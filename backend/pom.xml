@@ -15,6 +15,9 @@
     <description>backend</description>
     <properties>
         <java.version>20</java.version>
+        <sonar.organization>toshydev</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectName>netrunner_backend</sonar.projectName>
     </properties>
     <dependencies>
         <dependency>
