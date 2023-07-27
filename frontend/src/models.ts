@@ -9,12 +9,7 @@ export type Node = {
     coordinates: Coordinates,
 }
 
-export type NodeData = {
-    name: string,
-    coordinates: Coordinates
-}
-
-export type Coordinates = {
+type Coordinates = {
     latitude: number,
     longitude: number,
     timestamp: number
