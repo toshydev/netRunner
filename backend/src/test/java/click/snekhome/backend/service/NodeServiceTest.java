@@ -32,7 +32,7 @@ class NodeServiceTest {
         assertEquals(expected, actual);
         verify(nodeRepo).findAll();
     }
-
+  
     @Test
     void expectNodeWhenNodeDataIsAdded() {
         //given;
