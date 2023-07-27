@@ -89,9 +89,9 @@ jobs:
           #Set dockerhub project (replace "bartfastiel/java-capstone-project.de-example-app")
           #Set IP (replace "10.0.1.99" with "10.0.1.1"-"10.0.1.20")
           script: |
-            sudo docker stop netrunner
-            sudo docker rm netrunner
-            sudo docker run --pull=always -e MONGO_DB_URI="${{ secrets.MONGO_DB_URI }}" --name netrunner --network capstones --ip 10.0.5.3 --restart always --detach toshymoshy/netrunner:latest
+            sudo docker stop cgn-java-23-2-anton
+            sudo docker rm cgn-java-23-2-anton
+            sudo docker run --pull=always -e MONGO_DB_URI="${{ secrets.MONGO_DB_URI }}" --name cgn-java-23-2-anton --network capstones --ip 10.0.5.3 --restart always --detach toshymoshy/netrunner:latest
             sleep 15s
             sudo docker logs netrunner
 
@@ -99,7 +99,7 @@ jobs:
         uses: jtalk/url-health-check-action@v3
         with:
           #Set App Name (replace "example" with "alpha"-"tango")
-          url: http://netrunner.capstone-project.de
+          url: http://cgn-java-23-2-anton.capstone-project.de
           max-attempts: 3
           retry-delay: 5s
           retry-all: true
