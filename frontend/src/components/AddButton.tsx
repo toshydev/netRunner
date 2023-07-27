@@ -6,12 +6,18 @@ export default function AddButton() {
     const navigate = useNavigate();
 
     return (
-        <Tooltip title={"Add Node"} placement={"left"}>
+        <Tooltip title={
+            <StyledBadge>Add Node</StyledBadge>
+        } placement={"left"}>
             <StyledAddButton onClick={() => navigate("/add")}>+</StyledAddButton>
         </Tooltip>
     )
 }
 
+const StyledBadge = styled.div`
+  color: var(--color-primary);
+  font-size: 1.5rem;
+`;
 
 const StyledAddButton = styled(Button)`
   width: 4rem;
