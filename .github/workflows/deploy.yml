@@ -91,7 +91,7 @@ jobs:
           script: |
             sudo docker stop netrunner
             sudo docker rm netrunner
-            sudo docker run --pull=always -e MONGO_DB_URI="${{ secrets.MONGO_DB_URI }}" --name netrunner --network capstones --ip 10.0.5.3 --restart always --detach toshymoshy/netrunner:latest
+            sudo docker run --pull=always --name netrunner --network capstones --ip 10.0.5.3 --restart always --detach --env MONGO_DB_URI="${{ secrets.MONGO_DB_URI }}" toshymoshy/netrunner:latest
             sleep 15s
             sudo docker logs netrunner
 
