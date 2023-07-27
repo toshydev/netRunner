@@ -1,4 +1,5 @@
 import {css, Global} from '@emotion/react';
+import NerdFont from './assets/fonts/3270/3270NerdFont-Regular.ttf';
 
 export default function GlobalStyle() {
     return (
@@ -6,7 +7,7 @@ export default function GlobalStyle() {
             styles={css`
               @font-face {
                 font-family: '3270';
-                src: url('../public/fonts/3270/3270NerdFont-Regular.ttf') format('truetype');
+                src: url('${NerdFont}') format('truetype');
                 font-weight: 400;
                 font-style: normal;
               }
