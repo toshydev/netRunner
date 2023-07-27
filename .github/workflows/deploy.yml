@@ -89,11 +89,11 @@ jobs:
           #Set dockerhub project (replace "bartfastiel/java-capstone-project.de-example-app")
           #Set IP (replace "10.0.1.99" with "10.0.1.1"-"10.0.1.20")
           script: |
-            docker stop netrunner
-            docker rm netrunner
-            docker run --pull=always -e MONGO_DB_URI="${{ secrets.MONGO_DB_URI }}" --name netrunner --network capstones --ip 10.0.5.3 --restart always --detach toshymoshy/netrunner:latest
+            sudo docker stop netrunner
+            sudo docker rm netrunner
+            sudo docker run --pull=always -e MONGO_DB_URI="${{ secrets.MONGO_DB_URI }}" --name netrunner --network capstones --ip 10.0.5.3 --restart always --detach toshymoshy/netrunner:latest
             sleep 15s
-            docker logs netrunner
+            sudo docker logs netrunner
 
       - name: Check the deployed service URL
         uses: jtalk/url-health-check-action@v3
