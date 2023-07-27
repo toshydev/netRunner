@@ -9,18 +9,19 @@ export default function AddPage() {
     const [name, setName] = useState<string>("");
     const [latitude, setLatitude] = useState<number>(0);
     const [longitude, setLongitude] = useState<number>(0);
-    const [nameError, setNameError] = useState<string>("");
+    const [nameError, setNameError] = useState<string>("Name cannot be empty");
     const [latitudeError, setLatitudeError] = useState<string>("");
     const [longitudeError, setLongitudeError] = useState<string>("");
 
     const addNode = useStore(state => state.addNode);
     const navigate = useNavigate();
-
+    const submitActive = nameError === "" && latitudeError === "" && longitudeError === "";
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const timestamp = Date.now();
         const coordinates: Coordinates = {latitude, longitude, timestamp}
         const nodeData: NodeData = {name, coordinates};
+        console.log(nodeData);
         addNode(nodeData);
         navigate("/");
     }
@@ -58,16 +59,25 @@ export default function AddPage() {
         <StyledForm onSubmit={handleSubmit}>
             <StyledLabel htmlFor="name">Name</StyledLabel>
             <StyledInput id="name" type="text" value={name} onChange={handleNameChange} placeholder="New Node 1"/>
+            <StyledHelperContainer>
+                <StyledHelperText>{nameError}</StyledHelperText>
+            </StyledHelperContainer>
             <StyledLabel htmlFor="latitude">Latitude</StyledLabel>
             <StyledInput id="latitude" type="number" value={latitude} onChange={handleLatitudeChange}
                          placeholder="Latitude"/>
+            <StyledHelperContainer>
+                <StyledHelperText>{latitudeError}</StyledHelperText>
+            </StyledHelperContainer>
             <StyledLabel htmlFor="longitude">Longitude</StyledLabel>
             <StyledInput id="longitude" type="number" value={longitude} onChange={handleLongitudeChange}
                          placeholder="Longitude"/>
+            <StyledHelperContainer>
+                <StyledHelperText>{longitudeError}</StyledHelperText>
+            </StyledHelperContainer>
             <StyledButtonContainer>
                 <StyledCancelButton onClick={() => navigate("/")}>Cancel</StyledCancelButton>
                 <StyledSuccessButton type="submit"
-                                     disabled={nameError.length + latitudeError.length + longitudeError.length < 1}>Add</StyledSuccessButton>
+                                     disabled={!submitActive}>Add</StyledSuccessButton>
             </StyledButtonContainer>
         </StyledForm>
 
@@ -95,11 +105,22 @@ const StyledInput = styled.input`
   font: inherit;
   width: 100%;
   height: 3rem;
-  margin-bottom: 1rem;
 
   &::placeholder {
     color: var(--color-primary);
   }
+`;
+
+const StyledHelperContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 1.5rem;
+`;
+
+const StyledHelperText = styled.small`
+  color: var(--color-secondary);
+  font-family: inherit;
 `;
 
 const StyledButtonContainer = styled.div`
@@ -128,4 +149,10 @@ const StyledSuccessButton = styled(Button)`
   color: var(--color-primary);
   font: inherit;
   width: 45%;
+
+  &:disabled {
+    background: var(--color-black);
+    border-color: var(--color-semiblack);
+    color: var(--color-semiblack);
+  }
 `;

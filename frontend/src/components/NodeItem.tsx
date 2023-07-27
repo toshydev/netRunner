@@ -8,7 +8,7 @@ type Props = {
 export default function NodeItem({node}: Props) {
     return <StyledListItem>
         <StyledNameContainer>
-            <StyledHeading variant={"h2"}>{node.name}</StyledHeading>
+            <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
         </StyledNameContainer>
         <StyledStatsContainer>
             <StyledTextPrimary>Health: {node.health}</StyledTextPrimary>
@@ -60,10 +60,10 @@ const StyledNameContainer = styled.div`
   padding-right: 0.5rem;
 `;
 
-const StyledHeading = styled(Typography)`
+const StyledHeading = styled(Typography)<{ length: number }>`
   color: var(--color-primary);
   font: inherit;
-  font-size: 2rem;
+  font-size: ${({length}) => length > 10 ? "1.5rem" : "2rem"};
 `;
 
 const StyledStatsContainer = styled.div`

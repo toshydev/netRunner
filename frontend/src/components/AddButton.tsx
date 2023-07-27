@@ -20,8 +20,14 @@ const StyledAddButton = styled(Button)`
   background: var(--color-semiblack);
   border: 3px solid var(--color-primary);
   font-family: inherit;
+  font-size: 2rem;
   color: var(--color-primary);
   position: fixed;
   bottom: 2rem;
   right: 2rem;
+  filter: drop-shadow(0 0 0.75rem var(--color-black));
+
+  &:hover {
+    background: var(--color-black);
+  }
 `;

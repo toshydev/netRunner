@@ -19,10 +19,6 @@ export default function GlobalStyle() {
                 --color-secondary: #ff004f;
               }
 
-              #root {
-                width: 100%;
-              }
-
               html,
               body {
                 font-family: '3270', sans-serif;
