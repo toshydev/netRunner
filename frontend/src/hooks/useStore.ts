@@ -25,9 +25,14 @@ export const useStore = create<State>(set => ({
     },
 
     addNode: (nodeData: NodeData) => {
-        axios.post("/api/nodes", nodeData)
+        set({isLoading: true})
+        axios
+            .post("/api/nodes", nodeData)
             .then(response => response.data)
-            .then(data => console.log(data))
+            .then(data => {
+                set({nodes: [...useStore.getState().nodes, data]});
+            })
             .catch(console.error)
+            .then(() => set({isLoading: false}));
     }
 }));
