@@ -1,4 +1,4 @@
-name: "Deploy App on Snekhome"
+name: "Deploy App on SNEK"
 
 on:
   push:
