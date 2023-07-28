@@ -19,3 +19,8 @@ export type Coordinates = {
     longitude: number,
     timestamp: number
 }
+
+export enum ActionType {
+    HACK = "HACK",
+    ABANDON = "ABANDON",
+}

@@ -1,6 +1,7 @@
-import {Node} from "../models.ts";
+import {ActionType, Node} from "../models.ts";
 import styled from "@emotion/styled";
 import {Typography} from "@mui/material";
+import ActionButton from "./ActionButton.tsx";
 
 type Props = {
     node: Node;
@@ -20,6 +21,10 @@ export default function NodeItem({node}: Props) {
                 <StyledTextPrimary>{node.ownerId}</StyledTextPrimary>
             </StyledOwnerContainer>
         </StyledOwnerArea>
+        <StyledActionArea>
+            <ActionButton action={ActionType.ABANDON} nodeId={node.id}/>
+            <ActionButton action={ActionType.HACK} nodeId={node.id}/>
+        </StyledActionArea>
         <StyledLevelArea>
             <StyledTextSecondary>LVL:</StyledTextSecondary>
             <StyledLevelContainer>
@@ -102,6 +107,14 @@ const StyledOwnerContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const StyledActionArea = styled.div`
+  display: flex;
+  z-index: 1;
+  grid-column: 5;
+  grid-row: 2;
+  
 `;
 
 const StyledLevelArea = styled.div`
