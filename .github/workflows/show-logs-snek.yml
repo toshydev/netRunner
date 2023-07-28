@@ -1,4 +1,4 @@
-name: "Get Logs from NF"
+name: "Get Logs from SNEK"
 
 on:
   workflow_dispatch:
