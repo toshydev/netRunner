@@ -1,0 +1,27 @@
+name: "Get Logs from NF"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  get-logs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get logs from docker
+        uses: appleboy/ssh-action@master
+        with:
+          host: capstone-project.de
+          #Set App Name ("alpha" - "tango")
+          username: cgn-java-23-2-anton
+          password: ${{ secrets.SSH_PASSWORD_NF }}
+          #Set App Name ("alpha" - "tango")
+          script: |
+            docker logs netrunner
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v3
+        with:
+          #Set App Name ("alpha" - "tango")
+          url: http://netrunner.capstone-project.de
+          max-attempts: 3
+          retry-delay: 5s
+          retry-all: true
