@@ -15,17 +15,17 @@ export default function ActionButton({action, nodeId}: props) {
         editNode(nodeId, action)
     }
 
-    return <StyledButton onClick={handleAction} actionType={action}>{action.toString() === "ABANDON" ? "-" : "+"}</StyledButton>
+    return <StyledButton onClick={handleAction} actiontype={action}>{action.toString() === "ABANDON" ? "-" : "+"}</StyledButton>
 }
 
-const StyledButton = styled(Button)<{actionType: ActionType}>`
+const StyledButton = styled(Button)<{actiontype: ActionType}>`
   width: 4rem;
   height: 4rem;
   scale: 0.6;
   font-family: inherit;
   background: var(--color-black);
-  color: ${({actionType}) => actionType.toString() === "ABANDON" ? "var(--color-secondary)" : "var(--color-primary)"};
+  color: ${({actiontype}) => actiontype.toString() === "ABANDON" ? "var(--color-secondary)" : "var(--color-primary)"};
   font-size: 4rem;
   border-radius: 12px;
-  border: 4px solid ${({actionType}) => actionType.toString() === "ABANDON" ? "var(--color-secondary)" : "var(--color-primary)"};
+  border: 4px solid ${({actiontype}) => actiontype.toString() === "ABANDON" ? "var(--color-secondary)" : "var(--color-primary)"};
 `;

@@ -7,6 +7,7 @@ type Props = {
     node: Node;
 }
 export default function NodeItem({node}: Props) {
+
     return <StyledListItem>
         <StyledNameContainer>
             <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
@@ -21,10 +22,10 @@ export default function NodeItem({node}: Props) {
                 <StyledTextPrimary>{node.ownerId}</StyledTextPrimary>
             </StyledOwnerContainer>
         </StyledOwnerArea>
-        <StyledActionArea>
+        {node.ownerId !== null && <StyledActionArea>
             <ActionButton action={ActionType.ABANDON} nodeId={node.id}/>
             <ActionButton action={ActionType.HACK} nodeId={node.id}/>
-        </StyledActionArea>
+        </StyledActionArea>}
         <StyledLevelArea>
             <StyledTextSecondary>LVL:</StyledTextSecondary>
             <StyledLevelContainer>
