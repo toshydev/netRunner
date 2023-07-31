@@ -10,12 +10,15 @@ type Props = {
 }
 export default function NodeItem({node}: Props) {
     const [level, setLevel] = useState<number>(node.level);
+    const [owner, setOwner] = useState<string>();
     const editNode = useStore(state => state.editNode);
     const deleteNode = useStore(state => state.deleteNode);
+    const getOwner = useStore(state => state.getOwner);
 
     useEffect(() => {
         setLevel(node.level)
-    }, [node]);
+        getOwner(node.ownerId).then(data => setOwner(data));
+    }, [getOwner, node]);
 
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
@@ -34,7 +37,7 @@ export default function NodeItem({node}: Props) {
                 <StyledClaimButton
                     disabled={node.ownerId !== null}
                     onClick={() => handleEdit(ActionType.HACK)}
-                >{node.ownerId ?? "CLAIM"}</StyledClaimButton>
+                >{node.ownerId === null ? "CLAIM" : owner}</StyledClaimButton>
             </StyledOwnerArea>
             <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
             {node.ownerId !== null && <StyledActionArea>
