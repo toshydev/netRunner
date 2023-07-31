@@ -94,4 +94,102 @@ class NodeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
+
+    @Test
+    @DirtiesContext
+    void returnsUpgradedNode_whenHackingOwnedNode() throws Exception {
+        Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        nodeRepo.save(node);
+        String expected = """
+                {
+                    "id":"abc",
+                    "name":"Home",
+                    "level":2,
+                    "health":100,
+                    "ownerId": "123",
+                    "coordinates": {
+                        "latitude": 0,
+                        "longitude": 0
+                        },
+                    "lastAttack":0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
+                        .content("HACK"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
+
+    @Test
+    @DirtiesContext
+    void returnsDowngradedNode_whenAbandoningOwnedNode() throws Exception {
+        Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        nodeRepo.save(node);
+        String expected = """
+                {
+                    "id":"abc",
+                    "name":"Home",
+                    "level":0,
+                    "health":100,
+                    "coordinates": {
+                        "latitude": 0,
+                        "longitude": 0
+                        },
+                    "lastAttack":0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
+                        .content("ABANDON"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
+
+    @Test
+    @DirtiesContext
+    void returnNodeWithOwner_whenHackingUnownedNode() throws Exception {
+        Node node = new Node("abc", null, "Home", 0, 100, new Coordinates(0, 0, 0), 0, 0);
+        nodeRepo.save(node);
+        String expected = """
+                {
+                    "id":"abc",
+                    "name":"Home",
+                    "ownerId":"playerUnknown",
+                    "level":1,
+                    "health":100,
+                    "coordinates": {
+                        "latitude": 0,
+                        "longitude": 0
+                        },
+                    "lastAttack":0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
+                        .content("HACK"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
+
+    @Test
+    @DirtiesContext
+    void returnUnchangedNode_whenAbandoningUnownedNode() throws Exception {
+        Node node = new Node("abc", null, "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        nodeRepo.save(node);
+        String expected = """
+                {
+                    "id":"abc",
+                    "name":"Home",
+                    "level":1,
+                    "health":100,
+                    "coordinates": {
+                        "latitude": 0,
+                        "longitude": 0
+                        },
+                    "lastAttack":0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
+                        .content("ABANDON"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
 }

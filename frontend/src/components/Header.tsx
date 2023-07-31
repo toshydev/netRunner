@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import {keyframes} from "@emotion/react";
 
 export default function Header() {
     return (
@@ -7,6 +8,36 @@ export default function Header() {
         </StyledHeader>
     );
 }
+
+const blink = keyframes`
+    0% {
+      color: var(--color-primary);
+      text-shadow: 1px 1px 1px var(--color-secondary);
+    }
+    2% {
+      color: transparent;
+      text-shadow: 1px 1px 1px var(--color-secondary);
+    }
+    4% {
+      color: var(--color-primary);
+      text-shadow: -1px -1px 1px var(--color-secondary);
+    }
+    90% {
+        color: var(--color-primary);
+    }
+    92% {
+        color: transparent;
+        text-shadow: -1px -1px 1px var(--color-secondary);
+    }
+    94% {
+        color: var(--color-primary);
+      text-shadow: 1px 1px 1px var(--color-secondary);
+    }
+    100% {
+        color: var(--color-primary);
+        text-shadow: 1px 1px 1px var(--color-secondary);
+    }
+`;
 
 const StyledHeader = styled.header`
   width: 100%;
@@ -23,5 +54,6 @@ const StyledHeader = styled.header`
   h1 {
     color: var(--color-primary);
     text-shadow: -1px -1px 1px var(--color-secondary);
+    animation: ${blink} 3s infinite;
   }
 `;

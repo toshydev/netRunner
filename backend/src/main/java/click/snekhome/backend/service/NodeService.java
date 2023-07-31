@@ -3,6 +3,7 @@ package click.snekhome.backend.service;
 import click.snekhome.backend.model.Node;
 import click.snekhome.backend.model.NodeData;
 import click.snekhome.backend.repo.NodeRepo;
+import click.snekhome.backend.util.ActionType;
 import click.snekhome.backend.util.IdService;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,8 @@ import java.util.List;
 
 @Service
 public class NodeService {
+
+    private static final String PLAYERNAME = "playerUnknown";
 
     private final NodeRepo nodeRepo;
     private final IdService idService;
@@ -39,4 +42,65 @@ public class NodeService {
         return node;
     }
 
+    public Node edit(String id, ActionType actionType) {
+        Node node = this.nodeRepo.findById(id).orElseThrow();
+        Node newNode;
+        if (node.ownerId() == null) {
+            if (actionType == ActionType.HACK) {
+                newNode = new Node(
+                        node.id(),
+                        PLAYERNAME,
+                        node.name(),
+                        node.level() + 1,
+                        100,
+                        node.coordinates(),
+                        Instant.now().getEpochSecond(),
+                        node.lastAttack()
+                );
+                return this.nodeRepo.save(newNode);
+            } else if (actionType == ActionType.ABANDON) {
+                return node;
+            }
+        } else {
+            if (actionType == ActionType.HACK) {
+                newNode = new Node(
+                        node.id(),
+                        node.ownerId(),
+                        node.name(),
+                        node.level() + 1,
+                        100,
+                        node.coordinates(),
+                        Instant.now().getEpochSecond(),
+                        node.lastAttack()
+                );
+                return this.nodeRepo.save(newNode);
+            } else if (actionType == ActionType.ABANDON) {
+                if (node.level() == 1) {
+                    newNode = new Node(
+                            node.id(),
+                            null,
+                            node.name(),
+                            0,
+                            100,
+                            node.coordinates(),
+                            Instant.now().getEpochSecond(),
+                            node.lastAttack()
+                    );
+                } else {
+                    newNode = new Node(
+                            node.id(),
+                            node.ownerId(),
+                            node.name(),
+                            node.level() - 1,
+                            100,
+                            node.coordinates(),
+                            Instant.now().getEpochSecond(),
+                            node.lastAttack()
+                    );
+                }
+                return this.nodeRepo.save(newNode);
+            }
+        }
+        return node;
+    }
 }

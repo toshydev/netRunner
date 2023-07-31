@@ -10,7 +10,7 @@ export default function NodeList() {
 
     useEffect(() => {
         getNodes()
-    }, [getNodes])
+    }, [getNodes]);
 
     return <StyledList>
         {nodes.map(node => <NodeItem key={node.id} node={node}/>)}
