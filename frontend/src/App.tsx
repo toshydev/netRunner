@@ -6,7 +6,6 @@ import AddPage from "./components/AddPage.tsx";
 import styled from "@emotion/styled";
 
 export default function App() {
-
     return (
         <>
             <GlobalStyle/>

@@ -1,12 +1,24 @@
 import {ActionType, Node} from "../models.ts";
 import styled from "@emotion/styled";
-import {Typography} from "@mui/material";
+import {Button, Typography} from "@mui/material";
 import ActionButton from "./ActionButton.tsx";
+import {useEffect, useState} from "react";
+import {useStore} from "../hooks/useStore.ts";
 
 type Props = {
     node: Node;
 }
 export default function NodeItem({node}: Props) {
+    const [level, setLevel] = useState<number>(node.level);
+    const editNode = useStore(state => state.editNode);
+
+    useEffect(() => {
+        setLevel(node.level)
+    }, [node]);
+
+    function handleEdit(action: ActionType) {
+        editNode(node.id, action)
+    }
 
     return <StyledListItem>
         <StyledNameContainer>
@@ -17,19 +29,18 @@ export default function NodeItem({node}: Props) {
             <StyledTextPrimary>last update: {node.lastUpdated}</StyledTextPrimary>
         </StyledStatsContainer>
         <StyledOwnerArea>
-            <StyledTextSecondary>Owner: </StyledTextSecondary>
-            <StyledOwnerContainer>
-                <StyledTextPrimary>{node.ownerId}</StyledTextPrimary>
-            </StyledOwnerContainer>
+                <StyledClaimButton
+                    disabled={node.ownerId !== null}
+                    onClick={() => handleEdit(ActionType.HACK)}
+                >{node.ownerId === null ? "CLAIM" : node.ownerId}</StyledClaimButton>
         </StyledOwnerArea>
         {node.ownerId !== null && <StyledActionArea>
-            <ActionButton action={ActionType.ABANDON} nodeId={node.id}/>
-            <ActionButton action={ActionType.HACK} nodeId={node.id}/>
+            <ActionButton action={ActionType.ABANDON} onAction={handleEdit}/>
+            <ActionButton action={ActionType.HACK} onAction={handleEdit}/>
         </StyledActionArea>}
         <StyledLevelArea>
-            <StyledTextSecondary>LVL:</StyledTextSecondary>
             <StyledLevelContainer>
-                <StyledLevel><strong>{node.level}</strong></StyledLevel>
+                <StyledLevel><strong>{level}</strong></StyledLevel>
             </StyledLevelContainer>
         </StyledLevelArea>
         <StyledLocationContainer>
@@ -46,11 +57,6 @@ const StyledListItem = styled.li`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(3, 1fr);
-`;
-
-const StyledTextSecondary = styled(Typography)`
-  color: var(--color-secondary);
-  font: inherit;
 `;
 
 const StyledTextPrimary = styled(Typography)`
@@ -99,21 +105,10 @@ const StyledOwnerArea = styled.div`
   grid-row: 1;
 `;
 
-const StyledOwnerContainer = styled.div`
-  width: 4rem;
-  height: 2rem;
-  border-radius: 8px;
-  background: var(--color-grey);
-  padding: 0.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const StyledActionArea = styled.div`
   display: flex;
   z-index: 1;
-  grid-column: 5;
+  grid-column: 4 / 6;
   grid-row: 2;
   
 `;
@@ -147,3 +142,18 @@ const StyledLevel = styled(Typography)`
   font-size: 1.5rem;
   font-family: inherit;
 `
+
+const StyledClaimButton = styled(Button)`
+  margin-left: auto;
+  background: var(--color-black);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  border-radius: 8px;
+  font: inherit;
+  
+  &:disabled {
+    background: var(--color-black);
+    border: 2px solid var(--color-secondary);
+    color: var(--color-secondary);
+  }
+`;

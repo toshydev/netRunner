@@ -21,7 +21,6 @@ export default function AddPage() {
         const timestamp = Date.now();
         const coordinates: Coordinates = {latitude, longitude, timestamp}
         const nodeData: NodeData = {name, coordinates};
-        console.log(nodeData);
         addNode(nodeData);
         navigate("/");
     }

@@ -1,21 +1,15 @@
 import {ActionType} from "../models.ts";
 import {Button} from "@mui/material";
 import styled from "@emotion/styled";
-import {useStore} from "../hooks/useStore.ts";
 
 type props = {
     action: ActionType
-    nodeId: string
+    onAction: (action: ActionType) => void
 }
 
-export default function ActionButton({action, nodeId}: props) {
-    const editNode = useStore(state => state.editNode);
+export default function ActionButton({action, onAction}: props) {
 
-    function handleAction() {
-        editNode(nodeId, action)
-    }
-
-    return <StyledButton onClick={handleAction} actiontype={action}>{action.toString() === "ABANDON" ? "-" : "+"}</StyledButton>
+    return <StyledButton onClick={() => onAction(action)} actiontype={action}>{action.toString() === "ABANDON" ? "-" : "+"}</StyledButton>
 }
 
 const StyledButton = styled(Button)<{actiontype: ActionType}>`
@@ -28,4 +22,13 @@ const StyledButton = styled(Button)<{actiontype: ActionType}>`
   font-size: 4rem;
   border-radius: 12px;
   border: 4px solid ${({actiontype}) => actiontype.toString() === "ABANDON" ? "var(--color-secondary)" : "var(--color-primary)"};
+  transition: all 0.2s ease-in-out;
+  
+  &:focus {
+    background: var(--color-black);
+  }
+  
+  &:active {
+    scale: 0.5;
+  }
 `;

@@ -13,6 +13,7 @@ type State = {
 export const useStore = create<State>(set => ({
     nodes: [],
     isLoading: true,
+
     getNodes: () => {
         set({isLoading: true})
         axios
@@ -31,23 +32,24 @@ export const useStore = create<State>(set => ({
             .post("/api/nodes", nodeData)
             .then(response => response.data)
             .then(data => {
-                set({nodes: [...useStore.getState().nodes, data]});
+                set((state) => ({ nodes: [...state.nodes, data] }));
             })
             .catch(console.error)
             .then(() => set({isLoading: false}));
     },
 
     editNode: (nodeId: string, action: ActionType) => {
-        set({isLoading: true})
-        axios.put(`/api/nodes/${nodeId}`, action)
-            .then(response => response.data)
-            .then(data => {
-                const nodes = useStore.getState().nodes;
-                const index = nodes.findIndex(node => node.id === nodeId);
-                nodes[index] = data;
-                set({nodes: nodes});
+        set({ isLoading: true });
+        axios
+            .put(`/api/nodes/${nodeId}`, action, { headers: { "Content-Type": "text/plain" } })
+            .then((response) => response.data)
+            .then((data) => {
+                // Use the set function to update the nodes state immutably
+                set((state) => ({
+                    nodes: state.nodes.map((node) => (node.id === nodeId ? data : node)),
+                }));
             })
             .catch(console.error)
-            .then(() => set({isLoading: false}));
+            .then(() => set({ isLoading: false }));
     }
 }));
