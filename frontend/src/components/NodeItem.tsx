@@ -32,7 +32,7 @@ export default function NodeItem({node}: Props) {
                 <StyledClaimButton
                     disabled={node.ownerId !== null}
                     onClick={() => handleEdit(ActionType.HACK)}
-                >{node.ownerId === null ? "CLAIM" : node.ownerId}</StyledClaimButton>
+                >{node.ownerId ?? "CLAIM"}</StyledClaimButton>
         </StyledOwnerArea>
         {node.ownerId !== null && <StyledActionArea>
             <ActionButton action={ActionType.ABANDON} onAction={handleEdit}/>
