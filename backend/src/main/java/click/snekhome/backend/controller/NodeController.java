@@ -33,4 +33,9 @@ public class NodeController {
     public Node edit(@PathVariable String id, @RequestBody String actionType) {
         return this.nodeService.edit(id, ActionType.valueOf(actionType));
     }
+
+    @DeleteMapping("/nodes/{id}")
+    public void delete(@PathVariable String id) {
+        this.nodeService.delete(id);
+    }
 }

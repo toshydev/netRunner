@@ -58,8 +58,6 @@ public class NodeService {
                         node.lastAttack()
                 );
                 return this.nodeRepo.save(newNode);
-            } else if (actionType == ActionType.ABANDON) {
-                return node;
             }
         } else {
             if (actionType == ActionType.HACK) {
@@ -102,5 +100,9 @@ public class NodeService {
             }
         }
         return node;
+    }
+
+    public void delete(String id) {
+        this.nodeRepo.deleteById(id);
     }
 }
