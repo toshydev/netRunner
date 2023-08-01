@@ -58,8 +58,10 @@ public class NodeService {
                         node.lastAttack()
                 );
                 return this.nodeRepo.save(newNode);
+            } else {
+                return node;
             }
-        } else {
+        } else if (node.ownerId().equals(PLAYERNAME)) {
             if (actionType == ActionType.HACK) {
                 newNode = new Node(
                         node.id(),
@@ -98,6 +100,8 @@ public class NodeService {
                 }
                 return this.nodeRepo.save(newNode);
             }
+        } else {
+            return node;
         }
         return node;
     }
