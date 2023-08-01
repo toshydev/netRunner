@@ -33,7 +33,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(httpRequests ->
                         httpRequests
                                 .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/user/*").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/user/logout").permitAll()
                                 .anyRequest().authenticated())
                 .build();
     }

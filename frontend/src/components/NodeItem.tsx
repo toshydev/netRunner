@@ -4,25 +4,45 @@ import {Button, Typography} from "@mui/material";
 import ActionButton from "./ActionButton.tsx";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
+import axios from "axios";
 
 type Props = {
     node: Node;
 }
 export default function NodeItem({node}: Props) {
     const [level, setLevel] = useState<number>(node.level);
-    const [owner, setOwner] = useState<string>();
+    const [owner, setOwner] = useState<string>("");
     const editNode = useStore(state => state.editNode);
     const deleteNode = useStore(state => state.deleteNode);
-    const getOwner = useStore(state => state.getOwner);
+    const player = useStore(state => state.player)
 
     useEffect(() => {
         setLevel(node.level)
-        getOwner(node.ownerId).then(data => setOwner(data));
-    }, [getOwner, node]);
+        fetchOwner()
+    }, [node]);
+
+    function fetchOwner() {
+        axios.get(`/api/player/${node.ownerId}`)
+            .then(response => response.data)
+            .catch(() => setOwner(""))
+            .then(data => {
+                if (data) {
+                    setOwner(data)
+                } else {
+                    setOwner("")
+                }
+            })
+    }
 
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
     }
+
+    const date = new Date(node.lastUpdate * 1000);
+    const formattedDate = date.toLocaleDateString("en-US") + " " + date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 
     return <>
         <StyledListItem>
@@ -31,15 +51,15 @@ export default function NodeItem({node}: Props) {
             </StyledNameContainer>
             <StyledStatsContainer>
                 <StyledTextPrimary>Health: {node.health}</StyledTextPrimary>
-                <StyledTextPrimary>last update: {node.lastUpdated}</StyledTextPrimary>
+                <StyledTextPrimary>last update: {formattedDate}</StyledTextPrimary>
             </StyledStatsContainer>
             <StyledOwnerArea>
                 <StyledClaimButton
-                    disabled={node.ownerId !== null}
+                    disabled={owner !== ""}
                     onClick={() => handleEdit(ActionType.HACK)}
-                >{node.ownerId === null ? "CLAIM" : owner}</StyledClaimButton>
+                >{owner === "" ? "CLAIM" : owner}</StyledClaimButton>
             </StyledOwnerArea>
-            <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
+            {player?.id === node.ownerId && <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>}
             {node.ownerId !== null && <StyledActionArea>
                 <ActionButton action={ActionType.ABANDON} onAction={handleEdit}/>
                 <ActionButton action={ActionType.HACK} onAction={handleEdit}/>

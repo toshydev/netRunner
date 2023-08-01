@@ -2,6 +2,7 @@ package click.snekhome.backend.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class MongoUserController {
 
-    private final MongoUserDetailService mongoUserDetailService;
+    private final MongoUserService mongoUserService;
 
-    public MongoUserController(MongoUserDetailService mongoUserDetailService) {
-        this.mongoUserDetailService = mongoUserDetailService;
+    public MongoUserController(MongoUserService mongoUserService) {
+        this.mongoUserService = mongoUserService;
     }
 
     @GetMapping
@@ -23,16 +24,7 @@ public class MongoUserController {
                 .getContext()
                 .getAuthentication()
                 .getName();
-
-        if (!username.equals("anonymousUser")) {
-            return this.mongoUserDetailService.getUserData(username);
-        }
-        return null;
-    }
-
-    @GetMapping("{id}")
-    public UserData getUserDataById(@PathVariable String id) {
-        return this.mongoUserDetailService.getUserDataById(id);
+        return this.mongoUserService.getUserDataByUsername(username);
     }
 
     @PostMapping("/login")
@@ -41,6 +33,11 @@ public class MongoUserController {
                 .getContext()
                 .getAuthentication()
                 .getName();
+    }
+
+    @PostMapping("/register")
+    public void register(@Valid @RequestBody UserWithoutId userWithoutId){
+        this.mongoUserService.registerUser(userWithoutId);
     }
 
     @PostMapping("/logout")

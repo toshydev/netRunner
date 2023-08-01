@@ -1,3 +1,18 @@
+export type Player = {
+    id: string,
+    userId: string,
+    name: string,
+    Coordinates: Coordinates,
+    level: number,
+    experience: number,
+    experienceToNextLevel: number,
+    health: number,
+    maxHealth: number,
+    attack: number,
+    maxAttack: number,
+    credits: number,
+}
+
 export type User = {
     id: string,
     username: string,
@@ -9,8 +24,8 @@ export type Node = {
     name: string,
     level: number,
     health: number,
-    lastUpdated: string,
-    lastAttacked: string,
+    lastUpdate: number,
+    lastAttack: number,
     coordinates: Coordinates,
 }
 

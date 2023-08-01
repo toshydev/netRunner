@@ -1,12 +1,13 @@
 package click.snekhome.backend.service;
 
+import click.snekhome.backend.exception.WrongRoleException;
 import click.snekhome.backend.model.Node;
 import click.snekhome.backend.model.NodeData;
+import click.snekhome.backend.model.Player;
 import click.snekhome.backend.repo.NodeRepo;
 import click.snekhome.backend.security.MongoUser;
-import click.snekhome.backend.security.MongoUserDetailService;
+import click.snekhome.backend.security.MongoUserService;
 import click.snekhome.backend.security.Role;
-import click.snekhome.backend.security.UserData;
 import click.snekhome.backend.util.ActionType;
 import click.snekhome.backend.util.IdService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,12 +20,14 @@ import java.util.List;
 public class NodeService {
     private final NodeRepo nodeRepo;
     private final IdService idService;
-    private final MongoUserDetailService mongoUserDetailService;
+    private final MongoUserService mongoUserService;
+    private final PlayerService playerService;
 
-    public NodeService(NodeRepo nodeRepo, IdService idService, MongoUserDetailService mongoUserDetailService) {
+    public NodeService(NodeRepo nodeRepo, IdService idService, MongoUserService mongoUserService, PlayerService playerService) {
         this.nodeRepo = nodeRepo;
         this.idService = idService;
-        this.mongoUserDetailService = mongoUserDetailService;
+        this.mongoUserService = mongoUserService;
+        this.playerService = playerService;
     }
 
     public List<Node> list() {
@@ -33,7 +36,7 @@ public class NodeService {
 
     public Node add(NodeData nodeData) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        MongoUser user = this.mongoUserDetailService.getUserByUsername(username);
+        MongoUser user = this.mongoUserService.getUserByUsername(username);
         if (user.role().equals(Role.ADMIN)) {
             Node node = new Node(
                     this.idService.generateId(),
@@ -48,20 +51,20 @@ public class NodeService {
             this.nodeRepo.insert(node);
             return node;
         } else {
-            throw new RuntimeException("You are not an admin");
+            throw new WrongRoleException("You are not an admin");
         }
     }
 
     public Node edit(String id, ActionType actionType) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserData userData = this.mongoUserDetailService.getUserData(username);
+        Player player = this.playerService.getPlayer(username);
         Node node = this.nodeRepo.findById(id).orElseThrow();
         Node newNode;
         if (node.ownerId() == null) {
             if (actionType == ActionType.HACK) {
                 newNode = new Node(
                         node.id(),
-                        userData.id(),
+                        player.id(),
                         node.name(),
                         node.level() + 1,
                         100,
@@ -71,7 +74,7 @@ public class NodeService {
                 );
                 return this.nodeRepo.save(newNode);
             }
-        } else if (node.ownerId().equals(userData.id())){
+        } else if (node.ownerId().equals(player.id())){
             if (actionType == ActionType.HACK) {
                 newNode = new Node(
                         node.id(),
@@ -116,11 +119,11 @@ public class NodeService {
 
     public void delete(String id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        MongoUser user = this.mongoUserDetailService.getUserByUsername(username);
+        MongoUser user = this.mongoUserService.getUserByUsername(username);
         if (user.role().equals(Role.ADMIN)) {
             this.nodeRepo.deleteById(id);
         } else {
-            throw new RuntimeException("You are not an admin");
+            throw new WrongRoleException("You are not an admin");
         }
     }
 }

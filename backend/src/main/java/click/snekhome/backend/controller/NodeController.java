@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/nodes")
 public class NodeController {
 
     private final NodeService nodeService;
@@ -19,22 +19,22 @@ public class NodeController {
         this.nodeService = nodeService;
     }
 
-    @GetMapping("/nodes")
+    @GetMapping
     public List<Node> list() {
         return this.nodeService.list();
     }
 
-    @PostMapping("/nodes")
+    @PostMapping
     public Node add(@Valid @RequestBody NodeData nodeData) {
         return this.nodeService.add(nodeData);
     }
 
-    @PutMapping("/nodes/{id}")
+    @PutMapping("{id}")
     public Node edit(@PathVariable String id, @RequestBody String actionType) {
         return this.nodeService.edit(id, ActionType.valueOf(actionType));
     }
 
-    @DeleteMapping("/nodes/{id}")
+    @DeleteMapping("{id}")
     public void delete(@PathVariable String id) {
         this.nodeService.delete(id);
     }

@@ -9,19 +9,25 @@ import {useEffect} from "react";
 
 export default function App() {
     const user = useStore(state => state.user)
+    const player = useStore(state => state.player)
     const getUser = useStore(state => state.getUser)
+    const getPlayer = useStore(state => state.getPlayer)
     const logout = useStore(state => state.logout)
 
     useEffect(() => {
         getUser()
-    }, [getUser])
+        getPlayer()
+    }, [getPlayer, getUser])
+
+    console.log(user)
 
     return (
         <>
             <GlobalStyle/>
             <StyledContent>
             <Header/>
-                <p>{user?.username}</p>
+                <p>{player?.name ?? user?.username}</p>
+                {user && <button onClick={logout}>logout</button>}
                 {user && <button onClick={logout}>logout</button>}
                 <Routes>
                     <Route path="/add" element={<AddPage/>}/>

@@ -24,22 +24,4 @@ public class MongoUserDetailService implements UserDetailsService {
 
         return new User(mongoUser.username(), mongoUser.passwordHash(), Collections.emptyList());
     }
-
-    public UserData getUserData(String username) {
-        MongoUser mongoUser = mongoUserRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found!"));
-
-        return new UserData(mongoUser.id(), mongoUser.username());
-    }
-
-    public MongoUser getUserByUsername(String username) {
-        return this.mongoUserRepository.findByUsername(username).orElseThrow();
-    }
-
-    public UserData getUserDataById(String id) {
-        MongoUser mongoUser = mongoUserRepository.findByid(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User with ID " + id + " not found!"));
-
-        return new UserData(mongoUser.id(), mongoUser.username());
-    }
 }
