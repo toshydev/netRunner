@@ -122,4 +122,18 @@ class NodeServiceTest {
         verify(nodeRepo).findById("abc");
         verify(nodeRepo).save(expected);
     }
+
+    @Test
+    void expectListWithoutNodeWhenNodeIsDeleted() {
+        //given
+        Node node1 = new Node("def", "456", "Office", 2, 100, null, 0, 0);
+        List<Node> expected = List.of(node1);
+        //when
+        when(nodeRepo.findAll()).thenReturn(List.of(node1));
+        nodeService.delete("abc");
+        List<Node> actual = nodeService.list();
+        //then
+        assertEquals(expected, actual);
+        verify(nodeRepo).deleteById("abc");
+    }
 }

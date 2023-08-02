@@ -8,6 +8,7 @@ type State = {
     getNodes: () => void,
     addNode: (nodeData: NodeData) => void
     editNode: (nodeId: string, action: ActionType) => void
+    deleteNode: (nodeId: string) => void
 }
 
 export const useStore = create<State>(set => ({
@@ -51,5 +52,19 @@ export const useStore = create<State>(set => ({
             })
             .catch(console.error)
             .then(() => set({ isLoading: false }));
+    },
+
+    deleteNode: (nodeId: string) => {
+        set({ isLoading: true });
+        axios
+            .delete(`/api/nodes/${nodeId}`)
+            .catch(console.error)
+            .then(() => {
+                set((state) => ({
+                    nodes: state.nodes.filter((node) => node.id !== nodeId),
+                }));
+            })
+            .then(() => set({ isLoading: false }));
+
     }
 }));

@@ -11,6 +11,7 @@ type Props = {
 export default function NodeItem({node}: Props) {
     const [level, setLevel] = useState<number>(node.level);
     const editNode = useStore(state => state.editNode);
+    const deleteNode = useStore(state => state.deleteNode);
 
     useEffect(() => {
         setLevel(node.level)
@@ -20,34 +21,37 @@ export default function NodeItem({node}: Props) {
         editNode(node.id, action)
     }
 
-    return <StyledListItem>
-        <StyledNameContainer>
-            <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
-        </StyledNameContainer>
-        <StyledStatsContainer>
-            <StyledTextPrimary>Health: {node.health}</StyledTextPrimary>
-            <StyledTextPrimary>last update: {node.lastUpdated}</StyledTextPrimary>
-        </StyledStatsContainer>
-        <StyledOwnerArea>
+    return <>
+        <StyledListItem>
+            <StyledNameContainer>
+                <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
+            </StyledNameContainer>
+            <StyledStatsContainer>
+                <StyledTextPrimary>Health: {node.health}</StyledTextPrimary>
+                <StyledTextPrimary>last update: {node.lastUpdated}</StyledTextPrimary>
+            </StyledStatsContainer>
+            <StyledOwnerArea>
                 <StyledClaimButton
                     disabled={node.ownerId !== null}
                     onClick={() => handleEdit(ActionType.HACK)}
                 >{node.ownerId ?? "CLAIM"}</StyledClaimButton>
-        </StyledOwnerArea>
-        {node.ownerId !== null && <StyledActionArea>
-            <ActionButton action={ActionType.ABANDON} onAction={handleEdit}/>
-            <ActionButton action={ActionType.HACK} onAction={handleEdit}/>
-        </StyledActionArea>}
-        <StyledLevelArea>
-            <StyledLevelContainer>
-                <StyledLevel><strong>{level}</strong></StyledLevel>
-            </StyledLevelContainer>
-        </StyledLevelArea>
-        <StyledLocationContainer>
-            <StyledTextPrimary>Lat: {node.coordinates.latitude}</StyledTextPrimary>
-            <StyledTextPrimary>Lon: {node.coordinates.longitude}</StyledTextPrimary>
-        </StyledLocationContainer>
-    </StyledListItem>
+            </StyledOwnerArea>
+            <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
+            {node.ownerId !== null && <StyledActionArea>
+                <ActionButton action={ActionType.ABANDON} onAction={handleEdit}/>
+                <ActionButton action={ActionType.HACK} onAction={handleEdit}/>
+            </StyledActionArea>}
+            <StyledLevelArea>
+                <StyledLevelContainer>
+                    <StyledLevel><strong>{level}</strong></StyledLevel>
+                </StyledLevelContainer>
+            </StyledLevelArea>
+            <StyledLocationContainer>
+                <StyledTextPrimary>Lat: {node.coordinates.latitude}</StyledTextPrimary>
+                <StyledTextPrimary>Lon: {node.coordinates.longitude}</StyledTextPrimary>
+            </StyledLocationContainer>
+        </StyledListItem>
+    </>
 }
 
 const StyledListItem = styled.li`
@@ -110,7 +114,7 @@ const StyledActionArea = styled.div`
   z-index: 1;
   grid-column: 4 / 6;
   grid-row: 2;
-  
+
 `;
 
 const StyledLevelArea = styled.div`
@@ -150,10 +154,29 @@ const StyledClaimButton = styled(Button)`
   border: 2px solid var(--color-primary);
   border-radius: 8px;
   font: inherit;
-  
+
   &:disabled {
     background: var(--color-black);
     border: 2px solid var(--color-secondary);
     color: var(--color-secondary);
+  }
+`;
+
+const StyledDeleteButton = styled(Button)`
+  width: 4rem;
+  height: 4rem;
+  scale: 0.4;
+  font-family: inherit;
+  font-size: 3rem;
+  background: var(--color-semiblack);
+  color: var(--color-secondary);
+  border: 2px solid var(--color-secondary);
+  transition: all 0.2s ease-in-out;
+
+  &:active {
+    background: var(--color-secondary);
+    color: var(--color-black);
+    border: 2px solid var(--color-black);
+    scale: 0.3;
   }
 `;

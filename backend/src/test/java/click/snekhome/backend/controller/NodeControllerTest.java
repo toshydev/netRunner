@@ -192,4 +192,35 @@ class NodeControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
+
+    @Test
+    @DirtiesContext
+    void returnListWithoutDeletedNode_whenDeletingNode() throws Exception {
+        Node node1 = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Node node2 = new Node("def", "456", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
+        nodeRepo.save(node1);
+        nodeRepo.save(node2);
+        String expected = """
+                [
+                    {
+                        "id":"def",
+                        "name":"Office",
+                        "level":2,
+                        "health":100,
+                        "ownerId": "456",
+                        "coordinates": {
+                            "latitude": 0,
+                            "longitude": 0
+                            },
+                        "lastUpdate":0,
+                        "lastAttack":0
+                        }
+                ]
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/nodes/abc"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/nodes"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
 }

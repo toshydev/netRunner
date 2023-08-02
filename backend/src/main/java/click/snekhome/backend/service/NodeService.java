@@ -58,7 +58,7 @@ public class NodeService {
                         node.lastAttack()
                 );
                 return this.nodeRepo.save(newNode);
-            } else if (actionType == ActionType.ABANDON) {
+            } else {
                 return node;
             }
         } else {
@@ -102,5 +102,9 @@ public class NodeService {
             }
         }
         return node;
+    }
+
+    public void delete(String id) {
+        this.nodeRepo.deleteById(id);
     }
 }
