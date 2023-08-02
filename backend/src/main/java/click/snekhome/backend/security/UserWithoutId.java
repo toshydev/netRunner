@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record UserWithoutId(
         @NotBlank
-        @Size(min = 3, max = 25, message = "A length between 3 and 25 characters is mandatory.")
+        @Size(min = 3, max = 25, message = "A length between 3 and 15 characters is mandatory.")
         String username,
 
         @Email

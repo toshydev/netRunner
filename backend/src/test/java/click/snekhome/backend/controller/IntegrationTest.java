@@ -61,11 +61,6 @@ class IntegrationTest {
                     "password":"test"
                 }
                 """;
-        String expected = """
-                {
-                    "username": "test"
-                }
-                """;
         //when
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
                         .content(requestBody)
@@ -78,7 +73,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("test", "test")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(expected));
+                .andExpect(MockMvcResultMatchers.content().string("test"));
     }
 
     @Test
@@ -154,7 +149,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("admin", "admin")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"username\":\"admin\"}"));
+                .andExpect(MockMvcResultMatchers.content().string("admin"));
         mockMvc.perform(MockMvcRequestBuilders.post("/api/nodes")
                         .contentType("application/json")
                         .content(requestBody)
@@ -186,7 +181,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"username\":\"playerunknown\"}"));
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
 
         Optional<Player> player = playerRepo.findPlayerByName("playerunknown");
         assert player.isPresent();
@@ -238,7 +233,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"username\":\"playerunknown\"}"));
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
 
         Optional<Player> player = playerRepo.findPlayerByName("playerunknown");
         assert player.isPresent();
@@ -292,7 +287,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"username\":\"playerunknown\"}"));
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
 
         Optional<Player> player = playerRepo.findPlayerByName("playerunknown");
         assert player.isPresent();
@@ -357,7 +352,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"username\":\"playerunknown\"}"));
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("ABANDON")
                         .with(httpBasic("playerunknown", "password"))
@@ -403,7 +398,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"username\":\"playerunknown\"}"));
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("HACK")
                         .with(httpBasic("playerunknown", "password"))
@@ -456,11 +451,6 @@ class IntegrationTest {
                     "password":"test"
                 }
                 """;
-        String expectedUser = """
-                {
-                    "username": "testPlayer"
-                }
-                """;
         String expectedPlayer = """
                     {
                        "name": "testPlayer",
@@ -485,7 +475,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("testPlayer", "test")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(expectedUser));
+                .andExpect(MockMvcResultMatchers.content().string("testPlayer"));
         //then
         mockMvc.perform(MockMvcRequestBuilders.get("/api/player")
                         .with(httpBasic("testPlayer", "test")))
@@ -518,7 +508,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("admin", "admin")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("{\"username\":\"admin\"}"));
+                .andExpect(MockMvcResultMatchers.content().string("admin"));
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/logout")
                         .with(httpBasic("admin", "admin")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -553,11 +543,6 @@ class IntegrationTest {
                     "password":"test"
                 }
                 """;
-        String expectedUser = """
-                {
-                    "username": "testPlayer"
-                }
-                """;
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON).with(csrf()))
@@ -568,7 +553,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("testPlayer", "test")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(expectedUser));
+                .andExpect(MockMvcResultMatchers.content().string("testPlayer"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/nodes")
                         .with(httpBasic("testPlayer", "test"))

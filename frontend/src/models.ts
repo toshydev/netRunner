@@ -2,7 +2,7 @@ export type Player = {
     id: string,
     userId: string,
     name: string,
-    Coordinates: Coordinates,
+    coordinates: Coordinates,
     level: number,
     experience: number,
     experienceToNextLevel: number,
@@ -11,11 +11,6 @@ export type Player = {
     attack: number,
     maxAttack: number,
     credits: number,
-}
-
-export type User = {
-    id: string,
-    username: string,
 }
 
 export type Node = {

@@ -2,8 +2,13 @@ import {useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
 import {Coordinates, NodeData} from "../models.ts";
 import {useNavigate} from "react-router-dom";
-import {Button} from "@mui/material";
-import styled from "@emotion/styled";
+import {StyledForm} from "./styled/StyledForm.ts";
+import {StyledLabel} from "./styled/StyledLabel.ts";
+import {StyledInput} from "./styled/StyledInput.ts";
+import {StyledHelperContainer} from "./styled/StyledHelperContainer.ts";
+import {StyledHelperText} from "./styled/StyledHelperText.ts";
+import {StyledButtonContainer} from "./styled/StyledButtonContainer.ts";
+import {StyledFormButton} from "./styled/StyledFormButton.ts";
 
 export default function AddPage() {
     const [name, setName] = useState<string>("");
@@ -74,84 +79,10 @@ export default function AddPage() {
                 <StyledHelperText>{longitudeError}</StyledHelperText>
             </StyledHelperContainer>
             <StyledButtonContainer>
-                <StyledCancelButton onClick={() => navigate("/")}>Cancel</StyledCancelButton>
-                <StyledSuccessButton type="submit"
-                                     disabled={!submitActive}>Add</StyledSuccessButton>
+                <StyledFormButton theme="error" onClick={() => navigate("/")}>Cancel</StyledFormButton>
+                <StyledFormButton theme="success" type="submit"
+                                     disabled={!submitActive}>Add</StyledFormButton>
             </StyledButtonContainer>
         </StyledForm>
-
     )
-
 }
-
-const StyledForm = styled.form`
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 90%;
-`;
-
-const StyledLabel = styled.label`
-  color: var(--color-primary);
-`;
-
-const StyledInput = styled.input`
-  background: var(--color-semiblack);
-  outline: 2px solid var(--color-primary);
-  color: var(--color-primary);
-  font: inherit;
-  width: 100%;
-  height: 3rem;
-
-  &::placeholder {
-    color: var(--color-primary);
-  }
-`;
-
-const StyledHelperContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  height: 1.5rem;
-`;
-
-const StyledHelperText = styled.small`
-  color: var(--color-secondary);
-  font-family: inherit;
-`;
-
-const StyledButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  bottom: 1rem;
-  width: 100%;
-  gap: 0.25rem;
-`;
-
-const StyledCancelButton = styled(Button)`
-  background: var(--color-semiblack);
-  border: 4px solid var(--color-secondary);
-  border-radius: 12px;
-  color: var(--color-secondary);
-  font: inherit;
-  width: 45%;
-`;
-
-const StyledSuccessButton = styled(Button)`
-  background: var(--color-semiblack);
-  border: 4px solid var(--color-primary);
-  border-radius: 12px;
-  color: var(--color-primary);
-  font: inherit;
-  width: 45%;
-
-  &:disabled {
-    background: var(--color-black);
-    border-color: var(--color-semiblack);
-    color: var(--color-semiblack);
-  }
-`;

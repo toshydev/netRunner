@@ -19,12 +19,11 @@ public class MongoUserController {
     }
 
     @GetMapping
-    public UserData getUserData() {
-        String username = SecurityContextHolder
+    public String getUserData() {
+        return SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName();
-        return this.mongoUserService.getUserDataByUsername(username);
     }
 
     @PostMapping("/login")
