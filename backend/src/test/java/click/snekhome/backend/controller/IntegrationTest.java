@@ -513,7 +513,8 @@ class IntegrationTest {
                         .with(httpBasic("admin", "admin")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user"))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("anonymousUser"));
 
     }
 
@@ -568,5 +569,68 @@ class IntegrationTest {
                                 """)
                         .contentType(MediaType.APPLICATION_JSON).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    @DirtiesContext
+    void expectPlayerNameWhenLoggedIn() throws Exception {
+        String requestBody = """
+                {
+                    "username":"playerunknown",
+                    "email":"player@test.net",
+                    "password":"password"
+                }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
+                        .contentType("application/json")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+                        .with(httpBasic("playerunknown", "password")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
+                        .with(httpBasic("playerunknown", "password")))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
+
+        Optional<Player> player = playerRepo.findPlayerByName("playerunknown");
+        assert player.isPresent();
+        String playerId = player.get().id();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/player/" + playerId)
+                        .with(httpBasic("playerunknown", "password")))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
+    }
+
+    @Test
+    @DirtiesContext
+    void expect404whenPlayerIsNonExistent() throws Exception {
+        String requestBody = """
+                {
+                    "username":"playerunknown",
+                    "email":"player@test.net",
+                    "password":"password"
+                }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
+                        .contentType("application/json")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+                        .with(httpBasic("playerunknown", "password")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
+                        .with(httpBasic("playerunknown", "password")))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/player/abc")
+                        .with(httpBasic("playerunknown", "password")))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
