@@ -5,11 +5,15 @@ import {useEffect} from "react";
 export default function PlayerInfoBar() {
     const player = useStore(state => state.player)
     const getPlayer = useStore(state => state.getPlayer)
+    const gps = useStore(state => state.gps)
+    const toggleGps = useStore(state => state.toggleGps)
 
     useEffect(() => {
         getPlayer()
+        console.log(player)
     }, [getPlayer])
 
+    if (player === null) return null;
 
     return <StyledContainer>
         {player && <StyledBar theme={"primary"} bg={"semiblack"}>
@@ -21,9 +25,9 @@ export default function PlayerInfoBar() {
                 <StyledText color={"primary"}>{player.credits}$</StyledText>
             </StyledInfoContainer>
         </StyledBar>}
-        <StyledBar bg={"black"} theme={"secondary"}>
-            <StyledText color={"secondary"}>Lat: {player?.coordinates.latitude}</StyledText>
-            <StyledText color={"secondary"}>Lon: {player?.coordinates.longitude}</StyledText>
+        <StyledBar bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => toggleGps()}>
+            <StyledText color={gps ? "secondary" : "grey"}>Lat: {player.coordinates.latitude}</StyledText>
+            <StyledText color={gps ? "secondary" : "grey"}>Lon: {player.coordinates.longitude}</StyledText>
         </StyledBar>
     </StyledContainer>
 }

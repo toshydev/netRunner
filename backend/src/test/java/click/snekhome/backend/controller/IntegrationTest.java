@@ -633,4 +633,53 @@ class IntegrationTest {
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    @DirtiesContext
+    void expectPlayerWithUpdatedCoordinates() throws Exception {
+        String expected = """
+                    {
+                        "name": "playerunknown",
+                        "coordinates": {
+                            "latitude": 48.1232052,
+                            "longitude": 11.5485363,
+                            "timestamp": 1690997725514
+                        }
+                    }
+                """;
+        String userData = """
+                {
+                    "username":"playerunknown",
+                    "email":"player@test.net",
+                    "password":"password"
+                }
+                """;
+        String requestBody = """
+                    {
+                        "latitude": 48.1232052,
+                        "longitude": 11.5485363,
+                        "timestamp": 1690997725514
+                    }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
+                        .contentType("application/json")
+                        .content(userData)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+                        .with(httpBasic("playerunknown", "password")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
+                        .with(httpBasic("playerunknown", "password")))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
+                .content(requestBody).contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("playerunknown", "password")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+
+    }
 }

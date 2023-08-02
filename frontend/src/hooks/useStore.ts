@@ -17,6 +17,9 @@ type State = {
     login: (username: string, password: string, navigate: NavigateFunction) => void
     register: (username: string, email: string, password: string) => void
     logout: () => void
+    updateLocation: (coordinates: Coordinates) => void
+    gps: boolean
+    toggleGps: () => void
 }
 
 export const useStore = create<State>(set => ({
@@ -24,6 +27,7 @@ export const useStore = create<State>(set => ({
     player: null,
     nodes: [],
     isLoading: true,
+    gps: false,
 
     getPlayer: () => {
         set({isLoading: true})
@@ -145,5 +149,9 @@ export const useStore = create<State>(set => ({
             })
             .catch(console.error)
             .then(() => set({isLoading: false}));
+    },
+
+    toggleGps: () => {
+        set((state) => ({gps: !state.gps}))
     },
 }));

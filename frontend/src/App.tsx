@@ -15,8 +15,11 @@ import {Coordinates} from "./models.ts";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
+    const [location, setLocation] = useState<Coordinates | null>(null)
     const user = useStore(state => state.user)
     const getUser = useStore(state => state.getUser)
+    const updateLocation = useStore(state => state.updateLocation)
+    const gps = useStore(state => state.gps)
 
     useEffect(() => {
         try {
@@ -29,22 +32,26 @@ export default function App() {
     }, [getUser])
 
     useEffect(() => {
-        if (user) {
-            const id = setInterval(getLocation, 3000)
-            return () => clearInterval(id)
+        if (gps) {
+            const interval = setInterval(() => {
+                getLocation()
+                if (location) {
+                    updateLocation(location)
+                }
+            }, 3000)
+            return () => clearInterval(interval)
         }
-    }, [user])
+    }, [location, updateLocation, gps])
 
-    function getLocation(): Coordinates | null {
+    function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
                 const {latitude, longitude} = position.coords
                 const timestamp = position.timestamp
-                console.log(latitude, longitude, timestamp)
-                return {latitude, longitude, timestamp}
-            })
+                const coords: Coordinates = {latitude: latitude, longitude: longitude, timestamp: timestamp}
+                setLocation(coords)
+            });
         }
-        return null;
     }
 
     if (initialLoad) return null;
@@ -53,7 +60,7 @@ export default function App() {
         <ThemeProvider theme={theme}>
             <GlobalStyle/>
             <StyledContent>
-            <Header user={user}/>
+                <Header user={user}/>
                 <Routes>
                     <Route element={<ProtectedRoutes user={user}/>}>
                         <Route path={"/add"} element={<AddPage/>}/>
