@@ -61,7 +61,7 @@ public class NodeService {
             } else {
                 return node;
             }
-        } else if (node.ownerId().equals(PLAYERNAME)) {
+        } else {
             if (actionType == ActionType.HACK) {
                 newNode = new Node(
                         node.id(),
@@ -100,8 +100,6 @@ public class NodeService {
                 }
                 return this.nodeRepo.save(newNode);
             }
-        } else {
-            return node;
         }
         return node;
     }
