@@ -17,7 +17,8 @@ import java.time.Instant;
 import java.util.List;
 
 import static click.snekhome.backend.util.Calculation.getDistance;
-import static click.snekhome.backend.util.NodeFunctions.takeDamage;
+import static click.snekhome.backend.util.Calculation.getSecondsSince;
+import static click.snekhome.backend.util.NodeFunctions.*;
 import static click.snekhome.backend.util.PlayerFunctions.*;
 
 @Service
@@ -71,9 +72,9 @@ public class NodeService {
             return node;
         }
 
-        if ((node.ownerId() == null || node.health() == 0) && player.attack() > 0) {
+        if (node.ownerId() == null || node.health() == 0) {
             newNode = handleNonOwnedNode(player, node, actionType);
-        } else if (node.ownerId() != null && node.ownerId().equals(player.id())) {
+        } else if (node.ownerId().equals(player.id())) {
             newNode = handleOwnedNode(player, node, actionType);
         } else {
             newNode = handleAttackedNode(player, node, actionType);
@@ -83,85 +84,43 @@ public class NodeService {
     }
 
     private Node handleNonOwnedNode(Player player, Node node, ActionType actionType) {
-        if (actionType == ActionType.HACK) {
-            Node newNode = new Node(
-                    node.id(),
-                    player.id(),
-                    node.name(),
-                    node.level() + 1,
-                    100,
-                    node.coordinates(),
-                    Instant.now().getEpochSecond(),
-                    node.lastAttack()
-            );
+        if (actionType == ActionType.HACK && (getSecondsSince(node.lastUpdate()) > 120)) {
+            Node newNode = claimNode(node, player.id());
             Player updatedPlayer = useAttackPoints(player, newNode.level());
             updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
             playerService.updatePlayer(player.id(), updatedPlayer);
             return newNode;
-        } else {
-            return node;
+
         }
+        return node;
     }
 
     private Node handleOwnedNode(Player player, Node node, ActionType actionType) {
-        if (actionType == ActionType.HACK) {
-            Node newNode = new Node(
-                    node.id(),
-                    node.ownerId(),
-                    node.name(),
-                    node.level() + 1,
-                    100,
-                    node.coordinates(),
-                    Instant.now().getEpochSecond(),
-                    node.lastAttack()
-            );
+        if (actionType == ActionType.HACK && (player.attack() >= node.level()) && (getSecondsSince(node.lastUpdate()) > 120)) {
+            Node newNode = upgradeNode(node);
             Player updatedPlayer = useAttackPoints(player, newNode.level());
             updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
             playerService.updatePlayer(player.id(), updatedPlayer);
             return newNode;
-        } else if (actionType == ActionType.ABANDON) {
-            Node newNode;
-            if (node.level() == 1) {
-                newNode = new Node(
-                        node.id(),
-                        null,
-                        node.name(),
-                        0,
-                        100,
-                        node.coordinates(),
-                        Instant.now().getEpochSecond(),
-                        node.lastAttack()
-                );
-            } else {
-                newNode = new Node(
-                        node.id(),
-                        node.ownerId(),
-                        node.name(),
-                        node.level() - 1,
-                        100,
-                        node.coordinates(),
-                        Instant.now().getEpochSecond(),
-                        node.lastAttack()
-                );
-            }
+        } else if (actionType == ActionType.ABANDON && (getSecondsSince(node.lastUpdate()) > 120)) {
+            Node newNode = downgradeNode(node);
             Player updatedPlayer = useAttackPoints(player, -1);
             playerService.updatePlayer(player.id(), updatedPlayer);
             return newNode;
-        } else {
-            return node;
         }
+        return node;
     }
 
     private Node handleAttackedNode(Player player, Node node, ActionType actionType) {
-        if (actionType == ActionType.HACK) {
+        if (actionType == ActionType.HACK && (player.attack() >= node.level()) && (getSecondsSince(node.lastAttack()) > 120)) {
             Node newNode = takeDamage(node, player.level() * 10);
             Player updatedPlayer = getCredits(player, newNode.level() * 10);
             updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
             playerService.updatePlayer(player.id(), updatedPlayer);
             return newNode;
-        } else {
-            return node;
+
         }
+        return node;
     }
 
     public void delete(String id) {

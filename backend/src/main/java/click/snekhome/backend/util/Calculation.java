@@ -1,5 +1,7 @@
 package click.snekhome.backend.util;
 
+import java.time.Instant;
+
 public class Calculation {
     private static final double EARTH_RADIUS_KM = 6371.0;
 
@@ -17,5 +19,9 @@ public class Calculation {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return EARTH_RADIUS_KM * c * 1000;
+    }
+
+    public static long getSecondsSince(long timestamp) {
+        return Instant.now().getEpochSecond() - timestamp;
     }
 }

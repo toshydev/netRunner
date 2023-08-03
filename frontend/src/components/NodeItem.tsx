@@ -5,6 +5,7 @@ import ActionButton from "./ActionButton.tsx";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
 import axios from "axios";
+import {getDistanceBetweenCoordinates, getSecondsSinceTimestamp} from "../utils/calculation.ts";
 
 type Props = {
     node: Node;
@@ -12,16 +13,31 @@ type Props = {
 export default function NodeItem({node}: Props) {
     const [level, setLevel] = useState<number>(node.level);
     const [owner, setOwner] = useState<string>("");
+    const [distance, setDistance] = useState<number>(0);
     const editNode = useStore(state => state.editNode);
     const deleteNode = useStore(state => state.deleteNode);
+    const user = useStore(state => state.user);
+    const player = useStore(state => state.player);
+
+    const inactiveUpdate = getSecondsSinceTimestamp(node.lastUpdate) < 120;
+    const inactiveAttack = getSecondsSinceTimestamp(node.lastAttack) < 120;
 
     useEffect(() => {
         setLevel(node.level)
         fetchOwner()
-    }, [node]);
+    }, [node, editNode]);
+
+    useEffect(() => {
+        if (player) {
+            setDistance(getDistanceBetweenCoordinates({
+                latitude: player.coordinates.latitude,
+                longitude: player.coordinates.longitude
+            }, {latitude: node.coordinates.latitude, longitude: node.coordinates.longitude}))
+        }
+    }, [player, node])
 
     function fetchOwner() {
-        axios.get(`/api/player/${node.ownerId}`)
+        axios.get(node.ownerId && `/api/player/${node.ownerId}`)
             .then(response => response.data)
             .catch(() => setOwner(""))
             .then(data => {
@@ -35,6 +51,10 @@ export default function NodeItem({node}: Props) {
 
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
+    }
+
+    function isOutOfRange() {
+        return distance > 50
     }
 
     const date = new Date(node.lastUpdate * 1000);
@@ -54,14 +74,18 @@ export default function NodeItem({node}: Props) {
             </StyledStatsContainer>
             <StyledOwnerArea>
                 <StyledClaimButton
-                    disabled={owner !== ""}
+                    disabled={owner !== "" || isOutOfRange() || inactiveUpdate}
                     onClick={() => handleEdit(ActionType.HACK)}
                 >{owner === "" ? "CLAIM" : owner}</StyledClaimButton>
             </StyledOwnerArea>
             <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
+            <StyledDistanceInfo>{`Distance: ${distance / 1000} KM`}</StyledDistanceInfo>
             {node.ownerId !== null && <StyledActionArea>
-                <ActionButton action={ActionType.ABANDON} onAction={handleEdit}/>
-                <ActionButton action={ActionType.HACK} onAction={handleEdit}/>
+                {owner === user && <ActionButton inactive={inactiveUpdate || isOutOfRange()} action={ActionType.ABANDON}
+                                                 onAction={handleEdit}/>}
+                <ActionButton
+                    inactive={owner === user ? inactiveUpdate || isOutOfRange() : inactiveAttack || isOutOfRange()}
+                    action={ActionType.HACK} onAction={handleEdit}/>
             </StyledActionArea>}
             <StyledLevelArea>
                 <StyledLevelContainer>
@@ -133,8 +157,8 @@ const StyledOwnerArea = styled.div`
 
 const StyledActionArea = styled.div`
   display: flex;
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
   z-index: 1;
   grid-column: 4 / 6;
   grid-row: 2;
@@ -206,4 +230,13 @@ const StyledDeleteButton = styled(Button)`
     border: 2px solid var(--color-black);
     scale: 0.3;
   }
+`;
+
+const StyledDistanceInfo = styled(Typography)`
+  color: var(--color-secondary);
+  grid-column: 1 / 3;
+  grid-row: 4;
+  font-size: 0.8rem;
+    font-family: inherit;
+  align-self: center;
 `;
