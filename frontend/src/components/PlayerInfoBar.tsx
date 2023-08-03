@@ -9,7 +9,7 @@ export default function PlayerInfoBar({player}: Props) {
     const gps = useStore(state => state.gps)
     const setGps = useStore(state => state.setGps)
 
-    if (player ) {
+    if (player !== null) {
         return <StyledContainer>
             {player && <StyledBar theme={"primary"} bg={"semiblack"}>
                 <StyledText color={"primary"}>{player.name}</StyledText>

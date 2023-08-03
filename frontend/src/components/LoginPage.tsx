@@ -51,7 +51,7 @@ export default function LoginPage() {
 
     function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
         setEmail(event.target.value);
-        if (event.target.value.length < 3 && event.target.value.length > 50 && !event.target.value.match(/.+@.+\..+/)) {
+        if (!event.target.value.match(/^\w+@\w+\.\w+$/)) {
             setEmailError("Invalid email");
         } else {
             setEmailError("");
