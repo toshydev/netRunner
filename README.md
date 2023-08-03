@@ -41,6 +41,7 @@ As development continues, NetRunner aims to provide an immersive experience, ena
 
 Backend:
 
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
@@ -50,6 +51,7 @@ Backend:
 
 Frontend:
 
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
