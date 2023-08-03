@@ -1,15 +1,4 @@
-Backend:
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
-Frontend:
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
+![Server status](https://img.shields.io/website-up-down-green-red/http/snekhome.click.svg)
 
 **NetRunner**
 ![netRunner_wireframes](https://github.com/toshydev/netRunner/assets/91165689/cbec104c-7d1b-48d4-9f25-b37e960e40d4)
@@ -45,4 +34,22 @@ The project's CI/CD pipeline, powered by GitHub Actions and Docker, facilitates 
 
 As development continues, NetRunner aims to provide an immersive experience, enabling players to explore the real world through the lens of a cyberpunk universe, strategize their territorial control, and engage in thrilling multiplayer encounters within the futuristic cityscape.
 
+---
+
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-orange.svg)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
+
+Backend:
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=netRunner_backend&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
+
+Frontend:
+
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=netRunner_frontend&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=netRunner_frontend)
