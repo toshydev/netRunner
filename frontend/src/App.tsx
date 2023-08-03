@@ -35,7 +35,7 @@ export default function App() {
     }, [getUser])
 
     useEffect(() => {
-        if (user !== "anonymousUser") {
+        if (user !== "" && user !== "anonymousUser") {
             getPlayer()
             if (gps) {
                 const interval = setInterval(() => {
