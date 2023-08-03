@@ -1,4 +1,3 @@
-![Server status](https://img.shields.io/website-up-down-green-red/http/snekhome.click.svg)
 [![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Ftoshydev%2FnetRunner&labelColor=%23343a40&countColor=%23ff004f&style=flat&labelStyle=lower)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Ftoshydev%2FnetRunner)
 
 **NetRunner**
