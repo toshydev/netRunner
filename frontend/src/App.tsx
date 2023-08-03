@@ -27,7 +27,6 @@ export default function App() {
     useEffect(() => {
         try {
             getUser()
-            console.log("getting user")
         } catch (e) {
             console.error(e)
         } finally {
