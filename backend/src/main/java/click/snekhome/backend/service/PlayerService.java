@@ -67,4 +67,23 @@ public class PlayerService {
         return this.playerRepo.save(updatedPlayer);
 
     }
+
+    public void updatePlayer(String id, Player updatedPlayer) {
+        Player player = this.playerRepo.findPlayerByid(id).orElseThrow(() -> new NoSuchPlayerException(id));
+        Player newPlayer = new Player(
+                player.id(),
+                player.userId(),
+                player.name(),
+                player.coordinates(),
+                updatedPlayer.level(),
+                updatedPlayer.experience(),
+                updatedPlayer.experienceToNextLevel(),
+                updatedPlayer.health(),
+                updatedPlayer.maxHealth(),
+                updatedPlayer.attack(),
+                updatedPlayer.maxAttack(),
+                updatedPlayer.credits()
+        );
+        this.playerRepo.save(newPlayer);
+    }
 }

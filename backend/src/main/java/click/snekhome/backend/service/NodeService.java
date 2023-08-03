@@ -16,8 +16,14 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 
+import static click.snekhome.backend.util.Calculation.getDistance;
+import static click.snekhome.backend.util.NodeFunctions.takeDamage;
+import static click.snekhome.backend.util.PlayerFunctions.*;
+
 @Service
 public class NodeService {
+
+    private static final int MAX_DISTANCE = 50;
     private final NodeRepo nodeRepo;
     private final IdService idService;
     private final MongoUserService mongoUserService;
@@ -60,63 +66,102 @@ public class NodeService {
         Player player = this.playerService.getPlayer(username);
         Node node = this.nodeRepo.findById(id).orElseThrow();
         Node newNode;
-        if (node.ownerId() == null) {
-            if (actionType == ActionType.HACK) {
+
+        if (getDistance(player.coordinates().latitude(), player.coordinates().longitude(), node.coordinates().latitude(), node.coordinates().longitude()) > MAX_DISTANCE) {
+            return node;
+        }
+
+        if ((node.ownerId() == null || node.health() == 0) && player.attack() > 0) {
+            newNode = handleNonOwnedNode(player, node, actionType);
+        } else if (node.ownerId() != null && node.ownerId().equals(player.id())) {
+            newNode = handleOwnedNode(player, node, actionType);
+        } else {
+            newNode = handleAttackedNode(player, node, actionType);
+        }
+
+        return this.nodeRepo.save(newNode);
+    }
+
+    private Node handleNonOwnedNode(Player player, Node node, ActionType actionType) {
+        if (actionType == ActionType.HACK) {
+            Node newNode = new Node(
+                    node.id(),
+                    player.id(),
+                    node.name(),
+                    node.level() + 1,
+                    100,
+                    node.coordinates(),
+                    Instant.now().getEpochSecond(),
+                    node.lastAttack()
+            );
+            Player updatedPlayer = useAttackPoints(player, newNode.level());
+            updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
+            playerService.updatePlayer(player.id(), updatedPlayer);
+            return newNode;
+        } else {
+            return node;
+        }
+    }
+
+    private Node handleOwnedNode(Player player, Node node, ActionType actionType) {
+        if (actionType == ActionType.HACK) {
+            Node newNode = new Node(
+                    node.id(),
+                    node.ownerId(),
+                    node.name(),
+                    node.level() + 1,
+                    100,
+                    node.coordinates(),
+                    Instant.now().getEpochSecond(),
+                    node.lastAttack()
+            );
+            Player updatedPlayer = useAttackPoints(player, newNode.level());
+            updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
+            playerService.updatePlayer(player.id(), updatedPlayer);
+            return newNode;
+        } else if (actionType == ActionType.ABANDON) {
+            Node newNode;
+            if (node.level() == 1) {
                 newNode = new Node(
                         node.id(),
-                        player.id(),
+                        null,
                         node.name(),
-                        node.level() + 1,
+                        0,
                         100,
                         node.coordinates(),
                         Instant.now().getEpochSecond(),
                         node.lastAttack()
                 );
-                return this.nodeRepo.save(newNode);
             } else {
-                return node;
-            }
-        } else if (node.ownerId().equals(player.id())){
-            if (actionType == ActionType.HACK) {
                 newNode = new Node(
                         node.id(),
                         node.ownerId(),
                         node.name(),
-                        node.level() + 1,
+                        node.level() - 1,
                         100,
                         node.coordinates(),
                         Instant.now().getEpochSecond(),
                         node.lastAttack()
                 );
-                return this.nodeRepo.save(newNode);
-            } else if (actionType == ActionType.ABANDON) {
-                if (node.level() == 1) {
-                    newNode = new Node(
-                            node.id(),
-                            null,
-                            node.name(),
-                            0,
-                            100,
-                            node.coordinates(),
-                            Instant.now().getEpochSecond(),
-                            node.lastAttack()
-                    );
-                } else {
-                    newNode = new Node(
-                            node.id(),
-                            node.ownerId(),
-                            node.name(),
-                            node.level() - 1,
-                            100,
-                            node.coordinates(),
-                            Instant.now().getEpochSecond(),
-                            node.lastAttack()
-                    );
-                }
-                return this.nodeRepo.save(newNode);
             }
+            Player updatedPlayer = useAttackPoints(player, -1);
+            playerService.updatePlayer(player.id(), updatedPlayer);
+            return newNode;
+        } else {
+            return node;
         }
-        return node;
+    }
+
+    private Node handleAttackedNode(Player player, Node node, ActionType actionType) {
+        if (actionType == ActionType.HACK) {
+            Node newNode = takeDamage(node, player.level() * 10);
+            Player updatedPlayer = getCredits(player, newNode.level() * 10);
+            updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
+            playerService.updatePlayer(player.id(), updatedPlayer);
+            return newNode;
+        } else {
+            return node;
+        }
     }
 
     public void delete(String id) {
