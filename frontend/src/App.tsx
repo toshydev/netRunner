@@ -18,8 +18,11 @@ export default function App() {
     const [location, setLocation] = useState<Coordinates | null>(null)
     const user = useStore(state => state.user)
     const getUser = useStore(state => state.getUser)
+    const getPlayer = useStore(state => state.getPlayer)
+    const player = useStore(state => state.player)
     const updateLocation = useStore(state => state.updateLocation)
     const gps = useStore(state => state.gps)
+    const setGps = useStore(state => state.setGps)
 
     useEffect(() => {
         try {
@@ -32,16 +35,21 @@ export default function App() {
     }, [getUser])
 
     useEffect(() => {
-        if (gps) {
-            const interval = setInterval(() => {
-                getLocation()
-                if (location) {
-                    updateLocation(location)
-                }
-            }, 3000)
-            return () => clearInterval(interval)
+        if (user !== "anonymousUser") {
+            getPlayer()
+            if (gps) {
+                const interval = setInterval(() => {
+                    getLocation()
+                    if (location) {
+                        updateLocation(location)
+                    }
+                }, 3000)
+                return () => clearInterval(interval)
+            }
+        } else {
+            setGps(false)
         }
-    }, [location, updateLocation, gps])
+    }, [location, updateLocation, gps, user, getPlayer, setGps])
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -66,7 +74,7 @@ export default function App() {
                         <Route path={"/add"} element={<AddPage/>}/>
                         <Route path={"/"} element={
                             <>
-                                <PlayerInfoBar/>
+                                <PlayerInfoBar player={player}/>
                                 <NodeList/>
                             </>
                         }/>

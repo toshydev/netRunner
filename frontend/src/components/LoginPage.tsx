@@ -15,17 +15,15 @@ export default function LoginPage() {
     const [username, setUsername] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [usernameError, setUsernameError] = useState<string>("");
-    const [emailError, setEmailError] = useState<string>("");
-    const [passwordError, setPasswordError] = useState<string>("");
+    const [usernameError, setUsernameError] = useState<string>("Username must have at least three characters");
+    const [emailError, setEmailError] = useState<string>("Invalid email");
+    const [passwordError, setPasswordError] = useState<string>("Password must have at least three characters");
 
     const login = useStore(state => state.login)
     const register = useStore(state => state.register)
     const navigate = useNavigate()
 
-    const submitActive = newUser
-        ? (usernameError === "" && emailError === "" && passwordError === "")
-        : (usernameError === "" && passwordError === "");
+    const submitActive = usernameError === "" && emailError === "" && passwordError === ""
 
     function handleRegister(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -49,7 +47,6 @@ export default function LoginPage() {
         } else {
             setUsernameError("");
         }
-        !newUser && setUsernameError("");
     }
 
     function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
@@ -59,7 +56,6 @@ export default function LoginPage() {
         } else {
             setEmailError("");
         }
-        !newUser && setEmailError("");
     }
 
     function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
@@ -69,16 +65,10 @@ export default function LoginPage() {
         } else {
             setPasswordError("");
         }
-        !newUser && setPasswordError("");
     }
 
     function handleNewUserSwitch() {
         setNewUser(!newUser);
-        if (!newUser) {
-            setUsernameError("");
-            setEmailError("");
-            setPasswordError("");
-        }
     }
 
     return <>
@@ -102,7 +92,7 @@ export default function LoginPage() {
                     : (event) => setUsername(event.currentTarget.value)}
             />
             <StyledHelperContainer>
-                <StyledHelperText>{usernameError}</StyledHelperText>
+                {newUser && <StyledHelperText>{usernameError}</StyledHelperText>}
             </StyledHelperContainer>
             {newUser && <>
                 <StyledLabel htmlFor="email" id="email">Email</StyledLabel>
@@ -117,7 +107,7 @@ export default function LoginPage() {
                         : (event) => setEmail(event.currentTarget.value)}
                 />
                 <StyledHelperContainer>
-                    <StyledHelperText>{emailError}</StyledHelperText>
+                    {newUser && <StyledHelperText>{emailError}</StyledHelperText>}
                 </StyledHelperContainer>
             </>}
             <StyledLabel htmlFor="password" id="password">Password</StyledLabel>
@@ -132,7 +122,7 @@ export default function LoginPage() {
                     : (event) => setPassword(event.currentTarget.value)}
             />
             <StyledHelperContainer>
-                <StyledHelperText>{passwordError}</StyledHelperText>
+                {newUser && <StyledHelperText>{passwordError}</StyledHelperText>}
             </StyledHelperContainer>
             <StyledButtonContainer>
                 <StyledFormButton theme="error"
@@ -140,7 +130,7 @@ export default function LoginPage() {
                                   onClick={() => navigate("/")}>Cancel</StyledFormButton>
                 <StyledFormButton theme="success"
                                   type="submit"
-                                  disabled={!submitActive}>{newUser ? "Register" : "Login"}</StyledFormButton>
+                                  disabled={newUser ? !submitActive : false}>{newUser ? "Register" : "Login"}</StyledFormButton>
             </StyledButtonContainer>
         </StyledForm>
     </>

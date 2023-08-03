@@ -19,7 +19,7 @@ type State = {
     logout: () => void
     updateLocation: (coordinates: Coordinates) => void
     gps: boolean
-    toggleGps: () => void
+    setGps: (gps: boolean) => void
 }
 
 export const useStore = create<State>(set => ({
@@ -151,7 +151,7 @@ export const useStore = create<State>(set => ({
             .then(() => set({isLoading: false}));
     },
 
-    toggleGps: () => {
-        set((state) => ({gps: !state.gps}))
-    },
+    setGps: (gps: boolean) => {
+        set({gps: gps});
+    }
 }));

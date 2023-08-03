@@ -1,35 +1,33 @@
 import styled from "@emotion/styled";
 import {useStore} from "../hooks/useStore.ts";
-import {useEffect} from "react";
+import {Player} from "../models.ts";
 
-export default function PlayerInfoBar() {
-    const player = useStore(state => state.player)
-    const getPlayer = useStore(state => state.getPlayer)
+type Props = {
+    player: Player | null
+}
+export default function PlayerInfoBar({player}: Props) {
     const gps = useStore(state => state.gps)
-    const toggleGps = useStore(state => state.toggleGps)
+    const setGps = useStore(state => state.setGps)
 
-    useEffect(() => {
-        getPlayer()
-        console.log(player)
-    }, [getPlayer])
-
-    if (player === null) return null;
-
-    return <StyledContainer>
-        {player && <StyledBar theme={"primary"} bg={"semiblack"}>
-            <StyledText color={"primary"}>{player.name}</StyledText>
-            <StyledInfoContainer>
-                <StyledText color={"primary"}>LVL {player.level}</StyledText>
-                <StyledText color={"secondary"}>{player.health}HP</StyledText>
-                <StyledText color={"secondary"}>{player.attack}AP</StyledText>
-                <StyledText color={"primary"}>{player.credits}$</StyledText>
-            </StyledInfoContainer>
-        </StyledBar>}
-        <StyledBar bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => toggleGps()}>
-            <StyledText color={gps ? "secondary" : "grey"}>Lat: {player.coordinates.latitude}</StyledText>
-            <StyledText color={gps ? "secondary" : "grey"}>Lon: {player.coordinates.longitude}</StyledText>
-        </StyledBar>
-    </StyledContainer>
+    if (player ) {
+        return <StyledContainer>
+            {player && <StyledBar theme={"primary"} bg={"semiblack"}>
+                <StyledText color={"primary"}>{player.name}</StyledText>
+                <StyledInfoContainer>
+                    <StyledText color={"primary"}>LVL {player.level}</StyledText>
+                    <StyledText color={"secondary"}>{player.health}HP</StyledText>
+                    <StyledText color={"secondary"}>{player.attack}AP</StyledText>
+                    <StyledText color={"primary"}>{player.credits}$</StyledText>
+                </StyledInfoContainer>
+            </StyledBar>}
+            <StyledBar bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => setGps(!gps)}>
+                <StyledText color={gps ? "secondary" : "grey"}>Lat: {player?.coordinates?.latitude}</StyledText>
+                <StyledText color={gps ? "secondary" : "grey"}>Lon: {player?.coordinates?.longitude}</StyledText>
+            </StyledBar>
+        </StyledContainer>
+    } else {
+        return <>loading ...</>
+    }
 }
 
 const StyledContainer = styled.div`

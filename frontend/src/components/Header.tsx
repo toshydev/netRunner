@@ -12,6 +12,7 @@ type Props = {
 export default function Header({user}: Props) {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const logout = useStore(state => state.logout)
+    const setGps = useStore(state => state.setGps)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -21,6 +22,7 @@ export default function Header({user}: Props) {
 
     function handleLogout() {
         logout()
+        setGps(false)
         setIsAuthenticated(false)
         navigate("/login")
     }
