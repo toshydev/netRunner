@@ -21,6 +21,8 @@ export default function NodeItem({node}: Props) {
 
     const inactiveUpdate = getSecondsSinceTimestamp(node.lastUpdate) < 120;
     const inactiveAttack = getSecondsSinceTimestamp(node.lastAttack) < 120;
+    const notEnoughAP = player!.attack < node.level;
+    const isOutOfRange = distance > 50;
 
     useEffect(() => {
         setLevel(node.level)
@@ -53,10 +55,6 @@ export default function NodeItem({node}: Props) {
         editNode(node.id, action)
     }
 
-    function isOutOfRange() {
-        return distance > 50
-    }
-
     const date = new Date(node.lastUpdate * 1000);
     const formattedDate = date.toLocaleDateString("en-US") + " " + date.toLocaleTimeString("en-US", {
         hour: "2-digit",
@@ -74,17 +72,18 @@ export default function NodeItem({node}: Props) {
             </StyledStatsContainer>
             <StyledOwnerArea>
                 <StyledClaimButton
-                    disabled={owner !== "" || isOutOfRange() || inactiveUpdate}
+                    disabled={owner !== "" || isOutOfRange || inactiveUpdate}
                     onClick={() => handleEdit(ActionType.HACK)}
                 >{owner === "" ? "CLAIM" : owner}</StyledClaimButton>
             </StyledOwnerArea>
             <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
-            <StyledDistanceInfo>{`Distance: ${distance / 1000} KM`}</StyledDistanceInfo>
+            <StyledDistanceInfo outOfRange={isOutOfRange}>{`Distance: ${distance / 1000} KM`}</StyledDistanceInfo>
             {node.ownerId !== null && <StyledActionArea>
-                {owner === user && <ActionButton inactive={inactiveUpdate || isOutOfRange()} action={ActionType.ABANDON}
-                                                 onAction={handleEdit}/>}
+                {owner === user &&
+                    <ActionButton inactive={inactiveUpdate || isOutOfRange} action={ActionType.ABANDON}
+                                  onAction={handleEdit}/>}
                 <ActionButton
-                    inactive={owner === user ? inactiveUpdate || isOutOfRange() : inactiveAttack || isOutOfRange()}
+                    inactive={owner === user ? (inactiveUpdate || isOutOfRange || notEnoughAP) : (inactiveAttack || isOutOfRange || notEnoughAP)}
                     action={ActionType.HACK} onAction={handleEdit}/>
             </StyledActionArea>}
             <StyledLevelArea>
@@ -92,7 +91,7 @@ export default function NodeItem({node}: Props) {
                     <StyledLevel><strong>{level}</strong></StyledLevel>
                 </StyledLevelContainer>
             </StyledLevelArea>
-            <StyledLocationContainer>
+            <StyledLocationContainer outOfRange={isOutOfRange}>
                 <StyledTextPrimary>Lat: {node.coordinates.latitude}</StyledTextPrimary>
                 <StyledTextPrimary>Lon: {node.coordinates.longitude}</StyledTextPrimary>
             </StyledLocationContainer>
@@ -110,7 +109,7 @@ const StyledListItem = styled.li`
 `;
 
 const StyledTextPrimary = styled(Typography)`
-  color: var(--color-primary);
+  color: inherit;
   font: inherit;
 `;
 
@@ -135,12 +134,13 @@ const StyledStatsContainer = styled.div`
   gap: 0.5rem;
 `;
 
-const StyledLocationContainer = styled.div`
+const StyledLocationContainer = styled.div<{ outOfRange: boolean }>`
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 2px solid var(--color-primary);
-  background: var(--color-grey);
+  border: 2px solid ${({outOfRange}) => outOfRange ? "var(--color-secondary)" : "var(--color-primary)"};
+  background: var(--color-black);
+  color: ${({outOfRange}) => outOfRange ? "var(--color-secondary)" : "var(--color-primary)"};
   padding: 0.5rem;
   grid-column: 1 / 4;
   grid-row: 3;
@@ -205,8 +205,8 @@ const StyledClaimButton = styled(Button)`
 
   &:disabled {
     background: var(--color-black);
-    border: 2px solid var(--color-secondary);
-    color: var(--color-secondary);
+    border: 2px solid var(--color-grey);
+    color: var(--color-grey);
   }
 `;
 
@@ -232,11 +232,11 @@ const StyledDeleteButton = styled(Button)`
   }
 `;
 
-const StyledDistanceInfo = styled(Typography)`
-  color: var(--color-secondary);
-  grid-column: 1 / 3;
+const StyledDistanceInfo = styled(Typography)<{ outOfRange: boolean }>`
+  color: ${({outOfRange}) => outOfRange ? "var(--color-secondary)" : "var(--color-primary)"};
+  grid-column: 1 / 5;
   grid-row: 4;
-  font-size: 0.8rem;
-    font-family: inherit;
+  font-size: 1rem;
+  font-family: inherit;
   align-self: center;
 `;
