@@ -27,6 +27,7 @@ export default function App() {
     useEffect(() => {
         try {
             getUser()
+            console.log("getting user")
         } catch (e) {
             console.error(e)
         } finally {
@@ -35,7 +36,7 @@ export default function App() {
     }, [getUser])
 
     useEffect(() => {
-        if (user !== "anonymousUser") {
+        if (user !== "" && user !== "anonymousUser") {
             getPlayer()
             if (gps) {
                 const interval = setInterval(() => {
