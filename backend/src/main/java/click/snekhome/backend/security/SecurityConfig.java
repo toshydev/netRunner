@@ -32,7 +32,6 @@ public class SecurityConfig {
                             .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(httpRequests ->
                         httpRequests
-                                .requestMatchers(HttpMethod.GET, "/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/logout").permitAll()

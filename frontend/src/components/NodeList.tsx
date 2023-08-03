@@ -7,10 +7,13 @@ import {useEffect} from "react";
 export default function NodeList() {
     const nodes = useStore(state => state.nodes);
     const getNodes = useStore(state => state.getNodes);
+    const user = useStore(state => state.user);
 
     useEffect(() => {
-        getNodes()
-    }, [getNodes]);
+        if (user !== "" && user !== "anonymousUser") {
+            getNodes()
+        }
+    }, [getNodes, user]);
 
     return <StyledList>
         {nodes.map(node => <NodeItem key={node.id} node={node}/>)}
