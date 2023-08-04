@@ -4,7 +4,7 @@ import {Button, Typography} from "@mui/material";
 import ActionButton from "./ActionButton.tsx";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
-import {css, keyframes} from "@emotion/react";
+import {css, keyframes, SerializedStyles} from "@emotion/react";
 import useOwner from "../hooks/useOwner.ts";
 import CooldownCounter from "./CooldownCounter.tsx";
 import useCooldown from "../hooks/useCooldown.ts";
@@ -89,12 +89,24 @@ export default function NodeItem({node, player, distance}: Props) {
     const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
     const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
     const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange
+    const status = isUpdating ? "update" : isAttacked ? "attack" : null;
+    let animationStyles = null;
+    if (status === "update") {
+        animationStyles = css`
+    animation: ${generateBlinkAnimation("var(--color-primary)")} 1s linear infinite;
+  `;
+    } else if (status === "attack") {
+        animationStyles = css`
+    animation: ${generateBlinkAnimation("var(--color-secondary)")} 1s linear infinite;
+  `;
+    }
 
     if (!initialLoad && !isLoading && player !== null) {
 
         return <>
             <StyledListItem playerOwned={`${isPlayerOwned}`}
-                            status={`${isUpdating ? "update" : isAttacked ? "attack" : null}`}>
+                            status={`${status}`}
+                            css={animationStyles}>
                 {!isInRange && <ModalContainer>
                     <p>Out of Range</p>
                 </ModalContainer>}
@@ -155,7 +167,7 @@ const generateBlinkAnimation = (color: string) => keyframes`
   }
 `;
 
-const StyledListItem = styled.li<{ playerOwned: string; status: string }>`
+const StyledListItem = styled.li<{ playerOwned: string; status: string, css: SerializedStyles | null}>`
   color: ${({ playerOwned }) =>
           playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
@@ -165,17 +177,7 @@ const StyledListItem = styled.li<{ playerOwned: string; status: string }>`
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(3, 1fr) 2rem;
   position: relative;
-
-  ${({ status }) =>
-          status === "update"
-                  ? css`
-          animation: ${generateBlinkAnimation("var(--color-primary)")} 1s linear infinite;
-        `
-                  : status === "attack"
-                          ? css`
-          animation: ${generateBlinkAnimation("var(--color-secondary)")} 1s linear infinite;
-        `
-                          : null}
+  ${({css}) => css};
 `;
 
 const StyledTextPrimary = styled(Typography)`
