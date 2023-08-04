@@ -89,7 +89,14 @@ export default function NodeItem({node, player, distance}: Props) {
     const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
     const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
     const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange
-    const status = isUpdating ? "update" : isAttacked ? "attack" : null;
+
+    let status = null;
+    if (isUpdating) {
+        status = "update"
+    } else if (isAttacked) {
+        status = "attack"
+    }
+
     let animationStyles = null;
     if (status === "update") {
         animationStyles = css`
