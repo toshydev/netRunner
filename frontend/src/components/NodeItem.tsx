@@ -140,38 +140,24 @@ export default function NodeItem({node, player, distance}: Props) {
     }
 }
 
-const updateBlinker = keyframes`
+const generateBlinkAnimation = (color: string) => keyframes`
   0% {
-    outline: 0.25rem solid var(--color-primary);
-    filter: drop-shadow(0 0 0.25rem var(--color-primary));
+    outline: 0.25rem solid ${color};
+    filter: drop-shadow(0 0 0.25rem ${color});
   }
   50% {
     outline: 0.25rem solid var(--color-semiblack);
-    filter: drop-shadow(0 0 0 var(--color-primary));
+    filter: drop-shadow(0 0 0 ${color});
   }
   100% {
-    outline: 0.25rem solid var(--color-primary);
-    filter: drop-shadow(0 0 0.25rem var(--color-primary));
+    outline: 0.25rem solid ${color};
+    filter: drop-shadow(0 0 0.25rem ${color});
   }
 `;
 
-const attackBlinker = keyframes`
-  0% {
-    outline: 0.25rem solid var(--color-secondary);
-    filter: drop-shadow(0 0 0.25rem var(--color-secondary));
-  }
-  50% {
-    outline: 0.25rem solid var(--color-semiblack);
-    filter: drop-shadow(0 0 0 var(--color-secondary));
-  }
-  100% {
-    outline: 0.25rem solid var(--color-secondary);
-    filter: drop-shadow(0 0 0.25rem var(--color-secondary));
-  }
-`;
-
-const StyledListItem = styled.li<{ playerOwned: string, status: string }>`
-  color: ${({playerOwned}) => playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
+const StyledListItem = styled.li<{ playerOwned: string; status: string }>`
+  color: ${({ playerOwned }) =>
+          playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
   width: 100%;
   padding: 0.5rem;
@@ -179,11 +165,17 @@ const StyledListItem = styled.li<{ playerOwned: string, status: string }>`
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(3, 1fr) 2rem;
   position: relative;
-  ${({status}) => status === "update" ? css`
-    animation: ${updateBlinker} 1s linear infinite;
-  ` : status === "attack" ? css`
-    animation: ${attackBlinker} 1s linear infinite;
-  ` : null}
+
+  ${({ status }) =>
+          status === "update"
+                  ? css`
+          animation: ${generateBlinkAnimation("var(--color-primary)")} 1s linear infinite;
+        `
+                  : status === "attack"
+                          ? css`
+          animation: ${generateBlinkAnimation("var(--color-secondary)")} 1s linear infinite;
+        `
+                          : null}
 `;
 
 const StyledTextPrimary = styled(Typography)`
