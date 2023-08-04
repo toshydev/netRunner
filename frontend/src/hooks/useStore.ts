@@ -83,13 +83,15 @@ export const useStore = create<State>(set => ({
             .put(`/api/nodes/${nodeId}`, action, {headers: {"Content-Type": "text/plain"}})
             .then((response) => response.data)
             .then((data) => {
-                // Use the set function to update the nodes state immutably
                 set((state) => ({
                     nodes: state.nodes.map((node) => (node.id === nodeId ? data : node)),
                 }));
             })
             .catch(console.error)
-            .then(() => set({isLoading: false}));
+            .then(() => {
+                useStore.getState().getPlayer();
+                set({isLoading: false})
+            });
     },
 
     deleteNode: (nodeId: string) => {

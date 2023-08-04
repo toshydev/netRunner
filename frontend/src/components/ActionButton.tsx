@@ -5,11 +5,12 @@ import styled from "@emotion/styled";
 type props = {
     action: ActionType
     onAction: (action: ActionType) => void
+    inactive: boolean
 }
 
-export default function ActionButton({action, onAction}: props) {
+export default function ActionButton({action, onAction, inactive}: props) {
 
-    return <StyledButton onClick={() => onAction(action)} actiontype={action}>{action.toString() === "ABANDON" ? "-" : "+"}</StyledButton>
+    return <StyledButton disabled={inactive} onClick={() => onAction(action)} actiontype={action}>{action.toString() === "ABANDON" ? "-" : "+"}</StyledButton>
 }
 
 const StyledButton = styled(Button)<{actiontype: ActionType}>`
@@ -30,5 +31,10 @@ const StyledButton = styled(Button)<{actiontype: ActionType}>`
   
   &:active {
     scale: 0.5;
+  }
+  
+  &:disabled {
+    color: var(--color-grey);
+    border-color: var(--color-grey);
   }
 `;

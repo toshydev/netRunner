@@ -1,92 +1,194 @@
-import {ActionType, Node} from "../models.ts";
+import {ActionType, Node, Player} from "../models.ts";
 import styled from "@emotion/styled";
 import {Button, Typography} from "@mui/material";
 import ActionButton from "./ActionButton.tsx";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
-import axios from "axios";
+import {css, keyframes, SerializedStyles} from "@emotion/react";
+import useOwner from "../hooks/useOwner.ts";
+import CooldownCounter from "./CooldownCounter.tsx";
+import useCooldown from "../hooks/useCooldown.ts";
+import HealthBar from "./HealthBar.tsx";
 
 type Props = {
     node: Node;
+    player: Player | null;
+    distance: number;
 }
-export default function NodeItem({node}: Props) {
+export default function NodeItem({node, player, distance}: Props) {
+    const [isInRange, setIsInRange] = useState<boolean>(false)
+    const [initialLoad, setInitialLoad] = useState(true)
     const [level, setLevel] = useState<number>(node.level);
-    const [owner, setOwner] = useState<string>("");
+    const [notEnoughAP, setNotEnoughAP] = useState<boolean>(true);
+    const [isPlayerOwned, setIsPlayerOwned] = useState<boolean>(false);
+    const [isClaimable, setIsClaimable] = useState<boolean>(false);
+    const [interactionText, setInteractionText] = useState<string>("");
+    const [isInteraction, setIsInteraction] = useState<boolean>(false);
+    const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
+    const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
+
+    const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
     const deleteNode = useStore(state => state.deleteNode);
+    const isLoading = useStore(state => state.isLoading);
 
     useEffect(() => {
-        setLevel(node.level)
-        fetchOwner()
-    }, [node]);
+        if (distance < 50) {
+            setIsInRange(true)
+        } else {
+            setIsInRange(false)
+        }
+    }, [distance, node.lastAttack, node.lastUpdate, editNode])
 
-    function fetchOwner() {
-        axios.get(`/api/player/${node.ownerId}`)
-            .then(response => response.data)
-            .catch(() => setOwner(""))
-            .then(data => {
-                if (data) {
-                    setOwner(data)
-                } else {
-                    setOwner("")
-                }
-            })
-    }
+    useEffect(() => {
+        try {
+            setLevel(node.level)
+        } catch (e) {
+            console.error(e)
+        } finally {
+            if (player !== null) {
+                setIsClaimable(node.health === 0 || node.ownerId === null)
+                setIsPlayerOwned(node.ownerId === player.id)
+                setNotEnoughAP(player.attack < node.level)
+                setInitialLoad(false)
+            }
+        }
+    }, [node, player, editNode, distance, isUpdating, isAttacked])
+
+    useEffect(() => {
+        if (isInteraction) {
+            const timer = setTimeout(() => {
+                setIsInteraction(false)
+                setInteractionText("")
+            }, 3000)
+            return () => clearTimeout(timer)
+        }
+    }, [isInteraction])
 
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
+        buildText(action)
+        setIsInteraction(true)
     }
 
-    const date = new Date(node.lastUpdate * 1000);
-    const formattedDate = date.toLocaleDateString("en-US") + " " + date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+    function buildText(action: ActionType) {
+        switch (action) {
+            case ActionType.HACK:
+                if (isPlayerOwned || owner === null) {
+                    setInteractionText(`-${node.level}AP`)
+                } else {
+                    setInteractionText(`+${node.level * 10}$`)
+                }
+                break;
+            case ActionType.ABANDON:
+                setInteractionText("+1AP")
+                break;
+        }
+    }
 
-    return <>
-        <StyledListItem>
-            <StyledNameContainer>
-                <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
-            </StyledNameContainer>
-            <StyledStatsContainer>
-                <StyledTextPrimary>Health: {node.health}</StyledTextPrimary>
-                <StyledTextPrimary>last update: {formattedDate}</StyledTextPrimary>
-            </StyledStatsContainer>
-            <StyledOwnerArea>
-                <StyledClaimButton
-                    disabled={owner !== ""}
-                    onClick={() => handleEdit(ActionType.HACK)}
-                >{owner === "" ? "CLAIM" : owner}</StyledClaimButton>
-            </StyledOwnerArea>
-            <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
-            {node.ownerId !== null && <StyledActionArea>
-                <ActionButton action={ActionType.ABANDON} onAction={handleEdit}/>
-                <ActionButton action={ActionType.HACK} onAction={handleEdit}/>
-            </StyledActionArea>}
-            <StyledLevelArea>
-                <StyledLevelContainer>
-                    <StyledLevel><strong>{level}</strong></StyledLevel>
-                </StyledLevelContainer>
-            </StyledLevelArea>
-            <StyledLocationContainer>
-                <StyledTextPrimary>Lat: {node.coordinates.latitude}</StyledTextPrimary>
-                <StyledTextPrimary>Lon: {node.coordinates.longitude}</StyledTextPrimary>
-            </StyledLocationContainer>
-        </StyledListItem>
-    </>
+    const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
+    const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
+    const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange
+
+    let status = null;
+    if (isUpdating) {
+        status = "update"
+    } else if (isAttacked) {
+        status = "attack"
+    }
+
+    let animationStyles = null;
+    if (status === "update") {
+        animationStyles = css`
+    animation: ${generateBlinkAnimation("var(--color-primary)")} 1s linear infinite;
+  `;
+    } else if (status === "attack") {
+        animationStyles = css`
+    animation: ${generateBlinkAnimation("var(--color-secondary)")} 1s linear infinite;
+  `;
+    }
+
+    if (!initialLoad && !isLoading && player !== null) {
+
+        return <>
+            <StyledListItem playerOwned={`${isPlayerOwned}`}
+                            status={`${status}`}
+                            css={animationStyles}>
+                {!isInRange && <ModalContainer>
+                    <p>Out of Range</p>
+                </ModalContainer>}
+                <StyledNameContainer>
+                    <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
+                </StyledNameContainer>
+                {isInteraction && <StyledFloatingText>{interactionText}</StyledFloatingText>}
+                <StyledStatsContainer>
+                    <HealthBar health={node.health}/>
+                    {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate}/>}
+                    {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack}/>}
+                </StyledStatsContainer>
+                <StyledOwnerArea>
+                    <StyledClaimButton
+                        disabled={claimDisabled}
+                        onClick={() => handleEdit(ActionType.HACK)}
+                    >{owner === "" ? "CLAIM" : owner}</StyledClaimButton>
+                </StyledOwnerArea>
+                <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
+                <StyledDistanceInfo
+                    outofrange={`${!isInRange}`}>{`Distance: ${distance / 1000} KM`}</StyledDistanceInfo>
+                {node.ownerId !== null && <StyledActionArea>
+                    {node.ownerId === player.id &&
+                        <ActionButton inactive={abandonDisabled} action={ActionType.ABANDON}
+                                      onAction={handleEdit}/>}
+                    <ActionButton
+                        inactive={hackDisabled}
+                        action={ActionType.HACK} onAction={handleEdit}/>
+                </StyledActionArea>}
+                <StyledLevelArea>
+                    <StyledLevelContainer>
+                        <StyledLevel><strong>{level}</strong></StyledLevel>
+                    </StyledLevelContainer>
+                </StyledLevelArea>
+                <StyledLocationContainer outofrange={`${!isInRange}`}>
+                    <StyledTextPrimary>Lat: {node.coordinates.latitude}</StyledTextPrimary>
+                    <StyledTextPrimary>Lon: {node.coordinates.longitude}</StyledTextPrimary>
+                </StyledLocationContainer>
+            </StyledListItem>
+        </>
+    } else {
+        return <>loading ...</>
+    }
 }
 
-const StyledListItem = styled.li`
+const generateBlinkAnimation = (color: string) => keyframes`
+  0% {
+    outline: 0.25rem solid ${color};
+    filter: drop-shadow(0 0 0.25rem ${color});
+  }
+  50% {
+    outline: 0.25rem solid var(--color-semiblack);
+    filter: drop-shadow(0 0 0 ${color});
+  }
+  100% {
+    outline: 0.25rem solid ${color};
+    filter: drop-shadow(0 0 0.25rem ${color});
+  }
+`;
+
+const StyledListItem = styled.li<{ playerOwned: string; status: string, css: SerializedStyles | null}>`
+  color: ${({ playerOwned }) =>
+          playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
-  width: 95%;
+  width: 100%;
   padding: 0.5rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(3, 1fr) 2rem;
+  position: relative;
+  ${({css}) => css};
 `;
 
 const StyledTextPrimary = styled(Typography)`
-  color: var(--color-primary);
+  color: inherit;
   font: inherit;
 `;
 
@@ -99,7 +201,7 @@ const StyledNameContainer = styled.div`
 `;
 
 const StyledHeading = styled(Typography)<{ length: number }>`
-  color: var(--color-primary);
+  color: inherit;
   font: inherit;
   font-size: ${({length}) => length > 10 ? "1.5rem" : "2rem"};
 `;
@@ -111,12 +213,13 @@ const StyledStatsContainer = styled.div`
   gap: 0.5rem;
 `;
 
-const StyledLocationContainer = styled.div`
+const StyledLocationContainer = styled.div<{ outofrange: string }>`
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 2px solid var(--color-primary);
-  background: var(--color-grey);
+  border: 2px solid ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
+  background: var(--color-black);
+  color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
   padding: 0.5rem;
   grid-column: 1 / 4;
   grid-row: 3;
@@ -133,8 +236,8 @@ const StyledOwnerArea = styled.div`
 
 const StyledActionArea = styled.div`
   display: flex;
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
   z-index: 1;
   grid-column: 4 / 6;
   grid-row: 2;
@@ -156,7 +259,7 @@ const StyledLevelContainer = styled.div`
   border-radius: 8px;
   transform: rotate(45deg);
   background: var(--color-black);
-  border: 3px solid var(--color-primary);
+  border: 3px solid currentColor;
   padding: 0.5rem;
   display: flex;
   justify-content: center;
@@ -164,7 +267,6 @@ const StyledLevelContainer = styled.div`
 `;
 
 const StyledLevel = styled(Typography)`
-  color: var(--color-primary);
   text-align: center;
   transform: rotate(-45deg);
   font-size: 1.5rem;
@@ -174,15 +276,15 @@ const StyledLevel = styled(Typography)`
 const StyledClaimButton = styled(Button)`
   margin-left: auto;
   background: var(--color-black);
-  color: var(--color-primary);
+  color: inherit;
   border: 2px solid var(--color-primary);
   border-radius: 8px;
   font: inherit;
 
   &:disabled {
     background: var(--color-black);
-    border: 2px solid var(--color-secondary);
-    color: var(--color-secondary);
+    border: 2px solid var(--color-grey);
+    color: currentColor;
   }
 `;
 
@@ -206,4 +308,64 @@ const StyledDeleteButton = styled(Button)`
     border: 2px solid var(--color-black);
     scale: 0.3;
   }
+`;
+
+const StyledDistanceInfo = styled(Typography)<{ outofrange: string }>`
+  color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
+  grid-column: 1 / 5;
+  grid-row: 4;
+  font-size: 1rem;
+  font-family: inherit;
+  align-self: center;
+  z-index: 5;
+`;
+
+const ModalContainer = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-black);
+  opacity: 0.75;
+  color: var(--color-secondary);
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+
+  p {
+    padding: 1rem;
+    background: black;
+    opacity: 1;
+    border: 2px solid var(--color-secondary);
+    filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+  }
+`;
+
+const floatingText = keyframes`
+    0% {
+        transform: translate(-50%, -75%);
+    }
+    50% {
+        transform: translate(-50%, -200%);
+    }
+    100% {
+        transform: translate(-50%, -300%);
+    }
+`;
+
+const StyledFloatingText = styled.p`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  transform: translate(-50%, -75%);
+    font-size: 2rem;
+    font-family: inherit;
+    color: var(--color-primary);
+    z-index: 5;
+    animation: ${floatingText} 3s linear;
+  text-shadow: 0 0 0.25rem var(--color-primary);
 `;

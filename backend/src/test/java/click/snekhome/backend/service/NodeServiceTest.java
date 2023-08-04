@@ -9,7 +9,6 @@ import click.snekhome.backend.repo.NodeRepo;
 import click.snekhome.backend.security.MongoUser;
 import click.snekhome.backend.security.MongoUserService;
 import click.snekhome.backend.security.Role;
-import click.snekhome.backend.security.UserData;
 import click.snekhome.backend.util.ActionType;
 import click.snekhome.backend.util.IdService;
 import org.junit.jupiter.api.Test;
@@ -43,8 +42,8 @@ class NodeServiceTest {
     @Test
     void expectAllNodesInList() {
         //given
-        Node node1 = new Node("abc", "123", "Home", 1, 100, null, 0, 0);
-        Node node2 = new Node("def", "456", "Office", 2, 100, null, 0, 0);
+        Node node1 = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Node node2 = new Node("def", "456", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
         List<Node> expected = List.of(node1, node2);
         //when
         when(nodeRepo.findAll()).thenReturn(expected);
@@ -77,8 +76,8 @@ class NodeServiceTest {
     @Test
     void expectNodeWithIncreasedLevelWhenNodeIsHacked() {
         //given
-        Node node = new Node("abc", "123", "Home", 1, 100, null, 0, 0);
-        Node expected = new Node("abc", "123", "Home", 2, 100, null, Instant.now().getEpochSecond(), 0);
+        Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Node expected = new Node("abc", "123", "Home", 2, 100, new Coordinates(0, 0, 0), Instant.now().getEpochSecond(), 0);
         //when
         when(authentication.getName()).thenReturn(playerName);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -97,15 +96,14 @@ class NodeServiceTest {
     @Test
     void expectNodeWithDecreasedLevelWhenNodeIsAbandoned() {
         //given
-        Node node = new Node("abc", "123", "Home", 2, 100, null, 0, 0);
-        Node expected = new Node("abc", "123", "Home", 1, 100, null, Instant.now().getEpochSecond(), 0);
-        UserData userData = new UserData(player.id(), playerName);
+        Node node = new Node("abc", "123", "Home", 2, 100, new Coordinates(0, 0, 0), 0, 0);
+        Node expected = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), Instant.now().getEpochSecond(), 0);
         //when
         when(authentication.getName()).thenReturn(playerName);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
-        when(nodeRepo.save(expected)).thenReturn(expected);
+        when(nodeRepo.save(any())).thenReturn(expected);
         when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
         Node actual = nodeService.edit("abc", ActionType.ABANDON);
         //then
@@ -118,12 +116,13 @@ class NodeServiceTest {
     @Test
     void expectUnchangedNodeWhenNodeIsAbandonedAndHasNoOwner() {
         //given
-        Node node = new Node("abc", null, "Home", 1, 100, null, 0, 0);
+        Node node = new Node("abc", null, "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
         //when
         when(authentication.getName()).thenReturn(playerName);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
+        when(nodeRepo.save(node)).thenReturn(node);
         when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
         Node actual = nodeService.edit("abc", ActionType.ABANDON);
         //then
@@ -136,8 +135,8 @@ class NodeServiceTest {
     @Test
     void expectNodeWithoutOwnerWhenNodeIsAbandonedAtLevel1() {
         //given
-        Node node = new Node("abc", "123", "Home", 1, 100, null, 0, 0);
-        Node expected = new Node("abc", null, "Home", 0, 100, null, Instant.now().getEpochSecond(), 0);
+        Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Node expected = new Node("abc", null, "Home", 0, 100, new Coordinates(0, 0, 0), Instant.now().getEpochSecond(), 0);
         //when
         when(authentication.getName()).thenReturn(playerName);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -156,8 +155,8 @@ class NodeServiceTest {
     @Test
     void expectNodeWithOwnerWhenNodeWithoutOwnerIsHacked() {
         //given
-        Node node = new Node("abc", null, "Home", 0, 100, null, 0, 0);
-        Node expected = new Node("abc", "123", "Home", 1, 100, null, Instant.now().getEpochSecond(), 0);
+        Node node = new Node("abc", null, "Home", 0, 100, new Coordinates(0, 0, 0), 0, 0);
+        Node expected = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), Instant.now().getEpochSecond(), 0);
         //when
         when(authentication.getName()).thenReturn(playerName);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -176,7 +175,7 @@ class NodeServiceTest {
     @Test
     void expectListWithoutNodeWhenNodeIsDeleted() {
         //given
-        Node node1 = new Node("def", "456", "Office", 2, 100, null, 0, 0);
+        Node node1 = new Node("def", "456", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
         List<Node> expected = List.of(node1);
         //when
         when(authentication.getName()).thenReturn(adminName);
@@ -209,7 +208,7 @@ class NodeServiceTest {
     @Test
     void expectWrongRoleException_whenNodeIsDeletedWithPlayer() {
         //given
-        Node node1 = new Node("def", "456", "Office", 2, 100, null, 0, 0);
+        Node node1 = new Node("def", "456", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
         //when
         when(authentication.getName()).thenReturn(playerName);
         when(securityContext.getAuthentication()).thenReturn(authentication);

@@ -27,12 +27,15 @@ export default function App() {
     useEffect(() => {
         try {
             getUser()
+            if (user !== "" && user !== "anonymousUser") {
+                getPlayer()
+            }
         } catch (e) {
             console.error(e)
         } finally {
             setInitialLoad(false)
         }
-    }, [getUser])
+    }, [])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -43,6 +46,7 @@ export default function App() {
                     if (location) {
                         updateLocation(location)
                     }
+                    getPlayer()
                 }, 3000)
                 return () => clearInterval(interval)
             }
@@ -62,7 +66,7 @@ export default function App() {
         }
     }
 
-    if (initialLoad) return null;
+    if (initialLoad) return <>loading ...</>;
 
     return (
         <ThemeProvider theme={theme}>
@@ -75,7 +79,7 @@ export default function App() {
                         <Route path={"/"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
-                                <NodeList/>
+                                <NodeList player={player}/>
                             </>
                         }/>
                     </Route>

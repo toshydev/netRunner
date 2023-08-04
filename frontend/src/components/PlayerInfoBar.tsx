@@ -8,8 +8,9 @@ type Props = {
 export default function PlayerInfoBar({player}: Props) {
     const gps = useStore(state => state.gps)
     const setGps = useStore(state => state.setGps)
+    const isLoading = useStore(state => state.isLoading)
 
-    if (player !== null) {
+    if (!isLoading) {
         return <StyledContainer>
             {player && <StyledBar theme={"primary"} bg={"semiblack"}>
                 <StyledText color={"primary"}>{player.name}</StyledText>
@@ -38,7 +39,10 @@ const StyledContainer = styled.div`
   width: 95%;
   height: 5rem;
   gap: 0.5rem;
-  margin-top: 1rem;
+  position: sticky;
+  top: 3.3rem;
+  z-index: 6;
+  background: linear-gradient(var(--color-black) 0%, var(--color-black) 85%, transparent 95%);
 `;
 
 const StyledBar = styled.div<{theme: string, bg: string}>`

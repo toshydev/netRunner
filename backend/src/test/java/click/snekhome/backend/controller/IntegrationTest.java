@@ -204,6 +204,18 @@ class IntegrationTest {
                 }
                 """.formatted(playerId);
 
+        String coordinates = """
+                {
+                    "latitude": 0,
+                    "longitude": 0,
+                    "timestamp": 0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
+                        .content(coordinates).contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("playerunknown", "password"))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("HACK")
                         .with(httpBasic("playerunknown", "password"))
@@ -229,6 +241,18 @@ class IntegrationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        String coordinates = """
+                {
+                    "latitude": 0,
+                    "longitude": 0,
+                    "timestamp": 0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
+                        .content(coordinates).contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("playerunknown", "password"))
+                        .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("playerunknown", "password")))
@@ -307,7 +331,18 @@ class IntegrationTest {
                     "lastAttack":0
                 }
                 """.formatted(playerId);
-
+        String coordinates = """
+                {
+                    "latitude": 0,
+                    "longitude": 0,
+                    "timestamp": 0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
+                        .content(coordinates).contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("playerunknown", "password"))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("HACK")
                         .with(httpBasic("playerunknown", "password"))
@@ -353,6 +388,18 @@ class IntegrationTest {
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
+        String coordinates = """
+                {
+                    "latitude": 0,
+                    "longitude": 0,
+                    "timestamp": 0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
+                        .content(coordinates).contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("playerunknown", "password"))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("ABANDON")
                         .with(httpBasic("playerunknown", "password"))
@@ -363,7 +410,7 @@ class IntegrationTest {
 
     @Test
     @DirtiesContext
-    void returnUnchangedNodeWhenHackingNodeOfOtherPlayer() throws Exception {
+    void returnDamagedNodeWhenHackingNodeOfOtherPlayer() throws Exception {
         Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
         nodeRepo.save(node);
         String expected = """
@@ -372,12 +419,11 @@ class IntegrationTest {
                     "ownerId":"123",
                     "name":"Home",
                     "level":1,
-                    "health":100,
+                    "health":90,
                     "coordinates": {
                         "latitude": 0,
                         "longitude": 0
-                        },
-                    "lastAttack":0
+                        }
                 }
                 """;
         String requestBody = """
@@ -399,6 +445,18 @@ class IntegrationTest {
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
+        String coordinates = """
+                {
+                    "latitude": 0,
+                    "longitude": 0,
+                    "timestamp": 0
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
+                        .content(coordinates).contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("playerunknown", "password"))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("HACK")
                         .with(httpBasic("playerunknown", "password"))
@@ -676,8 +734,8 @@ class IntegrationTest {
                 .andExpect(MockMvcResultMatchers.content().string("playerunknown"));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
-                .content(requestBody).contentType(MediaType.APPLICATION_JSON)
-                .with(httpBasic("playerunknown", "password")).with(csrf()))
+                        .content(requestBody).contentType(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
 
