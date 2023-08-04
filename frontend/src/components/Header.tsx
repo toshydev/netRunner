@@ -13,6 +13,7 @@ export default function Header({user}: Props) {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const logout = useStore(state => state.logout)
     const setGps = useStore(state => state.setGps)
+    const isLoading = useStore(state => state.isLoading)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -26,7 +27,7 @@ export default function Header({user}: Props) {
         setIsAuthenticated(false)
         navigate("/login")
     }
-    if(user === undefined) return "loading...";
+    if(user === undefined || isLoading) return "loading...";
 
     return (
         <StyledHeader>
@@ -71,8 +72,7 @@ const blink = keyframes`
 const StyledHeader = styled.header`
   width: 100%;
   background: var(--color-black);
-  border: 1px solid var(--color-secondary);
-  filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+  border-bottom: 1px solid var(--color-secondary);
   text-align: center;
   position: fixed;
   top: 0;

@@ -89,7 +89,10 @@ export const useStore = create<State>(set => ({
                 }));
             })
             .catch(console.error)
-            .then(() => set({isLoading: false}));
+            .then(() => {
+                useStore.getState().getPlayer();
+                set({isLoading: false})
+            });
     },
 
     deleteNode: (nodeId: string) => {

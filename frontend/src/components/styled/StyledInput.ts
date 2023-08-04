@@ -10,6 +10,7 @@ export const StyledInput = styled.input`
   height: 3rem;
   font-size: 1.5rem;
   text-align: center;
+  text-shadow: 0 0 5px var(--color-secondary);
 
   &::placeholder {
     color: var(--color-primary);
