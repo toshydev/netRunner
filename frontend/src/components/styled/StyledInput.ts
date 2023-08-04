@@ -13,6 +13,6 @@ export const StyledInput = styled.input`
   text-shadow: 0 0 5px var(--color-secondary);
 
   &::placeholder {
-    color: var(--color-primary);
+    color: var(--color-secondary);
   }
 `;

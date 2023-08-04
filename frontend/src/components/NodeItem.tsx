@@ -4,10 +4,11 @@ import {Button, Typography} from "@mui/material";
 import ActionButton from "./ActionButton.tsx";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
-import axios from "axios";
-import {getSecondsSinceTimestamp} from "../utils/calculation.ts";
-import CooldownCounter from "./CooldownCounter.tsx";
 import {css, keyframes} from "@emotion/react";
+import useOwner from "../hooks/useOwner.ts";
+import CooldownCounter from "./CooldownCounter.tsx";
+import useCooldown from "../hooks/useCooldown.ts";
+import HealthBar from "./HealthBar.tsx";
 
 type Props = {
     node: Node;
@@ -16,16 +17,17 @@ type Props = {
 }
 export default function NodeItem({node, player, distance}: Props) {
     const [isInRange, setIsInRange] = useState<boolean>(false)
-    const [isUpdating, setIsUpdating] = useState<boolean>(false)
-    const [isAttacked, setIsAttacked] = useState<boolean>(false)
     const [initialLoad, setInitialLoad] = useState(true)
     const [level, setLevel] = useState<number>(node.level);
-    const [owner, setOwner] = useState<string>("");
     const [notEnoughAP, setNotEnoughAP] = useState<boolean>(true);
     const [isPlayerOwned, setIsPlayerOwned] = useState<boolean>(false);
     const [isClaimable, setIsClaimable] = useState<boolean>(false);
-    const [updateCooldown, setUpdateCooldown] = useState<number>(0);
-    const [attackCooldown, setAttackCooldown] = useState<number>(0);
+    const [interactionText, setInteractionText] = useState<string>("");
+    const [isInteraction, setIsInteraction] = useState<boolean>(false);
+    const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
+    const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
+
+    const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
     const deleteNode = useStore(state => state.deleteNode);
     const isLoading = useStore(state => state.isLoading);
@@ -36,37 +38,11 @@ export default function NodeItem({node, player, distance}: Props) {
         } else {
             setIsInRange(false)
         }
-        if (getSecondsSinceTimestamp(node.lastUpdate) < 120) {
-            setIsUpdating(true)
-            setUpdateCooldown(120 - getSecondsSinceTimestamp(node.lastUpdate))
-        } else {
-            setIsUpdating(false)
-            setUpdateCooldown(0)
-        }
-        if (getSecondsSinceTimestamp(node.lastAttack) < 120) {
-            setIsAttacked(true)
-            setAttackCooldown(120 - getSecondsSinceTimestamp(node.lastAttack))
-        } else {
-            setIsAttacked(false)
-            setAttackCooldown(0)
-        }
     }, [distance, node.lastAttack, node.lastUpdate, editNode])
-
-    if (isUpdating) {
-        setTimeout(() => {
-            setIsUpdating(false)
-        }, updateCooldown * 1000)
-    }
-    if (isAttacked) {
-        setTimeout(() => {
-            setIsAttacked(false)
-        }, attackCooldown * 1000)
-    }
 
     useEffect(() => {
         try {
             setLevel(node.level)
-            fetchOwner()
         } catch (e) {
             console.error(e)
         } finally {
@@ -79,44 +55,57 @@ export default function NodeItem({node, player, distance}: Props) {
         }
     }, [node, player, editNode, distance, isUpdating, isAttacked])
 
-
-    function fetchOwner() {
-        axios.get(node.ownerId && `/api/player/${node.ownerId}`)
-            .then(response => response.data)
-            .catch(() => setOwner(""))
-            .then(data => {
-                if (data) {
-                    setOwner(data)
-                } else {
-                    setOwner("")
-                }
-            })
-    }
+    useEffect(() => {
+        if (isInteraction) {
+            const timer = setTimeout(() => {
+                setIsInteraction(false)
+                setInteractionText("")
+            }, 3000)
+            return () => clearTimeout(timer)
+        }
+    }, [isInteraction])
 
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
+        buildText(action)
+        setIsInteraction(true)
     }
 
-    const claimDisabled = !isClaimable || !isInRange || isUpdating
-    const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange
+    function buildText(action: ActionType) {
+        switch (action) {
+            case ActionType.HACK:
+                if (isPlayerOwned || owner === null) {
+                    setInteractionText(`-${node.level}AP`)
+                } else {
+                    setInteractionText(`+${node.level * 10}$`)
+                }
+                break;
+            case ActionType.ABANDON:
+                setInteractionText("+1AP")
+                break;
+        }
+    }
+
     const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
+    const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
+    const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange
 
     if (!initialLoad && !isLoading && player !== null) {
 
         return <>
-            <StyledListItem playerOwned={`${isPlayerOwned}`} status={`${isUpdating ? "update" : isAttacked ? "attack" : null}`}>
+            <StyledListItem playerOwned={`${isPlayerOwned}`}
+                            status={`${isUpdating ? "update" : isAttacked ? "attack" : null}`}>
                 {!isInRange && <ModalContainer>
                     <p>Out of Range</p>
                 </ModalContainer>}
                 <StyledNameContainer>
                     <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
                 </StyledNameContainer>
+                {isInteraction && <StyledFloatingText>{interactionText}</StyledFloatingText>}
                 <StyledStatsContainer>
-                    <StyledTextPrimary>Health: {node.health}</StyledTextPrimary>
-                    {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} cooldown={updateCooldown}
-                                      setCoolDown={setUpdateCooldown}/>}
-                    {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} cooldown={attackCooldown}
-                                                        setCoolDown={setAttackCooldown}/>}
+                    <HealthBar health={node.health}/>
+                    {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate}/>}
+                    {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack}/>}
                 </StyledStatsContainer>
                 <StyledOwnerArea>
                     <StyledClaimButton
@@ -152,33 +141,33 @@ export default function NodeItem({node, player, distance}: Props) {
 }
 
 const updateBlinker = keyframes`
-    0% {
-        outline: 0.25rem solid var(--color-primary);
-      filter: drop-shadow(0 0 0.25rem var(--color-primary));
-    }
-    50% {
-        outline: 0.25rem solid var(--color-semiblack);
-      filter: drop-shadow(0 0 0 var(--color-primary));
-    }
-    100% {
-        outline: 0.25rem solid var(--color-primary);
-      filter: drop-shadow(0 0 0.25rem var(--color-primary));
-    }
+  0% {
+    outline: 0.25rem solid var(--color-primary);
+    filter: drop-shadow(0 0 0.25rem var(--color-primary));
+  }
+  50% {
+    outline: 0.25rem solid var(--color-semiblack);
+    filter: drop-shadow(0 0 0 var(--color-primary));
+  }
+  100% {
+    outline: 0.25rem solid var(--color-primary);
+    filter: drop-shadow(0 0 0.25rem var(--color-primary));
+  }
 `;
 
 const attackBlinker = keyframes`
-    0% {
-        outline: 0.25rem solid var(--color-secondary);
-      filter: drop-shadow(0 0 0.25rem var(--color-secondary));
-    }
-    50% {
-        outline: 0.25rem solid var(--color-semiblack);
-      filter: drop-shadow(0 0 0 var(--color-secondary));
-    }
-    100% {
-        outline: 0.25rem solid var(--color-secondary);
-      filter: drop-shadow(0 0 0.25rem var(--color-secondary));
-    }
+  0% {
+    outline: 0.25rem solid var(--color-secondary);
+    filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+  }
+  50% {
+    outline: 0.25rem solid var(--color-semiblack);
+    filter: drop-shadow(0 0 0 var(--color-secondary));
+  }
+  100% {
+    outline: 0.25rem solid var(--color-secondary);
+    filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+  }
 `;
 
 const StyledListItem = styled.li<{ playerOwned: string, status: string }>`
@@ -192,9 +181,9 @@ const StyledListItem = styled.li<{ playerOwned: string, status: string }>`
   position: relative;
   ${({status}) => status === "update" ? css`
     animation: ${updateBlinker} 1s linear infinite;
-    ` : status === "attack" ? css`
+  ` : status === "attack" ? css`
     animation: ${attackBlinker} 1s linear infinite;
-    ` : null}
+  ` : null}
 `;
 
 const StyledTextPrimary = styled(Typography)`
@@ -353,4 +342,29 @@ const ModalContainer = styled.div`
     border: 2px solid var(--color-secondary);
     filter: drop-shadow(0 0 0.25rem var(--color-secondary));
   }
+`;
+
+const floatingText = keyframes`
+    0% {
+        transform: translate(-50%, -75%);
+    }
+    50% {
+        transform: translate(-50%, -200%);
+    }
+    100% {
+        transform: translate(-50%, -300%);
+    }
+`;
+
+const StyledFloatingText = styled.p`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  transform: translate(-50%, -75%);
+    font-size: 2rem;
+    font-family: inherit;
+    color: var(--color-primary);
+    z-index: 5;
+    animation: ${floatingText} 3s linear;
+  text-shadow: 0 0 0.25rem var(--color-primary);
 `;
