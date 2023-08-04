@@ -35,7 +35,7 @@ export default function App() {
         } finally {
             setInitialLoad(false)
         }
-    }, [])
+    }, [getPlayer, getUser, user])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
