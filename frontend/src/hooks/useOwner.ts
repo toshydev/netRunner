@@ -20,4 +20,4 @@ export default function useOwner(ownerId: string) {
     }, [ownerId]);
 
     return owner;
-};
+}
