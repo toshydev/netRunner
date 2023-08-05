@@ -3,31 +3,19 @@ import {keyframes} from "@emotion/react";
 import {Button} from "@mui/material";
 import {useStore} from "../hooks/useStore.ts";
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
 
 type Props = {
     user?: string
 }
 
 export default function Header({user}: Props) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const isAuthenticated = user !== "" && user !== undefined && user !== "anonymousUser"
     const logout = useStore(state => state.logout)
-    const setGps = useStore(state => state.setGps)
-    const isLoading = useStore(state => state.isLoading)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        setIsAuthenticated(user !== "anonymousUser")
-
-    }, [user, logout])
-
     function handleLogout() {
-        logout()
-        setGps(false)
-        setIsAuthenticated(false)
-        navigate("/login")
+        logout(navigate)
     }
-    if(user === undefined || isLoading) return "loading...";
 
     return (
         <StyledHeader>

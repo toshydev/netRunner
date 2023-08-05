@@ -15,9 +15,9 @@ type Props = {
     player: Player | null;
     distance: number;
 }
+
 export default function NodeItem({node, player, distance}: Props) {
     const [isInRange, setIsInRange] = useState<boolean>(false)
-    const [initialLoad, setInitialLoad] = useState(true)
     const [level, setLevel] = useState<number>(node.level);
     const [notEnoughAP, setNotEnoughAP] = useState<boolean>(true);
     const [isPlayerOwned, setIsPlayerOwned] = useState<boolean>(false);
@@ -30,7 +30,6 @@ export default function NodeItem({node, player, distance}: Props) {
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
     const deleteNode = useStore(state => state.deleteNode);
-    const isLoading = useStore(state => state.isLoading);
 
     useEffect(() => {
         if (distance < 50) {
@@ -50,7 +49,6 @@ export default function NodeItem({node, player, distance}: Props) {
                 setIsClaimable(node.health === 0 || node.ownerId === null)
                 setIsPlayerOwned(node.ownerId === player.id)
                 setNotEnoughAP(player.attack < node.level)
-                setInitialLoad(false)
             }
         }
     }, [node, player, editNode, distance, isUpdating, isAttacked])
@@ -100,16 +98,14 @@ export default function NodeItem({node, player, distance}: Props) {
     let animationStyles = null;
     if (status === "update") {
         animationStyles = css`
-    animation: ${generateBlinkAnimation("var(--color-primary)")} 1s linear infinite;
-  `;
+          animation: ${generateBlinkAnimation("var(--color-primary)")} 1s linear infinite;
+        `;
     } else if (status === "attack") {
         animationStyles = css`
-    animation: ${generateBlinkAnimation("var(--color-secondary)")} 1s linear infinite;
-  `;
+          animation: ${generateBlinkAnimation("var(--color-secondary)")} 1s linear infinite;
+        `;
     }
-
-    if (!initialLoad && !isLoading && player !== null) {
-
+    if (player) {
         return <>
             <StyledListItem playerOwned={`${isPlayerOwned}`}
                             status={`${status}`}
@@ -154,8 +150,6 @@ export default function NodeItem({node, player, distance}: Props) {
                 </StyledLocationContainer>
             </StyledListItem>
         </>
-    } else {
-        return <>loading ...</>
     }
 }
 
@@ -174,8 +168,8 @@ const generateBlinkAnimation = (color: string) => keyframes`
   }
 `;
 
-const StyledListItem = styled.li<{ playerOwned: string; status: string, css: SerializedStyles | null}>`
-  color: ${({ playerOwned }) =>
+const StyledListItem = styled.li<{ playerOwned: string; status: string, css: SerializedStyles | null }>`
+  color: ${({playerOwned}) =>
           playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
   width: 100%;
@@ -346,26 +340,26 @@ const ModalContainer = styled.div`
 `;
 
 const floatingText = keyframes`
-    0% {
-        transform: translate(-50%, -75%);
-    }
-    50% {
-        transform: translate(-50%, -200%);
-    }
-    100% {
-        transform: translate(-50%, -300%);
-    }
+  0% {
+    transform: translate(-50%, -75%);
+  }
+  50% {
+    transform: translate(-50%, -200%);
+  }
+  100% {
+    transform: translate(-50%, -300%);
+  }
 `;
 
 const StyledFloatingText = styled.p`
-    position: absolute;
-    top: 50%;
-    left: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -75%);
-    font-size: 2rem;
-    font-family: inherit;
-    color: var(--color-primary);
-    z-index: 5;
-    animation: ${floatingText} 3s linear;
+  font-size: 2rem;
+  font-family: inherit;
+  color: var(--color-primary);
+  z-index: 5;
+  animation: ${floatingText} 3s linear;
   text-shadow: 0 0 0.25rem var(--color-primary);
 `;

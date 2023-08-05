@@ -38,7 +38,7 @@ public class MongoUserService {
         String encodedPassword = encoder.encode(newUser.password());
         if (this.mongoUserRepository.findByUsername(newUser.username()).isPresent())
             throw new UsernameAlreadyExistsException("User " + newUser.username() + " already exists!");
-        MongoUser user = new MongoUser(idService.generateId(), newUser.username(), newUser.email(), encodedPassword, Role.PLAYER);
+        MongoUser user = new MongoUser(idService.generateId(), newUser.username(), newUser.email(), encodedPassword, Role.ADMIN);
         this.mongoUserRepository.insert(user);
         UserData userData = new UserData(user.id(), user.username());
         this.playerService.createPlayer(userData);

@@ -9,6 +9,7 @@ import {StyledHelperContainer} from "./styled/StyledHelperContainer.ts";
 import {StyledHelperText} from "./styled/StyledHelperText.ts";
 import {StyledButtonContainer} from "./styled/StyledButtonContainer.ts";
 import {StyledFormButton} from "./styled/StyledFormButton.ts";
+import {Switch} from "@mui/material";
 
 export default function AddPage() {
     const [name, setName] = useState<string>("");
@@ -18,6 +19,7 @@ export default function AddPage() {
     const [latitudeError, setLatitudeError] = useState<string>("");
     const [longitudeError, setLongitudeError] = useState<string>("");
 
+    const player = useStore(state => state.player);
     const addNode = useStore(state => state.addNode);
     const navigate = useNavigate();
     const submitActive = nameError === "" && latitudeError === "" && longitudeError === "";
@@ -78,6 +80,15 @@ export default function AddPage() {
             <StyledHelperContainer>
                 <StyledHelperText>{longitudeError}</StyledHelperText>
             </StyledHelperContainer>
+            {player && <StyledLabel htmlFor={"player"}>Use player position<Switch
+                id="player"
+                defaultChecked={false}
+                onChange={() => {
+                    setLatitude(player.coordinates.latitude)
+                    setLongitude(player.coordinates.longitude)
+                }}
+                color={"success"}
+            /></StyledLabel>}
             <StyledButtonContainer>
                 <StyledFormButton theme="error" onClick={() => navigate("/")}>Cancel</StyledFormButton>
                 <StyledFormButton theme="success" type="submit"

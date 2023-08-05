@@ -17,7 +17,7 @@ type State = {
     deleteNode: (nodeId: string) => void
     login: (username: string, password: string, navigate: NavigateFunction) => void
     register: (username: string, email: string, password: string) => void
-    logout: () => void
+    logout: (navigate: NavigateFunction) => void
     updateLocation: (coordinates: Coordinates) => void
     gps: boolean
     setGps: (gps: boolean) => void
@@ -134,16 +134,21 @@ export const useStore = create<State>(set => ({
             .then(() => set({isLoading: false}));
     },
 
-    logout: () => {
+    logout: (navigate: NavigateFunction) => {
         set({isLoading: true});
         axios
             .post("/api/user/logout")
+            .then(() => {
+                set({user: "anonymousUser"});
+                set({player: null});
+                set({isLoading: false})
+                navigate("/login");
+                toast.success("Logged out", {autoClose: 2000});
+            })
             .catch((error) => {
                 console.error(error);
+                set({isLoading: false})
             })
-            .then(() => {
-                set({isLoading: false});
-            });
     },
 
     updateLocation: (coordinates: Coordinates) => {
