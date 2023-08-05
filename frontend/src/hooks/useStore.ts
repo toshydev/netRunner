@@ -2,6 +2,7 @@ import {create} from "zustand";
 import axios from "axios";
 import {ActionType, Coordinates, Node, NodeData, Player} from "../models.ts";
 import {NavigateFunction} from "react-router-dom";
+import {toast} from "react-toastify";
 
 type State = {
     user: string,
@@ -108,16 +109,20 @@ export const useStore = create<State>(set => ({
     },
 
     login: (username: string, password: string, navigate: NavigateFunction) => {
-        set({isLoading: true});
+        set({ isLoading: true });
         axios
-            .post("/api/user/login", null, {auth: {username, password}})
-            .then(response => {
-                set({user: response.data});
+            .post("/api/user/login", null, { auth: { username, password } })
+            .then((response) => {
+                set({ user: response.data });
                 navigate("/");
+                toast.success(`Welcome ${username}`, { autoClose: 2000 });
             })
-            .catch(console.error)
+            .catch((error) => {
+                console.error("Error during login:", error);
+                toast.error("Invalid username or password", { autoClose: 2000 });
+            })
             .then(() => {
-                set({isLoading: false})
+                set({ isLoading: false });
             });
     },
 
