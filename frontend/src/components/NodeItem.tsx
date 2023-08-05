@@ -273,7 +273,6 @@ const StyledClaimButton = styled(Button)<{isPlayerOwned: boolean}>`
   margin-left: auto;
   background: var(--color-black);
   color: ${({isPlayerOwned}) => isPlayerOwned ? "var(--color-primary)" : "var(--color-secondary)"};
-  color: inherit;
   border: 2px solid ${({isPlayerOwned}) => isPlayerOwned ? "var(--color-primary)" : "var(--color-secondary)"};
   border-radius: 8px;
   font: inherit;
