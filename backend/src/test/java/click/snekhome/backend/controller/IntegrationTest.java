@@ -19,11 +19,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 
@@ -705,26 +707,6 @@ class IntegrationTest {
 
     @Test
     @DirtiesContext
-    void expectUnauthorizedWhenLoginWithBadCredentials() throws Exception {
-        String userData = """
-                {
-                    "username":"playerunknown",
-                    "email":"player@test.net",
-                    "password":"password"
-                }
-                """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
-                        .contentType("application/json")
-                        .content(userData)
-                        .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
-                        .with(httpBasic("playerunknown", "wrongPassword")).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
-    }
-
-    @Test
-    @DirtiesContext
     void expectForbiddenWhenTryingToAddNodeWithWrongRole() throws Exception {
         PasswordEncoder passwordEncoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
         MongoUser player = new MongoUser("123", "playerunknown", "player@player.net", passwordEncoder.encode("password"), Role.PLAYER);
@@ -798,5 +780,20 @@ class IntegrationTest {
                         .with(httpBasic("testPlayer", "12345678")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
+
+    @Test
+    void expectUnauthorizedWhenLoginWithBadCredentials() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login").with(httpBasic("unregistered", "12345678")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized()).andReturn();
+
+        String errorMessage = mvcResult.getResponse().getErrorMessage();
+        assertEquals("Invalid username or password", errorMessage);
+    }
+
+    @Test
+    void expectUnauthorizedWhenLoginWithoutUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login").with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized()).andReturn();
     }
 }
