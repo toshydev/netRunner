@@ -19,10 +19,16 @@ export default function PlayerInfoBar({player}: Props) {
                 <StyledText color={"primary"}>{player.credits}$</StyledText>
             </StyledInfoContainer>
         </StyledBar>}
-        <StyledBar bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => setGps(!gps)}>
-            <StyledText color={gps ? "secondary" : "grey"}>Lat: {player?.coordinates?.latitude}</StyledText>
-            <StyledText color={gps ? "secondary" : "grey"}>Lon: {player?.coordinates?.longitude}</StyledText>
-        </StyledBar>
+        <StyledBarGps gps={gps} bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => setGps(!gps)}>
+            {gps
+                ? <>
+                    <StyledText color={"secondary"}>Lat: {player?.coordinates?.latitude}</StyledText>
+                    <StyledText color={"secondary"}>Lon: {player?.coordinates?.longitude}</StyledText>
+                </>
+                :
+                <StyledText color={"grey"}>GPS disabled - press to enable</StyledText>
+            }
+        </StyledBarGps>
     </StyledContainer>
 
 }
@@ -51,6 +57,15 @@ const StyledBar = styled.div<{ theme: string, bg: string }>`
   width: 100%;
   background: var(--color-${props => props.bg});
   padding: 0 1rem 0 1rem;
+`;
+
+const StyledBarGps = styled(StyledBar)<{gps: boolean}>`
+  transition: transform 0.1s ease-in-out;
+  ${({gps}) => !gps && "justify-content: center;"}
+
+  &:active {
+    transform: scale(0.95);
+  }
 `;
 
 const StyledText = styled.p<{ color: string }>`

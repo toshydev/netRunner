@@ -88,7 +88,7 @@ export default function App() {
                     <Route path={"/login"} element={<LoginPage/>}/>
                 </Routes>
                 <StyledToastContainer icon={false}/>
-                <StatusBar gps={gps} />
+                {user !== "" && user !== "anonymousUser" && <StatusBar gps={gps}/>}
             </StyledContent>
         </ThemeProvider>
     )
