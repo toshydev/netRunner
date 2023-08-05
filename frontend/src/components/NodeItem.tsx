@@ -9,6 +9,7 @@ import useOwner from "../hooks/useOwner.ts";
 import CooldownCounter from "./CooldownCounter.tsx";
 import useCooldown from "../hooks/useCooldown.ts";
 import HealthBar from "./HealthBar.tsx";
+import {useNavigate} from "react-router-dom";
 
 type Props = {
     node: Node;
@@ -30,6 +31,7 @@ export default function NodeItem({node, player, distance}: Props) {
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
     const deleteNode = useStore(state => state.deleteNode);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (distance < 50) {
@@ -124,9 +126,9 @@ export default function NodeItem({node, player, distance}: Props) {
                 </StyledStatsContainer>
                 <StyledOwnerArea>
                     <StyledClaimButton
-                        disabled={claimDisabled}
-                        onClick={() => handleEdit(ActionType.HACK)}
-                    >{owner === "" ? "CLAIM" : owner}</StyledClaimButton>
+                        isPlayerOwned={isPlayerOwned}
+                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK): navigate(`/player/${owner}`)}
+                    >{owner === "" ? "+" : owner}</StyledClaimButton>
                 </StyledOwnerArea>
                 <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
                 <StyledDistanceInfo
@@ -267,19 +269,15 @@ const StyledLevel = styled(Typography)`
   font-family: inherit;
 `
 
-const StyledClaimButton = styled(Button)`
+const StyledClaimButton = styled(Button)<{isPlayerOwned: boolean}>`
   margin-left: auto;
   background: var(--color-black);
+  color: ${({isPlayerOwned}) => isPlayerOwned ? "var(--color-primary)" : "var(--color-secondary)"};
   color: inherit;
-  border: 2px solid var(--color-primary);
+  border: 2px solid ${({isPlayerOwned}) => isPlayerOwned ? "var(--color-primary)" : "var(--color-secondary)"};
   border-radius: 8px;
   font: inherit;
-
-  &:disabled {
-    background: var(--color-black);
-    border: 2px solid var(--color-grey);
-    color: currentColor;
-  }
+  z-index: 5;
 `;
 
 const StyledDeleteButton = styled(Button)`
@@ -311,7 +309,7 @@ const StyledDistanceInfo = styled(Typography)<{ outofrange: string }>`
   font-size: 1rem;
   font-family: inherit;
   align-self: center;
-  z-index: 5;
+  z-index: 4;
 `;
 
 const ModalContainer = styled.div`

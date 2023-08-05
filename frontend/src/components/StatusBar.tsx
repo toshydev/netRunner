@@ -36,25 +36,25 @@ const StyledGpsContainer = styled.div<{gps: boolean}>`
 const StyledRotatingTriangle = styled.div`
   width: 0;
     height: 0;
-    border: 0.5rem solid transparent;
+    border: 0.4rem solid transparent;
     border-top: 0;
-    border-bottom: 0.75rem solid var(--color-primary);
+    border-bottom: 0.65rem solid var(--color-primary);
     color: var(--color-primary);
     position: absolute;
   top: 50%;
-  left: 30%;
-  transform: translate(50%, -50%);
+  left: 35%;
+  transform: translate(-50%, -20%);
    animation: rotate 4s ease-in-out infinite;
   
     @keyframes rotate {
         0% {
-            transform: translate(50%, -50%) rotate(0deg);
+            transform: translate(-50%, -50%) rotate(0deg);
         }
         50% {
-            transform: translate(1500%, -50%) rotate(900deg);
+            transform: translate(-50%, -50%) rotate(900deg);
         }
         100% {
-            transform: translate(50%, -50%) rotate(0deg);
+            transform: translate(-50%, -50%) rotate(0deg);
         }
     }
 `;

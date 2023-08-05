@@ -20,6 +20,7 @@ public class MongoUserController {
         this.mongoUserService = mongoUserService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public String getUserData() {
         return SecurityContextHolder
@@ -28,6 +29,7 @@ public class MongoUserController {
                 .getName();
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/login")
     public ResponseEntity<String> login() {
         String username = SecurityContextHolder
@@ -41,11 +43,13 @@ public class MongoUserController {
         return ResponseEntity.ok(username);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
     public void register(@Valid @RequestBody UserWithoutId userWithoutId) {
         this.mongoUserService.registerUser(userWithoutId);
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/logout")
     public void logout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();

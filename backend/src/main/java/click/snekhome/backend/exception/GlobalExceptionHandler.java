@@ -1,8 +1,6 @@
 package click.snekhome.backend.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,12 +30,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoSuchPlayerException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNoSuchPlayerException(NoSuchPlayerException exception) {
-        return exception.getMessage();
-    }
-
-    @ExceptionHandler({AuthenticationException.class})
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String handleAuthenticationException(AuthenticationException exception) {
         return exception.getMessage();
     }
 }

@@ -125,9 +125,6 @@ export default function LoginPage() {
                 {newUser && <StyledHelperText>{passwordError}</StyledHelperText>}
             </StyledHelperContainer>
             <StyledButtonContainer>
-                <StyledFormButton theme="error"
-                                    type="button"
-                                  onClick={() => navigate("/")}>Cancel</StyledFormButton>
                 <StyledFormButton theme="success"
                                   type="submit"
                                   disabled={newUser ? !submitActive : false}>{newUser ? "Register" : "Login"}</StyledFormButton>

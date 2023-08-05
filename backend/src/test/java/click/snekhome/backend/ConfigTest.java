@@ -1,5 +1,6 @@
 package click.snekhome.backend;
 
+import click.snekhome.backend.security.CustomAuthenticationEntryPoint;
 import click.snekhome.backend.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest({Config.class, SecurityConfig.class})
+@WebMvcTest({Config.class, SecurityConfig.class, CustomAuthenticationEntryPoint.class})
 @EnableWebSecurity
 @AutoConfigureMockMvc
 class ConfigTest {

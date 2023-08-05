@@ -14,6 +14,7 @@ import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
 import {Coordinates} from "./models.ts";
 import {StyledToastContainer} from "./components/styled/StyledToastContainer.ts";
 import StatusBar from "./components/StatusBar.tsx";
+import PlayerPage from "./components/PlayerPage.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -78,6 +79,7 @@ export default function App() {
                 <Routes>
                     <Route element={<ProtectedRoutes user={user}/>}>
                         <Route path={"/add"} element={<AddPage/>}/>
+                        <Route path={"/player/:name"} element={<PlayerPage/>}/>
                         <Route path={"/"} element={
                             <>
                                 <PlayerInfoBar player={player}/>

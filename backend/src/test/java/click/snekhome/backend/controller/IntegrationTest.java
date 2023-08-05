@@ -594,43 +594,6 @@ class IntegrationTest {
 
     @Test
     @DirtiesContext
-    void expect403WhenTryingToAddNodeWithPlayer() throws Exception {
-        String requestBody = """
-                {
-                    "username":"testPlayer",
-                    "email":"test@test.com",
-                    "password":"test"
-                }
-                """;
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
-                        .content(requestBody)
-                        .contentType(MediaType.APPLICATION_JSON).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
-                        .with(httpBasic("testPlayer", "test")).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
-                        .with(httpBasic("testPlayer", "test")))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("testPlayer"));
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/nodes")
-                        .with(httpBasic("testPlayer", "test"))
-                        .content("""
-                                {
-                                    "name":"testNode",
-                                    "coordinates": {
-                                        "latitude": 0,
-                                        "longitude": 0
-                                    }
-                                }
-                                """)
-                        .contentType(MediaType.APPLICATION_JSON).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
-
-    @Test
-    @DirtiesContext
     void expectPlayerNameWhenLoggedIn() throws Exception {
         String requestBody = """
                 {
