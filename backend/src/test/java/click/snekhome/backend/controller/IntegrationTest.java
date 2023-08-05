@@ -701,6 +701,102 @@ class IntegrationTest {
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isAccepted())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
 
+    @Test
+    @DirtiesContext
+    void expectUnauthorizedWhenLoginWithBadCredentials() throws Exception {
+        String userData = """
+                {
+                    "username":"playerunknown",
+                    "email":"player@test.net",
+                    "password":"password"
+                }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
+                        .contentType("application/json")
+                        .content(userData)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+                        .with(httpBasic("playerunknown", "wrongPassword")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    @DirtiesContext
+    void expectForbiddenWhenTryingToAddNodeWithWrongRole() throws Exception {
+        PasswordEncoder passwordEncoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
+        MongoUser player = new MongoUser("123", "playerunknown", "player@player.net", passwordEncoder.encode("password"), Role.PLAYER);
+        mongoUserRepository.save(player);
+        Player playerunknown = new Player("abc", "123", "playerunknown", null, 1, 0, 100, 100, 100, 5, 15, 0);
+        String nodeData = """
+                {
+                    "name": "testNode",
+                    "coordinates": {
+                        "latitude": 48.1232052,
+                        "longitude": 11.5485363,
+                        "timestamp": 1690997725514
+                    }
+                }
+                """;
+
+        playerRepo.save(playerunknown);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+                        .with(httpBasic("playerunknown", "password")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/nodes")
+                        .contentType("application/json")
+                        .content(nodeData)
+                        .with(httpBasic("playerunknown", "password"))
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    @DirtiesContext
+    void expectPlayerWhenGettingPlayerByName() throws Exception {
+        Player playerunknown = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        playerRepo.save(playerunknown);
+
+        String userData = """
+                {
+                    "username":"testPlayer",
+                    "email":"testPlayer@test.net",
+                    "password":"12345678"
+                }
+                """;
+        String expected = """
+                    {
+                        "name": "playerunknown",
+                        "coordinates": {
+                            "latitude": 0,
+                            "longitude": 0,
+                            "timestamp": 0
+                        },
+                        "level": 1,
+                        "experience": 0,
+                        "health": 100,
+                        "maxHealth": 100,
+                        "credits": 0,
+                        "attack": 5
+                    }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
+                        .contentType("application/json")
+                        .content(userData)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+                        .with(httpBasic("testPlayer", "12345678")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
+                .with(httpBasic("testPlayer", "12345678")))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("testPlayer"));
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/player/info/playerunknown")
+                        .with(httpBasic("testPlayer", "12345678")))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 }
