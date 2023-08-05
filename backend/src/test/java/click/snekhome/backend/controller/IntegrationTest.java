@@ -65,7 +65,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("test", "test")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -155,7 +155,7 @@ class IntegrationTest {
                         .content(requestBody)
                         .with(httpBasic("admin", "admin"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
@@ -174,7 +174,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(requestBody)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -215,12 +215,12 @@ class IntegrationTest {
                         .content(coordinates).contentType(MediaType.APPLICATION_JSON)
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("HACK")
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
@@ -238,7 +238,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(requestBody)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -253,7 +253,7 @@ class IntegrationTest {
                         .content(coordinates).contentType(MediaType.APPLICATION_JSON)
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user")
                         .with(httpBasic("playerunknown", "password")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -283,7 +283,7 @@ class IntegrationTest {
                         .content("ABANDON")
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
@@ -304,7 +304,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(requestBody)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -342,12 +342,12 @@ class IntegrationTest {
                         .content(coordinates).contentType(MediaType.APPLICATION_JSON)
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("HACK")
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
@@ -380,7 +380,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(requestBody)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -399,12 +399,12 @@ class IntegrationTest {
                         .content(coordinates).contentType(MediaType.APPLICATION_JSON)
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("ABANDON")
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
@@ -437,7 +437,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(requestBody)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -456,12 +456,12 @@ class IntegrationTest {
                         .content(coordinates).contentType(MediaType.APPLICATION_JSON)
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
         mockMvc.perform(MockMvcRequestBuilders.put("/api/nodes/abc")
                         .content("HACK")
                         .with(httpBasic("playerunknown", "password"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
@@ -492,7 +492,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/nodes/abc")
                         .with(httpBasic("admin", "admin"))
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
         mockMvc.perform(MockMvcRequestBuilders.get("/api/nodes")
                         .with(httpBasic("admin", "admin")))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -526,7 +526,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("testPlayer", "test")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -569,7 +569,7 @@ class IntegrationTest {
                 .andExpect(MockMvcResultMatchers.content().string("admin"));
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/logout")
                         .with(httpBasic("admin", "admin")).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
         mockMvc.perform(MockMvcRequestBuilders.get("/api/user"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("anonymousUser"));
@@ -607,7 +607,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(requestBody)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -641,7 +641,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(requestBody)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -687,7 +687,7 @@ class IntegrationTest {
                         .contentType("application/json")
                         .content(userData)
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -699,7 +699,7 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/player/location")
                         .content(requestBody).contentType(MediaType.APPLICATION_JSON)
                         .with(httpBasic("playerunknown", "password")).with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
 
     }
