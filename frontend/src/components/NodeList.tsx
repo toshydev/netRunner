@@ -10,7 +10,7 @@ type Props = {
     player: Player | null;
 }
 
-export default function NodeList({player}: Props) {
+export default function NodeList({ player }: Props) {
     const nodes = useStore(state => state.nodes);
     const getNodes = useStore(state => state.getNodes);
     const user = useStore(state => state.user);
@@ -22,17 +22,25 @@ export default function NodeList({player}: Props) {
     }, [getNodes, user]);
 
     if (player) {
-        return <StyledList>
-            {nodes.map(node => <NodeItem
-                key={node.id}
-                node={node}
-                player={player}
-                distance={getDistanceBetweenCoordinates({latitude: player.coordinates.latitude, longitude: player.coordinates.longitude}, {latitude: node.coordinates.latitude, longitude: node.coordinates.longitude})}
-            />)}
-            <AddButton/>
-        </StyledList>
-    } else {
-        return <>loading ...</>
+        return (
+            <StyledList>
+                {nodes.map(node => (
+                    <NodeItem
+                        key={node.id}
+                        node={node}
+                        player={player}
+                        distance={getDistanceBetweenCoordinates({
+                            latitude: player.coordinates.latitude,
+                            longitude: player.coordinates.longitude
+                        }, {
+                            latitude: node.coordinates.latitude,
+                            longitude: node.coordinates.longitude
+                        })}
+                    />
+                ))}
+                <AddButton />
+            </StyledList>
+        );
     }
 }
 

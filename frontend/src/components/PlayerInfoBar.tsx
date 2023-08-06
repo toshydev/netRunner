@@ -8,27 +8,29 @@ type Props = {
 export default function PlayerInfoBar({player}: Props) {
     const gps = useStore(state => state.gps)
     const setGps = useStore(state => state.setGps)
-    const isLoading = useStore(state => state.isLoading)
 
-    if (!isLoading) {
-        return <StyledContainer>
-            {player && <StyledBar theme={"primary"} bg={"semiblack"}>
-                <StyledText color={"primary"}>{player.name}</StyledText>
-                <StyledInfoContainer>
-                    <StyledText color={"primary"}>LVL {player.level}</StyledText>
-                    <StyledText color={"secondary"}>{player.health}HP</StyledText>
-                    <StyledText color={"secondary"}>{player.attack}AP</StyledText>
-                    <StyledText color={"primary"}>{player.credits}$</StyledText>
-                </StyledInfoContainer>
-            </StyledBar>}
-            <StyledBar bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => setGps(!gps)}>
-                <StyledText color={gps ? "secondary" : "grey"}>Lat: {player?.coordinates?.latitude}</StyledText>
-                <StyledText color={gps ? "secondary" : "grey"}>Lon: {player?.coordinates?.longitude}</StyledText>
-            </StyledBar>
-        </StyledContainer>
-    } else {
-        return <>loading ...</>
-    }
+    return <StyledContainer>
+        {player && <StyledBar theme={"primary"} bg={"semiblack"}>
+            <StyledText color={"primary"}>{player.name}</StyledText>
+            <StyledInfoContainer>
+                <StyledText color={"primary"}>LVL {player.level}</StyledText>
+                <StyledText color={"secondary"}>{player.health}HP</StyledText>
+                <StyledText color={"secondary"}>{player.attack}AP</StyledText>
+                <StyledText color={"primary"}>{player.credits}$</StyledText>
+            </StyledInfoContainer>
+        </StyledBar>}
+        <StyledBarGps gps={gps} bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => setGps(!gps)}>
+            {gps
+                ? <>
+                    <StyledText color={"secondary"}>Lat: {player?.coordinates?.latitude}</StyledText>
+                    <StyledText color={"secondary"}>Lon: {player?.coordinates?.longitude}</StyledText>
+                </>
+                :
+                <StyledText color={"grey"}>GPS disabled - press to enable</StyledText>
+            }
+        </StyledBarGps>
+    </StyledContainer>
+
 }
 
 const StyledContainer = styled.div`
@@ -45,7 +47,7 @@ const StyledContainer = styled.div`
   background: linear-gradient(var(--color-black) 0%, var(--color-black) 85%, transparent 95%);
 `;
 
-const StyledBar = styled.div<{theme: string, bg: string}>`
+const StyledBar = styled.div<{ theme: string, bg: string }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -57,7 +59,16 @@ const StyledBar = styled.div<{theme: string, bg: string}>`
   padding: 0 1rem 0 1rem;
 `;
 
-const StyledText = styled.p<{color: string}>`
+const StyledBarGps = styled(StyledBar)<{gps: boolean}>`
+  transition: transform 0.1s ease-in-out;
+  ${({gps}) => !gps && "justify-content: center;"}
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const StyledText = styled.p<{ color: string }>`
   color: var(--color-${props => props.color});
 `;
 

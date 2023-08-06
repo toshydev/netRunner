@@ -32,7 +32,7 @@ const StyledAddButton = styled(Button)`
   bottom: 2rem;
   right: 2rem;
   filter: drop-shadow(0 0 0.75rem var(--color-black));
-  z-index: 2;
+  z-index: 5;
 
   &:hover {
     background: var(--color-black);

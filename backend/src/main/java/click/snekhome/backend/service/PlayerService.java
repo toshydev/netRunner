@@ -9,6 +9,8 @@ import click.snekhome.backend.util.IdService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 public class PlayerService {
     private final PlayerRepo playerRepo;
@@ -22,7 +24,7 @@ public class PlayerService {
                 idService.generateId(),
                 userData.id(),
                 userData.username(),
-                null,
+                new Coordinates(0, 0, Instant.now().getEpochSecond()),
                 1,
                 0,
                 100,

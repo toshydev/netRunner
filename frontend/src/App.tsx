@@ -12,6 +12,9 @@ import {ThemeProvider} from "@mui/material";
 import {theme} from "./theme.ts";
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
 import {Coordinates} from "./models.ts";
+import {StyledToastContainer} from "./components/styled/StyledToastContainer.ts";
+import StatusBar from "./components/StatusBar.tsx";
+import PlayerPage from "./components/PlayerPage.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -35,7 +38,7 @@ export default function App() {
         } finally {
             setInitialLoad(false)
         }
-    }, [])
+    }, [getPlayer, getUser, user])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -57,7 +60,7 @@ export default function App() {
 
     function getLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
+            navigator.geolocation.getCurrentPosition(position => {
                 const {latitude, longitude} = position.coords
                 const timestamp = position.timestamp
                 const coords: Coordinates = {latitude: latitude, longitude: longitude, timestamp: timestamp}
@@ -76,6 +79,7 @@ export default function App() {
                 <Routes>
                     <Route element={<ProtectedRoutes user={user}/>}>
                         <Route path={"/add"} element={<AddPage/>}/>
+                        <Route path={"/player/:name"} element={<PlayerPage/>}/>
                         <Route path={"/"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
@@ -85,6 +89,8 @@ export default function App() {
                     </Route>
                     <Route path={"/login"} element={<LoginPage/>}/>
                 </Routes>
+                <StyledToastContainer icon={false}/>
+                {user !== "" && user !== "anonymousUser" && <StatusBar gps={gps}/>}
             </StyledContent>
         </ThemeProvider>
     )

@@ -35,10 +35,6 @@ export default function CooldownCounter({ lastActionTimestamp }: Props) {
     return (
         <StyledCooldownCounter>
             <StyledHeading>COOLDOWN</StyledHeading>
-            <StyledRotatingTriangle duration={4}/>
-            <StyledRotatingTriangle duration={5}/>
-            <StyledRotatingTriangle duration={6}/>
-            <StyledRotatingTriangle duration={7}/>
             <StyledCountdownText>
                 {formatTime(remainingCooldown)}
             </StyledCountdownText>
@@ -58,37 +54,6 @@ const StyledCooldownCounter = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
   filter: drop-shadow(0 0 2px var(--color-primary));
-  z-index: 3;
-`;
-
-const StyledRotatingTriangle = styled.div<{duration: number}>`
-  width: 0;
-    height: 0;
-    border: 2.5rem solid transparent;
-    border-top: 0;
-    border-bottom: 4rem solid var(--color-secondary);
-    color: var(--color-secondary);
-    position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, 0%);
-   ${({duration}) => `animation: rotate ${duration}s ease-in-out infinite;`} 
-    z-index: 0;
-  
-    @keyframes rotate {
-        0% {
-            transform: translate(-50%, 0%) rotate(0deg);
-        }
-        25% {
-            transform: translate(-50%, 25%) rotate(180deg);
-        }
-        50% {
-            transform: translate(-50%, 25%) rotate(-180deg);
-        }
-        100% {
-            transform: translate(-50%, 0%) rotate(0deg);
-        }
-    }
 `;
 
 const StyledCountdownText = styled.p`
@@ -101,8 +66,8 @@ const StyledCountdownText = styled.p`
   transform: translate(-50%, 125%);
 `;
 
-const StyledHeading = styled.h2`
-  padding: 0 5rem;
+const StyledHeading = styled.h3`
+  padding: 0 3rem;
   position: absolute;
     top: 50%;
     left: 50%;
