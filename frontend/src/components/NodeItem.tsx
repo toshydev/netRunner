@@ -15,6 +15,11 @@ import UpgradeIcon from "./icons/UpgradeIcon.tsx";
 import DowngradeIcon from "./icons/DowngradeIcon.tsx";
 import UnlockIcon from "./icons/UnlockIcon.tsx";
 import TrashIcon from "./icons/TrashIcon.tsx";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import upgrade from "../assets/sounds/upgrade.mp3";
+import click from "../assets/sounds/click.mp3";
 
 type Props = {
     node: Node;
@@ -32,6 +37,8 @@ export default function NodeItem({node, player, distance}: Props) {
     const [isInteraction, setIsInteraction] = useState<boolean>(false);
     const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
     const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
+    const [playUpgrade] = useSound(upgrade);
+    const [playClick] = useSound(click);
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
@@ -73,6 +80,7 @@ export default function NodeItem({node, player, distance}: Props) {
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
         buildText(action)
+        playUpgrade()
         setIsInteraction(true)
     }
 
@@ -89,6 +97,11 @@ export default function NodeItem({node, player, distance}: Props) {
                 setInteractionText("+1AP")
                 break;
         }
+    }
+
+    function handleNavigate(path: string) {
+        playClick()
+        navigate(path)
     }
 
     const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
@@ -130,7 +143,7 @@ export default function NodeItem({node, player, distance}: Props) {
                 <StyledOwnerArea>
                     <StyledClaimButton
                         isPlayerOwned={isPlayerOwned}
-                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : navigate(`/player/${owner}`)}
+                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
                     >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
                 </StyledOwnerArea>
                 <StyledDeleteButton onClick={() => deleteNode(node.id)}>

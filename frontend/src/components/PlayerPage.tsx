@@ -9,6 +9,10 @@ import {useStore} from "../hooks/useStore.ts";
 import AvatarImage from "../assets/images/avatar.png";
 import NodeList from "./NodeList.tsx";
 import useNodes from "../hooks/useNodes.ts";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import clickSound from "../assets/sounds/click.mp3";
 
 export default function PlayerPage() {
     const [name, setName] = useState<string>("")
@@ -20,6 +24,7 @@ export default function PlayerPage() {
     const user = useStore(state => state.user)
     const logout = useStore(state => state.logout)
     const theme = useTheme()
+    const [playClick] = useSound(clickSound)
 
     const isEnemy = user !== player?.name
 
@@ -55,7 +60,10 @@ export default function PlayerPage() {
             </StyledCard>
                 <Typography color={theme.palette.success.main} variant={"h5"}>Nodes</Typography>
                 <StyledButtonContainer>
-                    <StyledFormButton theme={"primary"} onClick={() => navigate("/")}>Nodelist</StyledFormButton>
+                    <StyledFormButton theme={"primary"} onClick={() => {
+                        playClick()
+                        navigate("/")
+                    }}>Nodelist</StyledFormButton>
                     <StyledFormButton theme={"error"} onClick={() => logout(navigate)}>Logout</StyledFormButton>
                 </StyledButtonContainer>
                 {nodes && <NodeList player={player} nodes={nodes}/>}

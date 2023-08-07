@@ -1,15 +1,23 @@
 import {useNavigate} from "react-router-dom";
 import styled from "@emotion/styled";
 import {Button, Tooltip} from "@mui/material";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import click from "../assets/sounds/click.mp3";
 
 export default function AddButton() {
     const navigate = useNavigate();
+    const [playClick] = useSound(click);
 
     return (
         <Tooltip title={
             <StyledBadge>Add Node</StyledBadge>
         } placement={"left"}>
-            <StyledAddButton onClick={() => navigate("/add")}>+</StyledAddButton>
+            <StyledAddButton onClick={() => {
+                playClick();
+                navigate("/add")
+            }}>+</StyledAddButton>
         </Tooltip>
     )
 }

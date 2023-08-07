@@ -9,6 +9,12 @@ import {StyledHelperContainer} from "./styled/StyledHelperContainer.ts";
 import {Switch} from "@mui/material";
 import {useStore} from "../hooks/useStore.ts";
 import {useNavigate} from "react-router-dom";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import loginSuccess from "../assets/sounds/login_success.mp3";
+import keyPress from "../assets/sounds/key_press.mp3";
+import switchButton from "../assets/sounds/switch.mp3";
 
 export default function LoginPage() {
     const [newUser, setNewUser] = useState<boolean>(false);
@@ -18,6 +24,9 @@ export default function LoginPage() {
     const [usernameError, setUsernameError] = useState<string>("Username must have at least three characters");
     const [emailError, setEmailError] = useState<string>("Invalid email");
     const [passwordError, setPasswordError] = useState<string>("Password must have at least three characters");
+    const [playLoginSuccess] = useSound(loginSuccess);
+    const [playKeyPress] = useSound(keyPress);
+    const [playSwitch] = useSound(switchButton);
 
     const login = useStore(state => state.login)
     const register = useStore(state => state.register)
@@ -36,9 +45,11 @@ export default function LoginPage() {
         event.preventDefault()
 
         login(username, password, navigate);
+        playLoginSuccess();
     }
 
     function handleUsernameChange(event: ChangeEvent<HTMLInputElement>) {
+        playKeyPress()
         setUsername(event.target.value);
         if (event.target.value.length < 3) {
             setUsernameError("Username must have at least three characters");
@@ -50,6 +61,7 @@ export default function LoginPage() {
     }
 
     function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
+        playKeyPress()
         setEmail(event.target.value);
         if (!event.target.value.match(/^\w+@\w+\.\w+$/)) {
             setEmailError("Invalid email");
@@ -59,6 +71,7 @@ export default function LoginPage() {
     }
 
     function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
+        playKeyPress()
         setPassword(event.target.value);
         if (event.target.value.length < 3) {
             setPasswordError("Password must have at least three characters");
@@ -77,7 +90,10 @@ export default function LoginPage() {
             <StyledLabel htmlFor={"newUser"}>New User<Switch
                 id="newUser"
                 checked={newUser}
-                onChange={handleNewUserSwitch}
+                onChange={() => {
+                    playSwitch()
+                    handleNewUserSwitch()
+                }}
                 color={newUser ? "success" : "error"}
             /></StyledLabel>
             <StyledLabel htmlFor="username">Username</StyledLabel>
@@ -89,7 +105,10 @@ export default function LoginPage() {
                 value={username}
                 onChange={newUser
                     ? handleUsernameChange
-                    : (event) => setUsername(event.currentTarget.value)}
+                    : (event) => {
+                        playKeyPress()
+                        setUsername(event.currentTarget.value)
+                    }}
             />
             <StyledHelperContainer>
                 {newUser && <StyledHelperText>{usernameError}</StyledHelperText>}
@@ -104,7 +123,10 @@ export default function LoginPage() {
                     value={email}
                     onChange={newUser
                         ? handleEmailChange
-                        : (event) => setEmail(event.currentTarget.value)}
+                        : (event) => {
+                            playKeyPress()
+                            setEmail(event.currentTarget.value)
+                        }}
                 />
                 <StyledHelperContainer>
                     {newUser && <StyledHelperText>{emailError}</StyledHelperText>}
@@ -119,7 +141,10 @@ export default function LoginPage() {
                 value={password}
                 onChange={newUser
                     ? handlePasswordChange
-                    : (event) => setPassword(event.currentTarget.value)}
+                    : (event) => {
+                        playKeyPress()
+                        setPassword(event.currentTarget.value)
+                    }}
             />
             <StyledHelperContainer>
                 {newUser && <StyledHelperText>{passwordError}</StyledHelperText>}
