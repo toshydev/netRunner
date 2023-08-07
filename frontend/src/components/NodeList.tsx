@@ -31,7 +31,7 @@ export default function NodeList({ player }: Props) {
                 setSortedNodes(sortNodesByDistance({latitude: player.coordinates.latitude, longitude: player.coordinates.longitude}, filteredNodesByRange));
             }
         }
-    }, [getNodes, player, sortNodesByDistance, user, sortDirection, ownerNodesFilter, rangeFilter]);
+    }, [getNodes, player, user, sortDirection, ownerNodesFilter, rangeFilter]);
 
     if (player) {
         return (
