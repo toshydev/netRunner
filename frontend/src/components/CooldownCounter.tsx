@@ -3,9 +3,10 @@ import styled from "@emotion/styled";
 
 type Props = {
     lastActionTimestamp: number;
+    label: "Update" | "Attack";
 };
 
-export default function CooldownCounter({ lastActionTimestamp }: Props) {
+export default function CooldownCounter({ lastActionTimestamp, label }: Props) {
     const [remainingCooldown, setRemainingCooldown] = useState(0);
 
     useEffect(() => {
@@ -32,48 +33,17 @@ export default function CooldownCounter({ lastActionTimestamp }: Props) {
         return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }
 
-    return (
-        <StyledCooldownCounter>
-            <StyledHeading>COOLDOWN</StyledHeading>
-            <StyledCountdownText>
+    return  <StyledCountdownText type={label}>
                 {formatTime(remainingCooldown)}
             </StyledCountdownText>
-        </StyledCooldownCounter>
-    );
 }
 
-const StyledCooldownCounter = styled.div`
-  width: 0;
-  height: 0;
-  border: 2.5rem solid transparent;
-  border-top: 0;
-  border-bottom: 4rem solid var(--color-secondary);
-  color: var(--color-secondary);
-  position: absolute;
-  top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  filter: drop-shadow(0 0 2px var(--color-primary));
-`;
-
-const StyledCountdownText = styled.p`
+const StyledCountdownText = styled.p<{type: string}>`
   font-size: 1rem;
-  color: black;
-  text-shadow: 0 0 2px black;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, 125%);
-`;
-
-const StyledHeading = styled.h3`
-  padding: 0 3rem;
-  position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -175%);
-    color: black;
-    text-shadow: 0 0 2px black;
-    z-index: 2;
-  background: var(--color-secondary);
+  color: ${props => props.type === "Update" ? "var(--color-primary)" : "var(--color-secondary)"};
+  border: 2px solid ${props => props.type === "Update" ? "var(--color-primary)" : "var(--color-secondary)"};
+  border-radius: 5px;
+  text-align: center;
+  padding: 0 0.25rem;
+  background: var(--color-black);
 `;

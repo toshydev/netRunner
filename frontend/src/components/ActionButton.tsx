@@ -24,17 +24,21 @@ const StyledButton = styled(Button)<{actiontype: ActionType}>`
   border-radius: 12px;
   border: 4px solid ${({actiontype}) => actiontype.toString() === "ABANDON" ? "var(--color-secondary)" : "var(--color-primary)"};
   transition: all 0.2s ease-in-out;
-  
+
   &:focus {
     background: var(--color-black);
   }
-  
+
   &:active {
     scale: 0.5;
   }
-  
+
   &:disabled {
     color: var(--color-grey);
     border-color: var(--color-grey);
+  }
+
+  &:hover {
+    background: var(--color-black);
   }
 `;
