@@ -783,6 +783,7 @@ class IntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     void expectUnauthorizedWhenLoginWithBadCredentials() throws Exception {
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login").with(httpBasic("unregistered", "12345678")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized()).andReturn();
@@ -792,8 +793,52 @@ class IntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     void expectUnauthorizedWhenLoginWithoutUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login").with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized()).andReturn();
+    }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser(username = "test")
+    void expectNodesOfOwnerWhenGettingNodesByOwnerId() throws Exception {
+        Node node1 = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Node node2 = new Node("def", "123", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
+        nodeRepo.save(node1);
+        nodeRepo.save(node2);
+        String expected = """
+                [
+                    {
+                        "id":"abc",
+                        "name":"Home",
+                        "level":1,
+                        "health":100,
+                        "ownerId": "123",
+                        "coordinates": {
+                            "latitude": 0,
+                            "longitude": 0
+                            },
+                        "lastUpdate":0,
+                        "lastAttack":0
+                        },
+                    {
+                        "id":"def",
+                        "name":"Office",
+                        "level":2,
+                        "health":100,
+                        "ownerId": "123",
+                        "coordinates": {
+                            "latitude": 0,
+                            "longitude": 0
+                            },
+                        "lastUpdate":0,
+                        "lastAttack":0
+                        }
+                ]
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/nodes/123"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 }

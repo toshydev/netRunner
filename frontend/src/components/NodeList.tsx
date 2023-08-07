@@ -5,14 +5,15 @@ import AddButton from "./AddButton.tsx";
 import {useEffect, useState} from "react";
 import {Node, Player} from "../models.ts";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
+import {useLocation} from "react-router-dom";
 
 type Props = {
     player: Player | null;
+    nodes: Node[];
 }
 
-export default function NodeList({ player }: Props) {
+export default function NodeList({ player, nodes }: Props) {
     const [sortedNodes, setSortedNodes] = useState<Node[]>([]);
-    const nodes = useStore(state => state.nodes);
     const getNodes = useStore(state => state.getNodes);
     const user = useStore(state => state.user);
     const sortDirection = useStore(state => state.sortDirection);
@@ -21,10 +22,11 @@ export default function NodeList({ player }: Props) {
     const filterNodesByOwner = useStore(state => state.filterNodesByOwner);
     const rangeFilter = useStore(state => state.rangeFilter);
     const filterNodesByRange = useStore(state => state.filterNodesByRange);
+    const location = useLocation()
+    const path = location.pathname
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
-            getNodes()
             if (nodes && player) {
                 const filteredNodesbyOwner = filterNodesByOwner(player.id, nodes);
                 const filteredNodesByRange = filterNodesByRange({latitude: player.coordinates.latitude, longitude: player.coordinates.longitude}, filteredNodesbyOwner);
@@ -50,7 +52,7 @@ export default function NodeList({ player }: Props) {
                         })}
                     />
                 ))}
-                <AddButton />
+                {path === "/" && <AddButton/>}
             </StyledList>
         );
     }

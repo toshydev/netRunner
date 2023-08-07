@@ -54,7 +54,8 @@ const blink = keyframes`
 const StyledHeader = styled.header`
   width: 100%;
   background: var(--color-black);
-  border-bottom: 1px solid var(--color-secondary);
+  border-bottom: 0.5px solid var(--color-secondary);
+  filter: drop-shadow(0 0 0.1rem var(--color-secondary));
   text-align: center;
   position: fixed;
   top: 0;

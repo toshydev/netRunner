@@ -1,6 +1,6 @@
 import {ActionType, Node, Player} from "../models.ts";
 import styled from "@emotion/styled";
-import {Button, Typography} from "@mui/material";
+import {Button, Card, Typography} from "@mui/material";
 import ActionButton from "./ActionButton.tsx";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
@@ -130,7 +130,7 @@ export default function NodeItem({node, player, distance}: Props) {
                 <StyledOwnerArea>
                     <StyledClaimButton
                         isPlayerOwned={isPlayerOwned}
-                        onClick={() => !claimDisabled || node.ownerId !== "null" ? handleEdit(ActionType.HACK) : navigate(`/player/${owner}`)}
+                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : navigate(`/player/${owner}`)}
                     >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
                 </StyledOwnerArea>
                 <StyledDeleteButton onClick={() => deleteNode(node.id)}>
@@ -183,11 +183,11 @@ const generateBlinkAnimation = (color: string) => keyframes`
   }
 `;
 
-const StyledListItem = styled.li<{ playerOwned: string; status: string, css: SerializedStyles | null }>`
+const StyledListItem = styled(Card)<{ playerOwned: string; status: string, css: SerializedStyles | null }>`
   color: ${({playerOwned}) =>
           playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
-  width: 90%;
+  width: 95%;
   padding: 0.5rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -292,6 +292,10 @@ const StyledClaimButton = styled(Button)<{ isPlayerOwned: boolean }>`
   z-index: 5;
   
     &:active {
+    background: var(--color-black);
+    }
+  
+    &:hover {
     background: var(--color-black);
     }
 `;

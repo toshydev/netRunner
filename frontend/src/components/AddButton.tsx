@@ -29,7 +29,7 @@ const StyledAddButton = styled(Button)`
   font-size: 2rem;
   color: var(--color-primary);
   position: fixed;
-  bottom: 2rem;
+  bottom: 3rem;
   right: 2rem;
   filter: drop-shadow(0 0 0.75rem var(--color-black));
   z-index: 5;
