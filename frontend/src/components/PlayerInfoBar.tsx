@@ -10,7 +10,7 @@ export default function PlayerInfoBar({player}: Props) {
     const setGps = useStore(state => state.setGps)
 
     return <StyledContainer>
-        {player && <StyledBar theme={"primary"} bg={"semiblack"}>
+        {player && <StyledBar theme={"primary"} bg={"black"}>
             <StyledText color={"primary"}>{player.name}</StyledText>
             <StyledInfoContainer>
                 <StyledText color={"primary"}>LVL {player.level}</StyledText>
@@ -19,14 +19,14 @@ export default function PlayerInfoBar({player}: Props) {
                 <StyledText color={"primary"}>{player.credits}$</StyledText>
             </StyledInfoContainer>
         </StyledBar>}
-        <StyledBarGps gps={gps} bg={"black"} theme={gps ? "secondary" : "grey"} onClick={() => setGps(!gps)}>
+        <StyledBarGps gps={gps} bg={"black"} theme={gps ? "primary" : "secondary"} onClick={() => setGps(!gps)}>
             {gps
                 ? <>
-                    <StyledText color={"secondary"}>Lat: {player?.coordinates?.latitude}</StyledText>
-                    <StyledText color={"secondary"}>Lon: {player?.coordinates?.longitude}</StyledText>
+                    <StyledText color={"primary"}>Lat: {player?.coordinates?.latitude}</StyledText>
+                    <StyledText color={"primary"}>Lon: {player?.coordinates?.longitude}</StyledText>
                 </>
                 :
-                <StyledText color={"grey"}>GPS disabled - press to enable</StyledText>
+                <StyledText color={"secondary"}>GPS disabled - press to enable</StyledText>
             }
         </StyledBarGps>
     </StyledContainer>
@@ -44,7 +44,7 @@ const StyledContainer = styled.div`
   position: sticky;
   top: 3.3rem;
   z-index: 6;
-  background: linear-gradient(var(--color-black) 0%, var(--color-black) 85%, transparent 95%);
+  background: linear-gradient(var(--color-black) 0%, var(--color-black) 85%);
 `;
 
 const StyledBar = styled.div<{ theme: string, bg: string }>`
@@ -57,11 +57,13 @@ const StyledBar = styled.div<{ theme: string, bg: string }>`
   width: 100%;
   background: var(--color-${props => props.bg});
   padding: 0 1rem 0 1rem;
+  transition: all 0.5s ease-in-out;
 `;
 
 const StyledBarGps = styled(StyledBar)<{gps: boolean}>`
-  transition: transform 0.1s ease-in-out;
+  cursor: pointer;
   ${({gps}) => !gps && "justify-content: center;"}
+  ${({gps}) => gps && "filter: drop-shadow(0 0 0.25rem var(--color-primary));"}
 
   &:active {
     transform: scale(0.95);

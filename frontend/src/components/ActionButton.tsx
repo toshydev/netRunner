@@ -1,16 +1,18 @@
 import {ActionType} from "../models.ts";
 import {Button} from "@mui/material";
 import styled from "@emotion/styled";
+import React from "react";
 
 type props = {
     action: ActionType
     onAction: (action: ActionType) => void
     inactive: boolean
+    children?: React.ReactNode
 }
 
-export default function ActionButton({action, onAction, inactive}: props) {
+export default function ActionButton({action, onAction, inactive, children}: props) {
 
-    return <StyledButton disabled={inactive} onClick={() => onAction(action)} actiontype={action}>{action.toString() === "ABANDON" ? "-" : "+"}</StyledButton>
+    return <StyledButton disabled={inactive} onClick={() => onAction(action)} actiontype={action}>{children}</StyledButton>
 }
 
 const StyledButton = styled(Button)<{actiontype: ActionType}>`

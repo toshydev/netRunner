@@ -15,6 +15,7 @@ import {Coordinates} from "./models.ts";
 import {StyledToastContainer} from "./components/styled/StyledToastContainer.ts";
 import StatusBar from "./components/StatusBar.tsx";
 import PlayerPage from "./components/PlayerPage.tsx";
+import NodeFilter from "./components/NodeFilter.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -83,6 +84,7 @@ export default function App() {
                         <Route path={"/"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
+                                <NodeFilter/>
                                 <NodeList player={player}/>
                             </>
                         }/>

@@ -10,6 +10,11 @@ import CooldownCounter from "./CooldownCounter.tsx";
 import useCooldown from "../hooks/useCooldown.ts";
 import HealthBar from "./HealthBar.tsx";
 import {useNavigate} from "react-router-dom";
+import AttackIcon from "./icons/AttackIcon.tsx";
+import UpgradeIcon from "./icons/UpgradeIcon.tsx";
+import DowngradeIcon from "./icons/DowngradeIcon.tsx";
+import UnlockIcon from "./icons/UnlockIcon.tsx";
+import TrashIcon from "./icons/TrashIcon.tsx";
 
 type Props = {
     node: Node;
@@ -88,7 +93,7 @@ export default function NodeItem({node, player, distance}: Props) {
 
     const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
     const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
-    const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange
+    const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange || node.health === 0
 
     let status = null;
     if (isUpdating) {
@@ -125,19 +130,25 @@ export default function NodeItem({node, player, distance}: Props) {
                 <StyledOwnerArea>
                     <StyledClaimButton
                         isPlayerOwned={isPlayerOwned}
-                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : navigate(`/player/${owner}`)}
-                    >{owner === "" ? "+" : owner}</StyledClaimButton>
+                        onClick={() => !claimDisabled || node.ownerId !== "null" ? handleEdit(ActionType.HACK) : navigate(`/player/${owner}`)}
+                    >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
                 </StyledOwnerArea>
-                <StyledDeleteButton onClick={() => deleteNode(node.id)}>X</StyledDeleteButton>
+                <StyledDeleteButton onClick={() => deleteNode(node.id)}>
+                    <TrashIcon/>
+                </StyledDeleteButton>
                 <StyledDistanceInfo
                     outofrange={`${!isInRange}`}>{`Distance: ${distance / 1000} KM`}</StyledDistanceInfo>
                 {node.ownerId !== null && <StyledActionArea>
                     {node.ownerId === player.id &&
                         <ActionButton inactive={abandonDisabled} action={ActionType.ABANDON}
-                                      onAction={handleEdit}/>}
+                                      onAction={handleEdit}>
+                            <DowngradeIcon/>
+                        </ActionButton>}
                     <ActionButton
                         inactive={hackDisabled}
-                        action={ActionType.HACK} onAction={handleEdit}/>
+                        action={ActionType.HACK} onAction={handleEdit}>
+                        {isPlayerOwned ? <UpgradeIcon/> : <AttackIcon/>}
+                    </ActionButton>
                 </StyledActionArea>}
                 <StyledLevelArea>
                     <StyledLevelContainer>
@@ -176,7 +187,7 @@ const StyledListItem = styled.li<{ playerOwned: string; status: string, css: Ser
   color: ${({playerOwned}) =>
           playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
-  width: 100%;
+  width: 90%;
   padding: 0.5rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -279,6 +290,10 @@ const StyledClaimButton = styled(Button)<{ isPlayerOwned: boolean }>`
   border-radius: 8px;
   font: inherit;
   z-index: 5;
+  
+    &:active {
+    background: var(--color-black);
+    }
 `;
 
 const StyledDeleteButton = styled(Button)`
@@ -291,6 +306,7 @@ const StyledDeleteButton = styled(Button)`
   background: var(--color-semiblack);
   color: var(--color-secondary);
   border: 2px solid var(--color-secondary);
+  border-radius: 8px;
   transition: all 0.2s ease-in-out;
   grid-column: 5 / 6;
   grid-row: 5;
