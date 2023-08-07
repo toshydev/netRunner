@@ -34,7 +34,7 @@ export default function NodeList({ player, nodes }: Props) {
             }
         }
     }, [getNodes, player, user, sortDirection, ownerNodesFilter, rangeFilter]);
-
+// trigger commit
     if (player) {
         return (
             <StyledList>
