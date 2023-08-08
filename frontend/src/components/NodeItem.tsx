@@ -20,6 +20,8 @@ import TrashIcon from "./icons/TrashIcon.tsx";
 import useSound from "use-sound";
 import upgrade from "../assets/sounds/upgrade.mp3";
 import click from "../assets/sounds/click.mp3";
+import loginSuccess from "../assets/sounds/login_success.mp3";
+import error from "../assets/sounds/error.mp3";
 
 type Props = {
     node: Node;
@@ -39,6 +41,8 @@ export default function NodeItem({node, player, distance}: Props) {
     const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
     const [playUpgrade] = useSound(upgrade);
     const [playClick] = useSound(click);
+    const [playLoginSuccess] = useSound(loginSuccess);
+    const [playError] = useSound(error);
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
@@ -146,7 +150,7 @@ export default function NodeItem({node, player, distance}: Props) {
                         onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
                     >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
                 </StyledOwnerArea>
-                <StyledDeleteButton onClick={() => deleteNode(node.id)}>
+                <StyledDeleteButton onClick={() => deleteNode(node.id, playLoginSuccess, playError)}>
                     <TrashIcon/>
                 </StyledDeleteButton>
                 <StyledDistanceInfo

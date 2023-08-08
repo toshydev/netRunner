@@ -17,6 +17,7 @@ import click from "../assets/sounds/click.mp3";
 import loginSuccess from "../assets/sounds/login_success.mp3";
 import keyPress from "../assets/sounds/key_press.mp3";
 import switchButton from "../assets/sounds/switch.mp3";
+import error from "../assets/sounds/error.mp3";
 
 export default function AddPage() {
     const [name, setName] = useState<string>("");
@@ -27,6 +28,7 @@ export default function AddPage() {
     const [longitudeError, setLongitudeError] = useState<string>("");
     const [playClick] = useSound(click);
     const [playLoginSuccess] = useSound(loginSuccess);
+    const [playError] = useSound(error);
     const [playKeyPress] = useSound(keyPress);
     const [playSwitch] = useSound(switchButton);
 
@@ -36,11 +38,10 @@ export default function AddPage() {
     const submitActive = nameError === "" && latitudeError === "" && longitudeError === "";
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        playLoginSuccess()
         const timestamp = Date.now();
         const coordinates: Coordinates = {latitude, longitude, timestamp}
         const nodeData: NodeData = {name, coordinates};
-        addNode(nodeData);
+        addNode(nodeData, playLoginSuccess, playError);
         navigate("/");
     }
 

@@ -16,12 +16,12 @@ type State = {
     getPlayer: () => void,
     getUser: () => void,
     getNodes: () => void,
-    addNode: (nodeData: NodeData) => void
+    addNode: (nodeData: NodeData, onSuccess: () => void, onError: () => void) => void
     editNode: (nodeId: string, action: ActionType) => void
-    deleteNode: (nodeId: string) => void
-    login: (username: string, password: string, navigate: NavigateFunction) => void
+    deleteNode: (nodeId: string, onSuccess: () => void, onError: () => void) => void
+    login: (username: string, password: string, navigate: NavigateFunction, onSuccess: () => void, onError: () => void) => void
     register: (username: string, email: string, password: string) => void
-    logout: (navigate: NavigateFunction) => void
+    logout: (navigate: NavigateFunction, onSuccess: () => void, onError: () => void) => void
     updateLocation: (coordinates: Coordinates) => void
     gps: boolean
     setGps: (gps: boolean) => void
@@ -79,15 +79,19 @@ export const useStore = create<State>(set => ({
             .then(() => set({isLoading: false}));
     },
 
-    addNode: (nodeData: NodeData) => {
+    addNode: (nodeData: NodeData, onSuccess: () => void, onError: () => void) => {
         set({isLoading: true})
         axios
             .post("/api/nodes", nodeData)
             .then(response => response.data)
             .then(data => {
+                onSuccess()
                 set((state) => ({nodes: [...state.nodes, data]}));
             })
-            .catch(console.error)
+            .catch(error => {
+                onError()
+                console.error(error)
+            })
             .then(() => set({isLoading: false}));
     },
 
@@ -108,12 +112,16 @@ export const useStore = create<State>(set => ({
             });
     },
 
-    deleteNode: (nodeId: string) => {
+    deleteNode: (nodeId: string, onSuccess: () => void, onError: () => void) => {
         set({isLoading: true});
         axios
             .delete(`/api/nodes/${nodeId}`)
-            .catch(console.error)
+            .catch(error => {
+                onError()
+                console.error(error)
+            })
             .then(() => {
+                onSuccess()
                 set((state) => ({
                     nodes: state.nodes.filter((node) => node.id !== nodeId),
                 }));
@@ -121,7 +129,7 @@ export const useStore = create<State>(set => ({
             .then(() => set({isLoading: false}));
     },
 
-    login: (username: string, password: string, navigate: NavigateFunction) => {
+    login: (username: string, password: string, navigate: NavigateFunction, onSuccess: () => void, onError: () => void) => {
         set({isLoading: true});
         axios
             .post("/api/user/login", null, {auth: {username, password}})
@@ -129,10 +137,12 @@ export const useStore = create<State>(set => ({
                 set({user: response.data});
                 navigate("/");
                 toast.success(`Welcome ${username}`, {autoClose: 2000});
+                onSuccess();
             })
             .catch((error) => {
                 console.error("Error during login:", error);
                 toast.error("Invalid username or password", {autoClose: 2000});
+                onError();
             })
             .then(() => {
                 set({isLoading: false});
@@ -147,7 +157,7 @@ export const useStore = create<State>(set => ({
             .then(() => set({isLoading: false}));
     },
 
-    logout: (navigate: NavigateFunction) => {
+    logout: (navigate: NavigateFunction, onSuccess: () => void, onError: () => void) => {
         set({isLoading: true});
         axios
             .post("/api/user/logout")
@@ -157,10 +167,12 @@ export const useStore = create<State>(set => ({
                 set({isLoading: false})
                 navigate("/login");
                 toast.success("Logged out", {autoClose: 2000});
+                onSuccess();
             })
             .catch((error) => {
                 console.error(error);
                 set({isLoading: false})
+                onError()
             })
     },
 

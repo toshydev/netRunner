@@ -13,6 +13,8 @@ import useNodes from "../hooks/useNodes.ts";
 // @ts-ignore
 import useSound from "use-sound";
 import clickSound from "../assets/sounds/click.mp3";
+import error from "../assets/sounds/error.mp3";
+import loginSuccess from "../assets/sounds/login_success.mp3";
 
 export default function PlayerPage() {
     const [name, setName] = useState<string>("")
@@ -25,6 +27,8 @@ export default function PlayerPage() {
     const logout = useStore(state => state.logout)
     const theme = useTheme()
     const [playClick] = useSound(clickSound)
+    const [playError] = useSound(error)
+    const [playSuccess] = useSound(loginSuccess)
 
     const isEnemy = user !== player?.name
 
@@ -64,7 +68,7 @@ export default function PlayerPage() {
                         playClick()
                         navigate("/")
                     }}>Nodelist</StyledFormButton>
-                    <StyledFormButton theme={"error"} onClick={() => logout(navigate)}>Logout</StyledFormButton>
+                    <StyledFormButton theme={"error"} onClick={() => logout(navigate, playSuccess, playError)}>Logout</StyledFormButton>
                 </StyledButtonContainer>
                 {nodes && <NodeList player={player} nodes={nodes}/>}
         </>

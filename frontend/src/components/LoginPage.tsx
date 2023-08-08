@@ -13,6 +13,7 @@ import {useNavigate} from "react-router-dom";
 // @ts-ignore
 import useSound from "use-sound";
 import loginSuccess from "../assets/sounds/login_success.mp3";
+import error from "../assets/sounds/error.mp3";
 import keyPress from "../assets/sounds/key_press.mp3";
 import switchButton from "../assets/sounds/switch.mp3";
 
@@ -25,6 +26,7 @@ export default function LoginPage() {
     const [emailError, setEmailError] = useState<string>("Invalid email");
     const [passwordError, setPasswordError] = useState<string>("Password must have at least three characters");
     const [playLoginSuccess] = useSound(loginSuccess);
+    const [playError] = useSound(error);
     const [playKeyPress] = useSound(keyPress);
     const [playSwitch] = useSound(switchButton);
 
@@ -44,8 +46,7 @@ export default function LoginPage() {
     function handleLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        login(username, password, navigate);
-        playLoginSuccess();
+        login(username, password, navigate, playLoginSuccess, playError);
     }
 
     function handleUsernameChange(event: ChangeEvent<HTMLInputElement>) {
