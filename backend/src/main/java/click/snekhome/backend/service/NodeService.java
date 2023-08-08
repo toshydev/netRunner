@@ -147,7 +147,7 @@ public class NodeService {
             if (node.ownerId() != null) {
                 String playerName = this.playerService.getPlayerNameById(node.ownerId());
                 Player player = this.playerService.getPlayer(playerName);
-                player = getCredits(player, node.level() * 10 * 10);
+                player = getCredits(player, node.level() * 100);
                 this.playerService.updatePlayer(player.id(), player);
             }
         }
