@@ -3,8 +3,12 @@ import axios from "axios";
 import {ActionType, Coordinates, Node, NodeData, Player} from "../models.ts";
 import {NavigateFunction} from "react-router-dom";
 import {toast} from "react-toastify";
+import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 
 type State = {
+    toggleSortDirection: () => void;
+    sortNodesByDistance: (position: { latitude: number, longitude: number }, nodes: Node[]) => Node[],
+    sortDirection: "asc" | "desc",
     user: string,
     player: Player | null,
     nodes: Node[],
@@ -21,6 +25,12 @@ type State = {
     updateLocation: (coordinates: Coordinates) => void
     gps: boolean
     setGps: (gps: boolean) => void
+    ownerNodesFilter: boolean
+    toggleOwnerNodesFilter: () => void
+    filterNodesByOwner: (ownerId: string, nodes: Node[]) => Node[]
+    rangeFilter: boolean
+    toggleRangeFilter: () => void
+    filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[]) => Node[]
 }
 
 export const useStore = create<State>(set => ({
@@ -29,6 +39,9 @@ export const useStore = create<State>(set => ({
     nodes: [],
     isLoading: true,
     gps: false,
+    sortDirection: "asc",
+    ownerNodesFilter: false,
+    rangeFilter: false,
 
     getPlayer: () => {
         set({isLoading: true})
@@ -109,20 +122,20 @@ export const useStore = create<State>(set => ({
     },
 
     login: (username: string, password: string, navigate: NavigateFunction) => {
-        set({ isLoading: true });
+        set({isLoading: true});
         axios
-            .post("/api/user/login", null, { auth: { username, password } })
+            .post("/api/user/login", null, {auth: {username, password}})
             .then((response) => {
-                set({ user: response.data });
+                set({user: response.data});
                 navigate("/");
-                toast.success(`Welcome ${username}`, { autoClose: 2000 });
+                toast.success(`Welcome ${username}`, {autoClose: 2000});
             })
             .catch((error) => {
                 console.error("Error during login:", error);
-                toast.error("Invalid username or password", { autoClose: 2000 });
+                toast.error("Invalid username or password", {autoClose: 2000});
             })
             .then(() => {
-                set({ isLoading: false });
+                set({isLoading: false});
             });
     },
 
@@ -165,5 +178,70 @@ export const useStore = create<State>(set => ({
 
     setGps: (gps: boolean) => {
         set({gps: gps});
+    },
+
+    toggleSortDirection: () => {
+        const direction = useStore.getState().sortDirection;
+        if (direction === "asc") {
+            set({sortDirection: "desc"});
+        } else {
+            set({sortDirection: "asc"});
+        }
+    },
+
+    sortNodesByDistance: (position: { latitude: number, longitude: number }, nodes: Node[]) => {
+        const direction = useStore.getState().sortDirection;
+        if (direction === "asc") {
+            return nodes.sort((a, b) => {
+                const distanceA = getDistanceBetweenCoordinates(position, {
+                    latitude: a.coordinates.latitude,
+                    longitude: a.coordinates.longitude
+                });
+                const distanceB = getDistanceBetweenCoordinates(position, {
+                    latitude: b.coordinates.latitude,
+                    longitude: b.coordinates.longitude
+                });
+                if (direction === "asc") {
+                    return distanceA - distanceB;
+                } else {
+                    return distanceB - distanceA;
+                }
+            })
+        } else {
+            return nodes.slice();
+        }
+    },
+
+    toggleOwnerNodesFilter: () => {
+        set((state) => ({ownerNodesFilter: !state.ownerNodesFilter}));
+    },
+
+    filterNodesByOwner: (ownerId: string, nodes: Node[]) => {
+        const filter = useStore.getState().ownerNodesFilter;
+        if (filter) {
+            return nodes.filter((node) => node.ownerId === ownerId);
+        } else {
+            return nodes.slice();
+        }
+    },
+
+    toggleRangeFilter: () => {
+        set((state) => ({rangeFilter: !state.rangeFilter}));
+    },
+
+    filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[]) => {
+        const filter = useStore.getState().rangeFilter;
+        if (filter) {
+            return nodes.filter((node) => {
+                const distance = getDistanceBetweenCoordinates(position, {
+                    latitude: node.coordinates.latitude,
+                    longitude: node.coordinates.longitude
+                });
+                return distance <= 50;
+            });
+        } else {
+            return nodes.slice();
+        }
     }
+
 }));

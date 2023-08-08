@@ -39,5 +39,5 @@ const StyledHealthText = styled.div<{health: number}>`
     left: 50%;
     transform: translate(-50%, -50%);
   color: ${({health}) => health > 50 ? "black" : "white"};
-  text-shadow: 0 0 2px ${({health}) => health > 50 ? "black" : "white"};
+  text-shadow: 0 0 1px ${({health}) => health > 50 ? "black" : "white"};
 `;
