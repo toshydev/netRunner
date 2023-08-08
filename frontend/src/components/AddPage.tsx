@@ -26,11 +26,12 @@ export default function AddPage() {
     const [nameError, setNameError] = useState<string>("Name cannot be empty");
     const [latitudeError, setLatitudeError] = useState<string>("");
     const [longitudeError, setLongitudeError] = useState<string>("");
-    const [playClick] = useSound(click);
-    const [playLoginSuccess] = useSound(loginSuccess);
-    const [playError] = useSound(error);
-    const [playKeyPress] = useSound(keyPress);
-    const [playSwitch] = useSound(switchButton);
+    const volume = useStore(state => state.volume);
+    const [playClick] = useSound(click, {volume: volume});
+    const [playLoginSuccess] = useSound(loginSuccess, {volume: volume});
+    const [playError] = useSound(error, {volume: volume});
+    const [playKeyPress] = useSound(keyPress, {volume: volume});
+    const [playSwitch] = useSound(switchButton, {volume: volume});
 
     const player = useStore(state => state.player);
     const addNode = useStore(state => state.addNode);

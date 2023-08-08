@@ -5,10 +5,12 @@ import {Button, Tooltip} from "@mui/material";
 // @ts-ignore
 import useSound from "use-sound";
 import click from "../assets/sounds/click.mp3";
+import {useStore} from "../hooks/useStore";
 
 export default function AddButton() {
     const navigate = useNavigate();
-    const [playClick] = useSound(click);
+    const volume = useStore(state => state.volume);
+    const [playClick] = useSound(click, {volume: volume});
 
     return (
         <Tooltip title={

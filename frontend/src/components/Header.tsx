@@ -6,6 +6,7 @@ import {useNavigate} from "react-router-dom";
 // @ts-ignore
 import useSound from "use-sound";
 import click from "../assets/sounds/click.mp3";
+import {useStore} from "../hooks/useStore.ts";
 
 type Props = {
     user?: string
@@ -14,7 +15,8 @@ type Props = {
 export default function Header({user}: Props) {
     const isAuthenticated = user !== "" && user !== undefined && user !== "anonymousUser"
     const navigate = useNavigate()
-    const [playClick] = useSound(click);
+    const volume = useStore(state => state.volume);
+    const [playClick] = useSound(click, {volume: volume});
 
     return (
         <StyledHeader>
