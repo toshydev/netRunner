@@ -10,6 +10,8 @@ import click.snekhome.backend.security.MongoUserService;
 import click.snekhome.backend.security.Role;
 import click.snekhome.backend.util.ActionType;
 import click.snekhome.backend.util.IdService;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import static click.snekhome.backend.util.NodeFunctions.*;
 import static click.snekhome.backend.util.PlayerFunctions.*;
 
 @Service
+@EnableScheduling
 public class NodeService {
 
     private static final int MAX_DISTANCE = 50;
@@ -135,5 +138,18 @@ public class NodeService {
 
     public List<Node> getNodesByOwner(String id) {
         return this.nodeRepo.findAllByOwnerId(id);
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    public void generateCredits() {
+        List<Node> nodes = this.nodeRepo.findAll();
+        for (Node node : nodes) {
+            if (node.ownerId() != null) {
+                String playerName = this.playerService.getPlayerNameById(node.ownerId());
+                Player player = this.playerService.getPlayer(playerName);
+                player = getCredits(player, node.level() * 10 * 10);
+                this.playerService.updatePlayer(player.id(), player);
+            }
+        }
     }
 }
