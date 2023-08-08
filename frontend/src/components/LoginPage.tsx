@@ -16,6 +16,7 @@ import loginSuccess from "../assets/sounds/login_success.mp3";
 import error from "../assets/sounds/error.mp3";
 import keyPress from "../assets/sounds/key_press.mp3";
 import switchButton from "../assets/sounds/switch.mp3";
+import loadingOs from "../assets/sounds/loading_os.mp3";
 
 export default function LoginPage() {
     const [newUser, setNewUser] = useState<boolean>(false);
@@ -29,6 +30,7 @@ export default function LoginPage() {
     const [playError] = useSound(error);
     const [playKeyPress] = useSound(keyPress);
     const [playSwitch] = useSound(switchButton);
+    const [playLoadingOs] = useSound(loadingOs);
 
     const login = useStore(state => state.login)
     const register = useStore(state => state.register)
@@ -47,6 +49,7 @@ export default function LoginPage() {
         event.preventDefault()
 
         login(username, password, navigate, playLoginSuccess, playError);
+        playLoadingOs()
     }
 
     function handleUsernameChange(event: ChangeEvent<HTMLInputElement>) {

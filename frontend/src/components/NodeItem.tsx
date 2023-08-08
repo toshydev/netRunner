@@ -22,6 +22,7 @@ import upgrade from "../assets/sounds/upgrade.mp3";
 import click from "../assets/sounds/click.mp3";
 import loginSuccess from "../assets/sounds/login_success.mp3";
 import error from "../assets/sounds/error.mp3";
+import electricMachine from "../assets/sounds/electric_machine.mp3";
 
 type Props = {
     node: Node;
@@ -43,6 +44,7 @@ export default function NodeItem({node, player, distance}: Props) {
     const [playClick] = useSound(click);
     const [playLoginSuccess] = useSound(loginSuccess);
     const [playError] = useSound(error);
+    const [playElectricMachine] = useSound(electricMachine);
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
@@ -84,7 +86,11 @@ export default function NodeItem({node, player, distance}: Props) {
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
         buildText(action)
-        playUpgrade()
+        if (isPlayerOwned) {
+            playUpgrade()
+        } else {
+            playElectricMachine()
+        }
         setIsInteraction(true)
     }
 
