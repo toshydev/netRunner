@@ -16,6 +16,7 @@ import clickSound from "../assets/sounds/click.mp3";
 import error from "../assets/sounds/error.mp3";
 import loginSuccess from "../assets/sounds/login_success.mp3";
 import VolumeBar from "./VolumeBar.tsx";
+import {Node} from "../models.ts";
 
 export default function PlayerPage() {
     const [name, setName] = useState<string>("")
@@ -34,6 +35,12 @@ export default function PlayerPage() {
     const [playSuccess] = useSound(loginSuccess, {volume: volume})
 
     const isEnemy = user !== player?.name
+
+    const incomePerHour = (nodes: Node[]): number => {
+        return nodes.reduce((acc, node) => {
+            return acc + node.level * 100;
+        }, 0)
+    }
 
     useEffect(() => {
         if (params.name) {
@@ -59,6 +66,7 @@ export default function PlayerPage() {
                 <StyledPlayerStats>
                     <StyledText>Credits: {player.credits}$</StyledText>
                     <StyledText color={"secondary"}>Attack: {player.attack}AP</StyledText>
+                    <StyledText>Income/Hour: {nodes ? incomePerHour(nodes) : 0}$</StyledText>
                 </StyledPlayerStats>
                 <StyledPlayerCoordinates>
                     <StyledText>Position:</StyledText>
@@ -112,8 +120,9 @@ const StyledPlayerStats = styled.div`
   grid-column: 1 / span 2;
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
   margin-left: 2rem;
+  column-gap: 2rem;
+  row-gap: 0;
 `;
 
 const StyledPlayerCoordinates = styled.div`
