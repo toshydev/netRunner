@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class PlayerService {
@@ -88,4 +89,14 @@ public class PlayerService {
         );
         this.playerRepo.save(newPlayer);
     }
+
+    public List<Player> getEnemies() {
+        String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        Player player = this.getPlayer(username);
+        return this.playerRepo.findAllByNameIsNot(player.name());
+    }
+
 }

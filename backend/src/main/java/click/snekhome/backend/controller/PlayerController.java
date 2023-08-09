@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/player")
 public class PlayerController {
@@ -42,6 +44,12 @@ public class PlayerController {
     @PutMapping("location")
     public Player updateLocation(@RequestBody Coordinates coordinates) {
         return playerService.updateLocation(coordinates);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("enemies")
+    public List<Player> getEnemies() {
+        return this.playerService.getEnemies();
     }
 
 }

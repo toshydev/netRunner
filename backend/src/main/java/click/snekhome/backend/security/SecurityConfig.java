@@ -39,11 +39,12 @@ public class SecurityConfig {
                                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(httpRequests ->
                         httpRequests
-                                .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/user/logout").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/user").permitAll()
+                                .requestMatchers("/api/map").authenticated()
                                 .anyRequest().authenticated())
                 .build();
     }

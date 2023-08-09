@@ -16,6 +16,8 @@ import {StyledToastContainer} from "./components/styled/StyledToastContainer.ts"
 import StatusBar from "./components/StatusBar.tsx";
 import PlayerPage from "./components/PlayerPage.tsx";
 import NodeFilter from "./components/NodeFilter.tsx";
+import Leaflet from "./components/Leaflet.tsx";
+import ViewChangeButton from "./components/ViewChangeButton.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -29,6 +31,7 @@ export default function App() {
     const setGps = useStore(state => state.setGps)
     const nodes = useStore(state => state.nodes)
     const getNodes = useStore(state => state.getNodes)
+    const getEnemies = useStore(state => state.getEnemies)
 
     useEffect(() => {
         try {
@@ -36,13 +39,14 @@ export default function App() {
             if (user !== "" && user !== "anonymousUser") {
                 getPlayer()
                 getNodes()
+                getEnemies()
             }
         } catch (e) {
             console.error(e)
         } finally {
             setInitialLoad(false)
         }
-    }, [getNodes, getPlayer, getUser, user])
+    }, [getNodes, getPlayer, getEnemies, getUser, user])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -82,6 +86,13 @@ export default function App() {
                 <Header user={user}/>
                 <Routes>
                     <Route element={<ProtectedRoutes user={user}/>}>
+                        <Route path={"/map"} element={
+                            <>
+                                <PlayerInfoBar player={player}/>
+                                <Leaflet/>
+                                <ViewChangeButton view={"list"}/>
+                            </>
+                        }/>
                         <Route path={"/add"} element={<AddPage/>}/>
                         <Route path={"/player/:name"} element={<PlayerPage/>}/>
                         <Route path={"/"} element={
@@ -89,6 +100,7 @@ export default function App() {
                                 <PlayerInfoBar player={player}/>
                                 <NodeFilter/>
                                 <NodeList player={player} nodes={nodes}/>
+                                <ViewChangeButton view={"map"}/>
                             </>
                         }/>
                     </Route>

@@ -33,12 +33,15 @@ type State = {
     filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[]) => Node[]
     volume: number
     setVolume: (volume: number) => void
+    enemies: Player[]
+    getEnemies: () => void
 }
 
 export const useStore = create<State>(set => ({
     user: "",
     player: null,
     nodes: [],
+    enemies: [],
     isLoading: true,
     gps: false,
     sortDirection: "asc",
@@ -261,6 +264,18 @@ export const useStore = create<State>(set => ({
 
     setVolume: (newVolume: number) => {
         set({volume: newVolume});
+    },
+
+    getEnemies: () => {
+        set({isLoading: true});
+        axios
+            .get("/api/player/enemies")
+            .then((response) => response.data)
+            .then(data => {
+                set({enemies: data});
+            })
+            .catch(console.error)
+            .then(() => set({isLoading: false}));
     }
 
 }));

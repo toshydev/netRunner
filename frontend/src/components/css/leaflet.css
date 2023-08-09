@@ -1,0 +1,38 @@
+.leaflet-container {
+    border: 2px solid var(--color-semiblack);
+}
+
+#map {
+    background: var(--color-black);
+    z-index: 5;
+}
+
+.leaflet-container .leaflet-control-attribution {
+    display: none;
+}
+
+.leaflet-control-zoom.leaflet-bar.leaflet-control a {
+    background: var(--color-semiblack);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.leaflet-marker-pane .node__player {
+    border: 1.5px solid var(--color-primary);
+    border-radius: 5px;
+}
+
+.leaflet-marker-pane .node__enemy {
+    border: 1.5px solid var(--color-secondary);
+    border-radius: 5px;
+}
+
+.leaflet-marker-pane .node__neutral {
+    border: 1.5px solid var(--color-grey);
+    border-radius: 5px;
+}
+
+.leaflet-marker-pane .player {
+    border: 1.5px solid black;
+    border-radius: 50px;
+}
