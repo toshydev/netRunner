@@ -10,6 +10,14 @@ import {StyledHelperText} from "./styled/StyledHelperText.ts";
 import {StyledButtonContainer} from "./styled/StyledButtonContainer.ts";
 import {StyledFormButton} from "./styled/StyledFormButton.ts";
 import {Switch} from "@mui/material";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import click from "../assets/sounds/click.mp3";
+import loginSuccess from "../assets/sounds/login_success.mp3";
+import keyPress from "../assets/sounds/key_press.mp3";
+import switchButton from "../assets/sounds/switch.mp3";
+import error from "../assets/sounds/error.mp3";
 
 export default function AddPage() {
     const [name, setName] = useState<string>("");
@@ -18,6 +26,11 @@ export default function AddPage() {
     const [nameError, setNameError] = useState<string>("Name cannot be empty");
     const [latitudeError, setLatitudeError] = useState<string>("");
     const [longitudeError, setLongitudeError] = useState<string>("");
+    const [playClick] = useSound(click);
+    const [playLoginSuccess] = useSound(loginSuccess);
+    const [playError] = useSound(error);
+    const [playKeyPress] = useSound(keyPress);
+    const [playSwitch] = useSound(switchButton);
 
     const player = useStore(state => state.player);
     const addNode = useStore(state => state.addNode);
@@ -28,11 +41,12 @@ export default function AddPage() {
         const timestamp = Date.now();
         const coordinates: Coordinates = {latitude, longitude, timestamp}
         const nodeData: NodeData = {name, coordinates};
-        addNode(nodeData);
+        addNode(nodeData, playLoginSuccess, playError);
         navigate("/");
     }
 
     function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+        playKeyPress()
         setName(event.target.value);
         if (event.target.value === "") {
             setNameError("Name cannot be empty");
@@ -44,6 +58,7 @@ export default function AddPage() {
     }
 
     function handleLatitudeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        playKeyPress()
         setLatitude(Number(event.target.value));
         if (Number(event.target.value) < -90 || Number(event.target.value) > 90) {
             setLatitudeError("Latitude must be between -90 and 90");
@@ -53,6 +68,7 @@ export default function AddPage() {
     }
 
     function handleLongitudeChange(event: React.ChangeEvent<HTMLInputElement>) {
+        playKeyPress()
         setLongitude(Number(event.target.value));
         if (Number(event.target.value) < -180 || Number(event.target.value) > 180) {
             setLongitudeError("Longitude must be between -180 and 180");
@@ -84,13 +100,17 @@ export default function AddPage() {
                 id="player"
                 defaultChecked={false}
                 onChange={() => {
+                    playSwitch()
                     setLatitude(player.coordinates.latitude)
                     setLongitude(player.coordinates.longitude)
                 }}
                 color={"success"}
             /></StyledLabel>}
             <StyledButtonContainer>
-                <StyledFormButton theme="error" onClick={() => navigate("/")}>Cancel</StyledFormButton>
+                <StyledFormButton theme="error" onClick={() => {
+                    playClick();
+                    navigate("/")
+                }}>Cancel</StyledFormButton>
                 <StyledFormButton theme="success" type="submit"
                                      disabled={!submitActive}>Add</StyledFormButton>
             </StyledButtonContainer>

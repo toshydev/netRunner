@@ -27,19 +27,22 @@ export default function App() {
     const updateLocation = useStore(state => state.updateLocation)
     const gps = useStore(state => state.gps)
     const setGps = useStore(state => state.setGps)
+    const nodes = useStore(state => state.nodes)
+    const getNodes = useStore(state => state.getNodes)
 
     useEffect(() => {
         try {
             getUser()
             if (user !== "" && user !== "anonymousUser") {
                 getPlayer()
+                getNodes()
             }
         } catch (e) {
             console.error(e)
         } finally {
             setInitialLoad(false)
         }
-    }, [getPlayer, getUser, user])
+    }, [getNodes, getPlayer, getUser, user])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -85,7 +88,7 @@ export default function App() {
                             <>
                                 <PlayerInfoBar player={player}/>
                                 <NodeFilter/>
-                                <NodeList player={player}/>
+                                <NodeList player={player} nodes={nodes}/>
                             </>
                         }/>
                     </Route>

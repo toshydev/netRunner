@@ -132,4 +132,8 @@ public class NodeService {
             throw new WrongRoleException("You are not an admin");
         }
     }
+
+    public List<Node> getNodesByOwner(String id) {
+        return this.nodeRepo.findAllByOwnerId(id);
+    }
 }

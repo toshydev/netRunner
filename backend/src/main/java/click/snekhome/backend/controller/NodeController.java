@@ -26,6 +26,12 @@ public class NodeController {
         return this.nodeService.list();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("{id}")
+    public List<Node> getNodesByOwner(@PathVariable String id) {
+        return this.nodeService.getNodesByOwner(id);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Node add(@Valid @RequestBody NodeData nodeData) {

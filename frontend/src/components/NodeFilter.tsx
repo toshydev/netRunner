@@ -3,6 +3,10 @@ import {useStore} from "../hooks/useStore.ts";
 import {Button} from "@mui/material";
 import CharacterIcon from "./icons/CharacterIcon.tsx";
 import NetworkIcon from "./icons/NetworkIcon.tsx";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import click from "../assets/sounds/click.mp3";
 
 export default function NodeFilter() {
     const sortDirection = useStore(state => state.sortDirection);
@@ -11,15 +15,25 @@ export default function NodeFilter() {
     const toggleOwnerNodesFilter = useStore(state => state.toggleOwnerNodesFilter);
     const rangeFilter = useStore(state => state.rangeFilter);
     const toggleRangeFilter = useStore(state => state.toggleRangeFilter);
+    const [playClick] = useSound(click);
 
     return <StyledContainer>
-        <StyledFilterToggle direction={`${rangeFilter}`} onClick={toggleRangeFilter}>
+        <StyledFilterToggle direction={`${rangeFilter}`} onClick={() => {
+            playClick()
+            toggleRangeFilter()
+        }}>
             <NetworkIcon/>
         </StyledFilterToggle>
-        <StyledFilterToggle direction={`${ownerNodesFilter}`} onClick={toggleOwnerNodesFilter}>
+        <StyledFilterToggle direction={`${ownerNodesFilter}`} onClick={() => {
+            playClick()
+            toggleOwnerNodesFilter()
+        }}>
             <CharacterIcon/>
         </StyledFilterToggle>
-        <StyledSortToggle direction={sortDirection} onClick={toggleSortDirection}><span>{sortDirection === "asc" ? "▲" : "▼"}</span></StyledSortToggle>
+        <StyledSortToggle direction={sortDirection} onClick={() => {
+            playClick()
+            toggleSortDirection()
+        }}><span>{sortDirection === "asc" ? "▲" : "▼"}</span></StyledSortToggle>
     </StyledContainer>
 }
 

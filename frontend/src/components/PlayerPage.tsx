@@ -1,4 +1,4 @@
-import {Avatar, Card, Typography} from "@mui/material";
+import {Avatar, Card, Typography, useTheme} from "@mui/material";
 import styled from "@emotion/styled";
 import usePlayer from "../hooks/usePlayer.ts";
 import {StyledButtonContainer} from "./styled/StyledButtonContainer.ts";
@@ -7,23 +7,39 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
 import AvatarImage from "../assets/images/avatar.png";
+import NodeList from "./NodeList.tsx";
+import useNodes from "../hooks/useNodes.ts";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import clickSound from "../assets/sounds/click.mp3";
+import error from "../assets/sounds/error.mp3";
+import loginSuccess from "../assets/sounds/login_success.mp3";
 
 export default function PlayerPage() {
     const [name, setName] = useState<string>("")
+    const [id, setId] = useState<string>("")
     const params = useParams()
     const navigate = useNavigate()
     const player = usePlayer(name)
+    const nodes = useNodes(id)
     const user = useStore(state => state.user)
     const logout = useStore(state => state.logout)
+    const theme = useTheme()
+    const [playClick] = useSound(clickSound)
+    const [playError] = useSound(error)
+    const [playSuccess] = useSound(loginSuccess)
 
     const isEnemy = user !== player?.name
 
     useEffect(() => {
         if (params.name) {
             setName(params.name)
-            console.log("inside playerPage")
         }
-    }, [params.name]);
+        if (player) {
+            setId(player.id)
+        }
+    }, [params.name, player]);
 
     if (typeof player !== "undefined") {
         return (
@@ -45,28 +61,29 @@ export default function PlayerPage() {
                     <StyledText>Lat: {player.coordinates.latitude}</StyledText>
                     <StyledText>Lon: {player.coordinates.longitude}</StyledText>
                 </StyledPlayerCoordinates>
-                <StyledPlayerNodes>
-                    <StyledText>Nodes:</StyledText>
-                    <StyledText>{ }</StyledText>
-                </StyledPlayerNodes>
             </StyledCard>
+                <Typography color={theme.palette.success.main} variant={"h5"}>Nodes</Typography>
                 <StyledButtonContainer>
-                    <StyledFormButton theme={"primary"} onClick={() => navigate("/")}>Nodelist</StyledFormButton>
-                    <StyledFormButton theme={"error"} onClick={() => logout(navigate)}>Logout</StyledFormButton>
+                    <StyledFormButton theme={"primary"} onClick={() => {
+                        playClick()
+                        navigate("/")
+                    }}>Nodelist</StyledFormButton>
+                    <StyledFormButton theme={"error"} onClick={() => logout(navigate, playSuccess, playError)}>Logout</StyledFormButton>
                 </StyledButtonContainer>
+                {nodes && <NodeList player={player} nodes={nodes}/>}
         </>
         )
     }
 }
 
 const StyledCard = styled(Card)`
-  margin-top: 1rem;
+  margin: 1rem 0;
   width: 95%;
-  height: 75vh;
+  height: 50vh;
   background: var(--color-semiblack);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 2fr 1fr 2fr 2fr;
+  grid-template-rows: 2fr 1fr 2fr;
 `;
 
 const StyledAvatar = styled(Avatar)<{isEnemy: string}>`
@@ -97,14 +114,6 @@ const StyledPlayerStats = styled.div`
 
 const StyledPlayerCoordinates = styled.div`
   grid-row: 3;
-  grid-column: 1 / span 2;
-  display: flex;
-  flex-direction: column;
-  margin-left: 2rem;
-`;
-
-const StyledPlayerNodes = styled.div`
-  grid-row: 4;
   grid-column: 1 / span 2;
   display: flex;
   flex-direction: column;

@@ -1,6 +1,6 @@
 import {ActionType, Node, Player} from "../models.ts";
 import styled from "@emotion/styled";
-import {Button, Typography} from "@mui/material";
+import {Button, Card, Typography} from "@mui/material";
 import ActionButton from "./ActionButton.tsx";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
@@ -15,6 +15,13 @@ import UpgradeIcon from "./icons/UpgradeIcon.tsx";
 import DowngradeIcon from "./icons/DowngradeIcon.tsx";
 import UnlockIcon from "./icons/UnlockIcon.tsx";
 import TrashIcon from "./icons/TrashIcon.tsx";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import upgrade from "../assets/sounds/upgrade.mp3";
+import click from "../assets/sounds/click.mp3";
+import loginSuccess from "../assets/sounds/login_success.mp3";
+import error from "../assets/sounds/error.mp3";
 
 type Props = {
     node: Node;
@@ -32,6 +39,10 @@ export default function NodeItem({node, player, distance}: Props) {
     const [isInteraction, setIsInteraction] = useState<boolean>(false);
     const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
     const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
+    const [playUpgrade] = useSound(upgrade);
+    const [playClick] = useSound(click);
+    const [playLoginSuccess] = useSound(loginSuccess);
+    const [playError] = useSound(error);
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
@@ -73,6 +84,7 @@ export default function NodeItem({node, player, distance}: Props) {
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
         buildText(action)
+        playUpgrade()
         setIsInteraction(true)
     }
 
@@ -89,6 +101,11 @@ export default function NodeItem({node, player, distance}: Props) {
                 setInteractionText("+1AP")
                 break;
         }
+    }
+
+    function handleNavigate(path: string) {
+        playClick()
+        navigate(path)
     }
 
     const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
@@ -130,10 +147,10 @@ export default function NodeItem({node, player, distance}: Props) {
                 <StyledOwnerArea>
                     <StyledClaimButton
                         isPlayerOwned={isPlayerOwned}
-                        onClick={() => !claimDisabled || node.ownerId !== "null" ? handleEdit(ActionType.HACK) : navigate(`/player/${owner}`)}
+                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
                     >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
                 </StyledOwnerArea>
-                <StyledDeleteButton onClick={() => deleteNode(node.id)}>
+                <StyledDeleteButton onClick={() => deleteNode(node.id, playLoginSuccess, playError)}>
                     <TrashIcon/>
                 </StyledDeleteButton>
                 <StyledDistanceInfo
@@ -183,11 +200,11 @@ const generateBlinkAnimation = (color: string) => keyframes`
   }
 `;
 
-const StyledListItem = styled.li<{ playerOwned: string; status: string, css: SerializedStyles | null }>`
+const StyledListItem = styled(Card)<{ playerOwned: string; status: string, css: SerializedStyles | null }>`
   color: ${({playerOwned}) =>
           playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
-  width: 90%;
+  width: 95%;
   padding: 0.5rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -292,6 +309,10 @@ const StyledClaimButton = styled(Button)<{ isPlayerOwned: boolean }>`
   z-index: 5;
   
     &:active {
+    background: var(--color-black);
+    }
+  
+    &:hover {
     background: var(--color-black);
     }
 `;

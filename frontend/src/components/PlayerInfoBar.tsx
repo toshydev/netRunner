@@ -1,6 +1,10 @@
 import styled from "@emotion/styled";
 import {useStore} from "../hooks/useStore.ts";
 import {Player} from "../models.ts";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import switchSound from "../assets/sounds/switch.mp3";
 
 type Props = {
     player: Player | null
@@ -8,6 +12,7 @@ type Props = {
 export default function PlayerInfoBar({player}: Props) {
     const gps = useStore(state => state.gps)
     const setGps = useStore(state => state.setGps)
+    const [playSwitch] = useSound(switchSound);
 
     return <StyledContainer>
         {player && <StyledBar theme={"primary"} bg={"black"}>
@@ -19,7 +24,10 @@ export default function PlayerInfoBar({player}: Props) {
                 <StyledText color={"primary"}>{player.credits}$</StyledText>
             </StyledInfoContainer>
         </StyledBar>}
-        <StyledBarGps gps={gps} bg={"black"} theme={gps ? "primary" : "secondary"} onClick={() => setGps(!gps)}>
+        <StyledBarGps gps={gps} bg={"black"} theme={gps ? "primary" : "secondary"} onClick={() => {
+            playSwitch()
+            setGps(!gps)
+        }}>
             {gps
                 ? <>
                     <StyledText color={"primary"}>Lat: {player?.coordinates?.latitude}</StyledText>

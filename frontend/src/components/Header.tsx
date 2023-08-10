@@ -2,6 +2,10 @@ import styled from "@emotion/styled";
 import {keyframes} from "@emotion/react";
 import {Button} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import click from "../assets/sounds/click.mp3";
 
 type Props = {
     user?: string
@@ -10,13 +14,20 @@ type Props = {
 export default function Header({user}: Props) {
     const isAuthenticated = user !== "" && user !== undefined && user !== "anonymousUser"
     const navigate = useNavigate()
+    const [playClick] = useSound(click);
 
     return (
         <StyledHeader>
             <h1>NetRunner</h1>
             {!isAuthenticated
-                ? <StyledButton onClick={() => navigate("/login")}>Login</StyledButton>
-                : <StyledButton onClick={() => navigate(`/player/${user}`)}>{user}</StyledButton>}
+                ? <StyledButton onClick={() => {
+                    playClick()
+                    navigate("/login")
+                }}>Login</StyledButton>
+                : <StyledButton onClick={() => {
+                    playClick()
+                    navigate(`/player/${user}`)
+                }}>{user}</StyledButton>}
         </StyledHeader>
     );
 }
@@ -54,7 +65,8 @@ const blink = keyframes`
 const StyledHeader = styled.header`
   width: 100%;
   background: var(--color-black);
-  border-bottom: 1px solid var(--color-secondary);
+  border-bottom: 0.5px solid var(--color-secondary);
+  filter: drop-shadow(0 0 0.1rem var(--color-secondary));
   text-align: center;
   position: fixed;
   top: 0;
