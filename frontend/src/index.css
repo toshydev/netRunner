@@ -11,6 +11,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
+
+    --color-black: #1e1e1e;
+    --color-semiblack: #343a40;
+    --color-grey: #868e96;
+    --color-primary: #01fae6;
+    --color-secondary: #ff004f;
 }
 
 *, *::before, *::after {
