@@ -1,7 +1,6 @@
 import {Marker, MarkerProps} from "react-leaflet";
 import {Node, Player} from "../models.ts";
 import {nodeIcon} from "./icons/mapIcons.ts";
-import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 import useCooldown from "../hooks/useCooldown.ts";
 import {useEffect, useState} from "react";
 import NodePopup from "./NodePopup.tsx";
@@ -11,9 +10,10 @@ import {useClickSound} from "../utils/sound.ts";
 type Props = {
     node: Node
     player: Player
+    distance: number
 }
 
-export default function NodeMarker({node, player}: Props) {
+export default function NodeMarker({node, player, distance}: Props) {
     const [isInRange, setIsInRange] = useState<boolean>(false)
     const [isPlayerOwned, setIsPlayerOwned] = useState<boolean>(false);
     const [isClaimable, setIsClaimable] = useState<boolean>(false);
@@ -21,14 +21,6 @@ export default function NodeMarker({node, player}: Props) {
     const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
 
     const playClick = useClickSound()
-
-    const distance = getDistanceBetweenCoordinates({
-        latitude: player.coordinates.latitude,
-        longitude: player.coordinates.longitude
-    }, {
-        latitude: node.coordinates.latitude,
-        longitude: node.coordinates.longitude
-    })
 
     useEffect(() => {
         if (distance <= 50) {

@@ -14,6 +14,7 @@ import MiniActionButton from "./MiniActionButton.tsx";
 import MiniDowngradeIcon from "./icons/MiniDowngradeIcon.tsx";
 import MiniAttackIcon from "./icons/MiniAttackIcon.tsx";
 import MiniUpgradeIcon from "./icons/MiniUpgradeIcon.tsx";
+import {Popup} from "react-leaflet";
 
 type Props = {
     node: Node;
@@ -126,51 +127,51 @@ export default function NodePopupItem({node, player, distance, isUpdating, isAtt
     }
 
     if (player) {
-        return <>
-            <StyledListItem isplayerowned={`${isPlayerOwned}`}
+        return <Popup>
+            <StyledPopupListItem isplayerowned={`${isPlayerOwned}`}
                             status={`${status}`}
                             css={animationStyles}>
-                {!isInRange && <ModalContainer>
+                {!isInRange && <PopupModalContainer>
                     <p>Out of Range</p>
-                </ModalContainer>}
-                <StyledNameContainer>
-                    <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
-                </StyledNameContainer>
-                {isInteraction && <StyledFloatingText>{interactionText}</StyledFloatingText>}
-                <StyledStatsContainer>
+                </PopupModalContainer>}
+                <StyledPopupNameContainer>
+                    <StyledPopupHeading length={node.name.length} variant={"h2"}>{node.name}</StyledPopupHeading>
+                </StyledPopupNameContainer>
+                {isInteraction && <StyledPopupFloatingText>{interactionText}</StyledPopupFloatingText>}
+                <StyledPopupStatsContainer>
                     <HealthBar health={node.health}/>
-                </StyledStatsContainer>
-                <StyledOwnerArea>
-                    <StyledClaimButton
+                </StyledPopupStatsContainer>
+                <StyledPopupOwnerArea>
+                    <StyledPopupClaimButton
                         isplayerowned={`${isPlayerOwned}`}
                         onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
-                    >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
-                </StyledOwnerArea>
-                <StyledDistanceInfo
-                    outofrange={`${!isInRange}`}>{`${distance / 1000} KM`}</StyledDistanceInfo>
-                {node.ownerId !== null && <StyledActionArea>
+                    >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupClaimButton>
+                </StyledPopupOwnerArea>
+                <StyledPopupDistanceInfo
+                    outofrange={`${!isInRange}`}>{`${distance / 1000} KM`}</StyledPopupDistanceInfo>
+                {node.ownerId !== null && <StyledPopupActionArea>
                     {node.ownerId === player.id &&
-                            <MiniActionButton inactive={abandonDisabled} action={ActionType.ABANDON}
+                        <MiniActionButton inactive={abandonDisabled} action={ActionType.ABANDON}
                                           onAction={handleEdit}>
-                                <MiniDowngradeIcon/>
-                            </MiniActionButton>}
-                        <MiniActionButton
-                            inactive={hackDisabled}
-                            action={ActionType.HACK} onAction={handleEdit}>
-                            {isPlayerOwned ? <MiniUpgradeIcon/> : <MiniAttackIcon/>}
-                        </MiniActionButton>
-                </StyledActionArea>}
-                <StyledLevelArea>
-                    <StyledLevelContainer>
-                        <StyledLevel><strong>{level}</strong></StyledLevel>
-                    </StyledLevelContainer>
-                </StyledLevelArea>
-                <StyledStatusContainer>
+                            <MiniDowngradeIcon/>
+                        </MiniActionButton>}
+                    <MiniActionButton
+                        inactive={hackDisabled}
+                        action={ActionType.HACK} onAction={handleEdit}>
+                        {isPlayerOwned ? <MiniUpgradeIcon/> : <MiniAttackIcon/>}
+                    </MiniActionButton>
+                </StyledPopupActionArea>}
+                <StyledPopupLevelArea>
+                    <StyledPopupLevelContainer>
+                        <StyledPopupLevel><strong>{level}</strong></StyledPopupLevel>
+                    </StyledPopupLevelContainer>
+                </StyledPopupLevelArea>
+                <StyledPopupStatusContainer>
                     {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} label={"Update"}/>}
                     {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} label={"Attack"}/>}
-                </StyledStatusContainer>
-            </StyledListItem>
-        </>
+                </StyledPopupStatusContainer>
+            </StyledPopupListItem>
+        </Popup>
     }
 }
 
@@ -189,7 +190,7 @@ const generateBlinkAnimation = (color: string) => keyframes`
   }
 `;
 
-const StyledListItem = styled(Card)<{ isplayerowned: string; status: string, css: SerializedStyles | null }>`
+const StyledPopupListItem = styled(Card)<{ isplayerowned: string; status: string, css: SerializedStyles | null }>`
   color: ${({isplayerowned}) =>
           isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
@@ -200,11 +201,11 @@ const StyledListItem = styled(Card)<{ isplayerowned: string; status: string, css
   grid-template-rows: repeat(3, 1fr);
   position: relative;
   font-family: "3270", monospace;
-    border-radius: 0.5rem;
+  border-radius: 0.5rem;
   ${({css}) => css};
 `;
 
-const StyledNameContainer = styled.div`
+const StyledPopupNameContainer = styled.div`
   display: flex;
   grid-column: 1 / 4;
   grid-row: 1;
@@ -212,21 +213,21 @@ const StyledNameContainer = styled.div`
   padding-left: 0.5rem;
 `;
 
-const StyledHeading = styled(Typography)<{ length: number }>`
+const StyledPopupHeading = styled(Typography)<{ length: number }>`
   color: inherit;
   font: inherit;
   font-size: ${({length}) => length > 10 ? "1rem" : "1.5rem"};
 `;
 
-const StyledStatsContainer = styled.div`
+const StyledPopupStatsContainer = styled.div`
   display: flex;
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
   grid-column: 1 / 4;
   grid-row: 2;
 `;
 
-const StyledOwnerArea = styled.div`
+const StyledPopupOwnerArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -234,7 +235,7 @@ const StyledOwnerArea = styled.div`
   grid-row: 1;
 `;
 
-const StyledActionArea = styled.div`
+const StyledPopupActionArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -242,10 +243,10 @@ const StyledActionArea = styled.div`
   grid-column: 4;
   grid-row: 3;
   gap: 0.5rem;
-  
+
 `;
 
-const StyledLevelArea = styled.div`
+const StyledPopupLevelArea = styled.div`
   display: flex;
   grid-column: 4;
   grid-row: 2;
@@ -254,7 +255,7 @@ const StyledLevelArea = styled.div`
   scale: 0.8;
 `;
 
-const StyledLevelContainer = styled.div`
+const StyledPopupLevelContainer = styled.div`
   width: 2rem;
   height: 2rem;
   border-radius: 8px;
@@ -266,14 +267,14 @@ const StyledLevelContainer = styled.div`
   align-items: center;
 `;
 
-const StyledLevel = styled(Typography)`
+const StyledPopupLevel = styled(Typography)`
   text-align: center;
   transform: rotate(-45deg);
   font-size: 1.5rem;
   font-family: inherit;
 `
 
-const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
+const StyledPopupClaimButton = styled(Button)<{ isplayerowned: string }>`
   margin-left: auto;
   background: var(--color-black);
   color: ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
@@ -292,19 +293,19 @@ const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
   }
 `;
 
-const StyledStatusContainer = styled.div`
+const StyledPopupStatusContainer = styled.div`
   grid-column: 2 / 4;
   grid-row: 3;
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   p {
     font-size: 0.5rem;
   }
 `;
 
-const StyledDistanceInfo = styled(Typography)<{ outofrange: string }>`
+const StyledPopupDistanceInfo = styled(Typography)<{ outofrange: string }>`
   color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
   grid-column: 1 / 2;
   grid-row: 3;
@@ -315,7 +316,7 @@ const StyledDistanceInfo = styled(Typography)<{ outofrange: string }>`
   padding-left: 0.5rem;
 `;
 
-const ModalContainer = styled.div`
+const PopupModalContainer = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -351,7 +352,7 @@ const floatingText = keyframes`
   }
 `;
 
-const StyledFloatingText = styled.p`
+const StyledPopupFloatingText = styled.p`
   position: absolute;
   top: 50%;
   left: 50%;

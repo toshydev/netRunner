@@ -22,14 +22,22 @@ import {
     useLoginSuccessSound,
     useUpgradeSound
 } from "../utils/sound.ts";
+import {Marker, MarkerProps, Popup} from "react-leaflet";
+import {nodeIcon} from "./icons/mapIcons.ts";
+import MiniActionButton from "./MiniActionButton.tsx";
+import MiniDowngradeIcon from "./icons/MiniDowngradeIcon.tsx";
+import MiniUpgradeIcon from "./icons/MiniUpgradeIcon.tsx";
+import MiniAttackIcon from "./icons/MiniAttackIcon.tsx";
+
 
 type Props = {
     node: Node;
     player: Player | null;
     distance: number;
+    type: "list" | "map";
 }
 
-export default function NodeItem({node, player, distance}: Props) {
+export default function NodeItem({node, player, distance, type}: Props) {
     const [isInRange, setIsInRange] = useState<boolean>(false)
     const [level, setLevel] = useState<number>(node.level);
     const [notEnoughAP, setNotEnoughAP] = useState<boolean>(true);
@@ -118,11 +126,13 @@ export default function NodeItem({node, player, distance}: Props) {
     const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
     const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange || node.health === 0
 
-    let status = null;
+    let status;
     if (isUpdating) {
         status = "update"
     } else if (isAttacked) {
         status = "attack"
+    } else {
+        status = "none"
     }
 
     let animationStyles = null;
@@ -135,7 +145,20 @@ export default function NodeItem({node, player, distance}: Props) {
           animation: ${generateBlinkAnimation("var(--color-secondary)")} 1s linear infinite;
         `;
     }
-    if (player) {
+
+    const icon = nodeIcon(isPlayerOwned, isClaimable, isInRange, status)
+
+    const markerProps: MarkerProps = {
+        position: [node.coordinates.latitude, node.coordinates.longitude],
+        icon: icon,
+        eventHandlers: {
+            click: () => {
+                playClick()
+            }
+        }
+    }
+
+    if (player && node && type === "list") {
         return <>
             <StyledListItem isplayerowned={`${isPlayerOwned}`}
                             status={`${status}`}
@@ -188,6 +211,54 @@ export default function NodeItem({node, player, distance}: Props) {
                 </StyledStatusContainer>
             </StyledListItem>
         </>
+    } else if (player && node && type === "map") {
+        return <Marker {...markerProps}>
+            <Popup>
+                <StyledPopupListItem isplayerowned={`${isPlayerOwned}`}
+                                     status={`${status}`}
+                                     css={animationStyles}>
+                    {!isInRange && <PopupModalContainer>
+                        <p>Out of Range</p>
+                    </PopupModalContainer>}
+                    <StyledPopupNameContainer>
+                        <StyledPopupHeading length={node.name.length} variant={"h2"}>{node.name}</StyledPopupHeading>
+                    </StyledPopupNameContainer>
+                    {isInteraction && <StyledPopupFloatingText>{interactionText}</StyledPopupFloatingText>}
+                    <StyledPopupStatsContainer>
+                        <HealthBar health={node.health}/>
+                    </StyledPopupStatsContainer>
+                    <StyledPopupOwnerArea>
+                        <StyledPopupClaimButton
+                            isplayerowned={`${isPlayerOwned}`}
+                            onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
+                        >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupClaimButton>
+                    </StyledPopupOwnerArea>
+                    <StyledPopupDistanceInfo
+                        outofrange={`${!isInRange}`}>{`${distance / 1000} KM`}</StyledPopupDistanceInfo>
+                    {node.ownerId !== null && <StyledPopupActionArea>
+                        {node.ownerId === player.id &&
+                            <MiniActionButton inactive={abandonDisabled} action={ActionType.ABANDON}
+                                              onAction={handleEdit}>
+                                <MiniDowngradeIcon/>
+                            </MiniActionButton>}
+                        <MiniActionButton
+                            inactive={hackDisabled}
+                            action={ActionType.HACK} onAction={handleEdit}>
+                            {isPlayerOwned ? <MiniUpgradeIcon/> : <MiniAttackIcon/>}
+                        </MiniActionButton>
+                    </StyledPopupActionArea>}
+                    <StyledPopupLevelArea>
+                        <StyledPopupLevelContainer>
+                            <StyledPopupLevel><strong>{level}</strong></StyledPopupLevel>
+                        </StyledPopupLevelContainer>
+                    </StyledPopupLevelArea>
+                    <StyledPopupStatusContainer>
+                        {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} label={"Update"}/>}
+                        {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} label={"Attack"}/>}
+                    </StyledPopupStatusContainer>
+                </StyledPopupListItem>
+            </Popup>
+        </Marker>
     }
 }
 
@@ -409,6 +480,169 @@ const StyledFloatingText = styled.p`
   left: 50%;
   transform: translate(-50%, -75%);
   font-size: 2rem;
+  font-family: inherit;
+  color: var(--color-primary);
+  z-index: 5;
+  animation: ${floatingText} 3s linear;
+  text-shadow: 0 0 0.25rem var(--color-primary);
+`;
+
+const StyledPopupListItem = styled(Card)<{ isplayerowned: string; status: string, css: SerializedStyles | null }>`
+  color: ${({isplayerowned}) =>
+    isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
+  background: var(--color-semiblack);
+  width: 100%;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  position: relative;
+  font-family: "3270", monospace;
+  border-radius: 0.5rem;
+  ${({css}) => css};
+`;
+
+const StyledPopupNameContainer = styled.div`
+  display: flex;
+  grid-column: 1 / 4;
+  grid-row: 1;
+  align-items: center;
+  padding-left: 0.5rem;
+`;
+
+const StyledPopupHeading = styled(Typography)<{ length: number }>`
+  color: inherit;
+  font: inherit;
+  font-size: ${({length}) => length > 10 ? "1rem" : "1.5rem"};
+`;
+
+const StyledPopupStatsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 1 / 4;
+  grid-row: 2;
+`;
+
+const StyledPopupOwnerArea = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 4;
+  grid-row: 1;
+`;
+
+const StyledPopupActionArea = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  grid-column: 4;
+  grid-row: 3;
+  gap: 0.5rem;
+
+`;
+
+const StyledPopupLevelArea = styled.div`
+  display: flex;
+  grid-column: 4;
+  grid-row: 2;
+  justify-content: center;
+  align-items: center;
+  scale: 0.8;
+`;
+
+const StyledPopupLevelContainer = styled.div`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  transform: rotate(45deg);
+  background: var(--color-black);
+  border: 3px solid currentColor;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledPopupLevel = styled(Typography)`
+  text-align: center;
+  transform: rotate(-45deg);
+  font-size: 1.5rem;
+  font-family: inherit;
+`
+
+const StyledPopupClaimButton = styled(Button)<{ isplayerowned: string }>`
+  margin-left: auto;
+  background: var(--color-black);
+  color: ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
+  border: 2px solid ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
+  border-radius: 8px;
+  font: inherit;
+  z-index: 5;
+  scale: 0.75;
+
+  &:active {
+    background: var(--color-black);
+  }
+
+  &:hover {
+    background: var(--color-black);
+  }
+`;
+
+const StyledPopupStatusContainer = styled.div`
+  grid-column: 2 / 4;
+  grid-row: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    font-size: 0.5rem;
+  }
+`;
+
+const StyledPopupDistanceInfo = styled(Typography)<{ outofrange: string }>`
+  color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
+  grid-column: 1 / 2;
+  grid-row: 3;
+  font-size: 0.5rem;
+  font-family: inherit;
+  align-self: center;
+  z-index: 4;
+  padding-left: 0.5rem;
+`;
+
+const PopupModalContainer = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-black);
+  opacity: 0.75;
+  color: var(--color-secondary);
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+
+  p {
+    background: black;
+    opacity: 1;
+    border: 2px solid var(--color-secondary);
+    filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+  }
+`;
+
+const StyledPopupFloatingText = styled.p`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -75%);
+  font-size: 1rem;
   font-family: inherit;
   color: var(--color-primary);
   z-index: 5;

@@ -16,7 +16,7 @@ import {StyledToastContainer} from "./components/styled/StyledToastContainer.ts"
 import StatusBar from "./components/StatusBar.tsx";
 import PlayerPage from "./components/PlayerPage.tsx";
 import NodeFilter from "./components/NodeFilter.tsx";
-import Leaflet from "./components/Leaflet.tsx";
+import MapView from "./components/MapView.tsx";
 import ViewChangeButton from "./components/ViewChangeButton.tsx";
 
 export default function App() {
@@ -89,7 +89,7 @@ export default function App() {
                         <Route path={"/map"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
-                                <Leaflet/>
+                                <MapView/>
                                 <ViewChangeButton view={"list"}/>
                             </>
                         }/>

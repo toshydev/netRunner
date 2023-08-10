@@ -1,16 +1,13 @@
-import {MapContainer, Marker, TileLayer, useMapEvents} from "react-leaflet";
+import {MapContainer, Marker, TileLayer, useMap, useMapEvents} from "react-leaflet";
 import {useStore} from "../hooks/useStore.ts";
 import "./css/leaflet.css";
 import {playerIcon} from "./icons/mapIcons.ts";
 import {useZoomInSound, useZoomOutSound} from "../utils/sound.ts";
 import {useState} from "react";
-import NodeMarker from "./NodeMarker.tsx";
+import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
+import NodeItem from "./NodeItem.tsx";
 
-type MapProps = {
-    tracking: boolean
-}
-
-export default function Leaflet() {
+export default function MapView() {
     const [zoom, setZoom] = useState<number>(15)
     const nodes = useStore(state => state.nodes)
     const player = useStore(state => state.player)
@@ -21,11 +18,11 @@ export default function Leaflet() {
     const playZoomIn = useZoomInSound()
     const playZoomOut = useZoomOutSound()
 
-    function MapFunctions({tracking}: MapProps) {
+    function ZoomSound() {
         const map = useMapEvents({
             zoom: () => {
                 setZoom(map.getZoom())
-                if (!tracking) {
+                if (!gps) {
                     if (map.getZoom() > zoom) {
                         playZoomIn()
                     }
@@ -33,10 +30,14 @@ export default function Leaflet() {
                         playZoomOut()
                     }
                 }
-                return null
-            },
+            }
         })
-        if (player && tracking) {
+        return null
+    }
+
+    function PlayerTracker() {
+        const map = useMap();
+        if (player && gps) {
             map.flyTo([player.coordinates.latitude, player.coordinates.longitude])
         }
         return null
@@ -52,15 +53,23 @@ export default function Leaflet() {
                 id={"map"}
                 maxZoom={18}
             >
-                <MapFunctions tracking={gps}/>
+                {gps ? <PlayerTracker/> : <ZoomSound/>}
                 <TileLayer
                     attribution='Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
                     url={"api/map/{z}/{x}/{y}"}
                 />
-                {nodes.map(node => <NodeMarker
+                {nodes.map(node => <NodeItem
                     key={node.id}
+                    type={"map"}
                     node={node}
                     player={player}
+                    distance={getDistanceBetweenCoordinates({
+                        latitude: player.coordinates.latitude,
+                        longitude: player.coordinates.longitude
+                    }, {
+                        latitude: node.coordinates.latitude,
+                        longitude: node.coordinates.longitude
+                    })}
                 />)}
                 <Marker
                     icon={playerIcon(user, player.name)}

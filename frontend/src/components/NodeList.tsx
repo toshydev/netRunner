@@ -41,6 +41,7 @@ export default function NodeList({ player, nodes }: Props) {
                 {sortedNodes.map(node => (
                     <NodeItem
                         key={node.id}
+                        type={"list"}
                         node={node}
                         player={player}
                         distance={getDistanceBetweenCoordinates({

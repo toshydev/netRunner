@@ -17,8 +17,7 @@ function buildIconClass(isPlayerOwned: boolean, isClaimable: boolean, status: st
     let className = "node__";
     if (isClaimable) {
         className += "neutral"
-    }
-    else if (isPlayerOwned) {
+    } else if (isPlayerOwned) {
         className += "player"
     } else {
         className += "enemy"
@@ -32,25 +31,22 @@ function buildIconClass(isPlayerOwned: boolean, isClaimable: boolean, status: st
 }
 
 function getIconUrl(isPlayerOwned: boolean, isClaimable: boolean, isInRange: boolean) {
-    if (isClaimable) {
+    if (isClaimable && !isPlayerOwned) {
         if (isInRange) {
             return PadlockActive
         } else {
             return PadlockNeutral
         }
-    }
-    else if (isPlayerOwned) {
+    } else if (isPlayerOwned && !isClaimable) {
         if (isInRange) {
             return RadioTowerPlayer
         } else {
             return RadioTowerNeutral
         }
+    } else if (!isPlayerOwned && !isClaimable && isInRange) {
+        return RadioTowerEnemy
     } else {
-        if (isInRange) {
-            return RadioTowerEnemy
-        } else {
-            return RadioTowerNeutral
-        }
+        return RadioTowerNeutral
     }
 }
 
