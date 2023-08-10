@@ -8,6 +8,7 @@ import click.snekhome.backend.repo.PlayerRepo;
 import click.snekhome.backend.security.MongoUser;
 import click.snekhome.backend.security.MongoUserRepository;
 import click.snekhome.backend.security.Role;
+import click.snekhome.backend.service.NodeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 
@@ -38,6 +40,9 @@ class IntegrationTest {
 
     @Autowired
     private NodeRepo nodeRepo;
+
+    @Autowired
+    private NodeService nodeService;
 
     @Autowired
     private MongoUserRepository mongoUserRepository;
@@ -840,5 +845,23 @@ class IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/nodes/123"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
+
+    @Test
+    @DirtiesContext
+    void expectPlayerWithIncreasedCreditsWhenCreditsAreGenerated() {
+        Node node1 = new Node("abc", "abc", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        nodeRepo.save(node1);
+        Player player = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        playerRepo.save(player);
+        nodeService.generateCredits();
+        Optional<Node> ownedNode = nodeRepo.findById("abc");
+        Optional<Player> playerById = playerRepo.findById("abc");
+        Optional<Player> playerByName = playerRepo.findPlayerByName("playerunknown");
+        assertTrue(ownedNode.isPresent());
+        assertTrue(playerById.isPresent());
+        assertTrue(playerByName.isPresent());
+        Player updatedPlayer = playerByName.get();
+        assertEquals(100, updatedPlayer.credits());
     }
 }

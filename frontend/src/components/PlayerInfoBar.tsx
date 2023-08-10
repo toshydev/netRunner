@@ -12,7 +12,8 @@ type Props = {
 export default function PlayerInfoBar({player}: Props) {
     const gps = useStore(state => state.gps)
     const setGps = useStore(state => state.setGps)
-    const [playSwitch] = useSound(switchSound);
+    const volume = useStore(state => state.volume);
+    const [playSwitch] = useSound(switchSound, {volume: volume});
 
     return <StyledContainer>
         {player && <StyledBar theme={"primary"} bg={"black"}>

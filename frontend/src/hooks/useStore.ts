@@ -31,6 +31,8 @@ type State = {
     rangeFilter: boolean
     toggleRangeFilter: () => void
     filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[]) => Node[]
+    volume: number
+    setVolume: (volume: number) => void
 }
 
 export const useStore = create<State>(set => ({
@@ -42,6 +44,7 @@ export const useStore = create<State>(set => ({
     sortDirection: "asc",
     ownerNodesFilter: false,
     rangeFilter: false,
+    volume: 0.5,
 
     getPlayer: () => {
         set({isLoading: true})
@@ -254,6 +257,10 @@ export const useStore = create<State>(set => ({
         } else {
             return nodes.slice();
         }
+    },
+
+    setVolume: (newVolume: number) => {
+        set({volume: newVolume});
     }
 
 }));

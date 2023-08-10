@@ -15,6 +15,7 @@ import useSound from "use-sound";
 import clickSound from "../assets/sounds/click.mp3";
 import error from "../assets/sounds/error.mp3";
 import loginSuccess from "../assets/sounds/login_success.mp3";
+import VolumeBar from "./VolumeBar.tsx";
 
 export default function PlayerPage() {
     const [name, setName] = useState<string>("")
@@ -26,9 +27,11 @@ export default function PlayerPage() {
     const user = useStore(state => state.user)
     const logout = useStore(state => state.logout)
     const theme = useTheme()
-    const [playClick] = useSound(clickSound)
-    const [playError] = useSound(error)
-    const [playSuccess] = useSound(loginSuccess)
+    const volume = useStore(state => state.volume)
+
+    const [playClick] = useSound(clickSound, {volume: volume})
+    const [playError] = useSound(error, {volume: volume})
+    const [playSuccess] = useSound(loginSuccess, {volume: volume})
 
     const isEnemy = user !== player?.name
 
@@ -44,8 +47,9 @@ export default function PlayerPage() {
     if (typeof player !== "undefined") {
         return (
             <>
+                <VolumeBar />
             <StyledCard>
-                <StyledAvatar isEnemy={`${isEnemy}`} src={`${AvatarImage}`} sx={{width: 125, height: 125}}/>
+                <StyledAvatar isenemy={`${isEnemy}`} src={`${AvatarImage}`} sx={{width: 125, height: 125}}/>
                 <StyledPlayerDetails>
                     <StyledText>Name: {player.name}</StyledText>
                     <StyledText>Health: {player.health}/{player.maxHealth}HP</StyledText>
@@ -86,13 +90,13 @@ const StyledCard = styled(Card)`
   grid-template-rows: 2fr 1fr 2fr;
 `;
 
-const StyledAvatar = styled(Avatar)<{isEnemy: string}>`
+const StyledAvatar = styled(Avatar)<{isenemy: string}>`
   grid-row: 1;
   grid-column: 1;
   display: flex;
   margin: auto;
-  border: 2px solid ${props => props.isEnemy === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
-  filter: drop-shadow(0 0 0.15rem ${props => props.isEnemy === "true" ? "var(--color-secondary)" : "var(--color-primary)"});
+  border: 2px solid ${props => props.isenemy === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
+  filter: drop-shadow(0 0 0.15rem ${props => props.isenemy === "true" ? "var(--color-secondary)" : "var(--color-primary)"});
 `;
 
 const StyledPlayerDetails = styled.div`

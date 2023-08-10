@@ -22,6 +22,7 @@ import upgrade from "../assets/sounds/upgrade.mp3";
 import click from "../assets/sounds/click.mp3";
 import loginSuccess from "../assets/sounds/login_success.mp3";
 import error from "../assets/sounds/error.mp3";
+import electricMachine from "../assets/sounds/electric_machine.mp3";
 
 type Props = {
     node: Node;
@@ -39,10 +40,13 @@ export default function NodeItem({node, player, distance}: Props) {
     const [isInteraction, setIsInteraction] = useState<boolean>(false);
     const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
     const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
-    const [playUpgrade] = useSound(upgrade);
-    const [playClick] = useSound(click);
-    const [playLoginSuccess] = useSound(loginSuccess);
-    const [playError] = useSound(error);
+    const volume = useStore(state => state.volume);
+
+    const [playUpgrade] = useSound(upgrade, {volume: volume});
+    const [playClick] = useSound(click, {volume: volume});
+    const [playLoginSuccess] = useSound(loginSuccess, {volume: volume});
+    const [playError] = useSound(error, {volume: volume});
+    const [playElectricMachine] = useSound(electricMachine, {volume: volume});
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
@@ -84,7 +88,11 @@ export default function NodeItem({node, player, distance}: Props) {
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
         buildText(action)
-        playUpgrade()
+        if (isPlayerOwned) {
+            playUpgrade()
+        } else {
+            playElectricMachine()
+        }
         setIsInteraction(true)
     }
 
@@ -131,7 +139,7 @@ export default function NodeItem({node, player, distance}: Props) {
     }
     if (player) {
         return <>
-            <StyledListItem playerOwned={`${isPlayerOwned}`}
+            <StyledListItem isplayerowned={`${isPlayerOwned}`}
                             status={`${status}`}
                             css={animationStyles}>
                 {!isInRange && <ModalContainer>
@@ -146,7 +154,7 @@ export default function NodeItem({node, player, distance}: Props) {
                 </StyledStatsContainer>
                 <StyledOwnerArea>
                     <StyledClaimButton
-                        isPlayerOwned={isPlayerOwned}
+                        isplayerowned={`${isPlayerOwned}`}
                         onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
                     >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
                 </StyledOwnerArea>
@@ -200,9 +208,9 @@ const generateBlinkAnimation = (color: string) => keyframes`
   }
 `;
 
-const StyledListItem = styled(Card)<{ playerOwned: string; status: string, css: SerializedStyles | null }>`
-  color: ${({playerOwned}) =>
-          playerOwned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
+const StyledListItem = styled(Card)<{ isplayerowned: string; status: string, css: SerializedStyles | null }>`
+  color: ${({isplayerowned}) =>
+          isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
   width: 95%;
   padding: 0.5rem;
@@ -299,11 +307,11 @@ const StyledLevel = styled(Typography)`
   font-family: inherit;
 `
 
-const StyledClaimButton = styled(Button)<{ isPlayerOwned: boolean }>`
+const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
   margin-left: auto;
   background: var(--color-black);
-  color: ${({isPlayerOwned}) => isPlayerOwned ? "var(--color-primary)" : "var(--color-secondary)"};
-  border: 2px solid ${({isPlayerOwned}) => isPlayerOwned ? "var(--color-primary)" : "var(--color-secondary)"};
+  color: ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
+  border: 2px solid ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   border-radius: 8px;
   font: inherit;
   z-index: 5;

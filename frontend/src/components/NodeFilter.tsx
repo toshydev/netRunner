@@ -15,7 +15,8 @@ export default function NodeFilter() {
     const toggleOwnerNodesFilter = useStore(state => state.toggleOwnerNodesFilter);
     const rangeFilter = useStore(state => state.rangeFilter);
     const toggleRangeFilter = useStore(state => state.toggleRangeFilter);
-    const [playClick] = useSound(click);
+    const volume = useStore(state => state.volume);
+    const [playClick] = useSound(click, {volume: volume});
 
     return <StyledContainer>
         <StyledFilterToggle direction={`${rangeFilter}`} onClick={() => {
