@@ -58,6 +58,6 @@ export const playerIcon = (userName: string, playerName: string) => {
     if (userName === playerName) {
         return new Icon({iconUrl: CharacterPlayer, iconSize: [32, 32], className: "player"})
     } else {
-        return new Icon({iconUrl: CharacterEnemy, iconSize: [32, 32], className: "player"})
+        return new Icon({iconUrl: CharacterEnemy, iconSize: [32, 32], className: "player__enemy"})
     }
 }

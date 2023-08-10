@@ -57,8 +57,41 @@
 }
 
 .leaflet-marker-pane .player {
-    border: 2px solid black;
     border-radius: 50px;
+    animation: halo-pulse 2s ease-in-out infinite;
+}
+
+/* Blinking halo animation around player */
+@keyframes halo-pulse {
+    0% {
+        outline: 0.25rem solid var(--color-primary);
+        filter: drop-shadow(0 0 2rem var(--color-primary));
+    }
+    50% {
+        outline: 0.25rem solid transparent;
+        filter: drop-shadow(0 0 0 var(--color-primary));
+    }
+    100% {
+        outline: 0.25rem solid var(--color-primary);
+        filter: drop-shadow(0 0 2rem var(--color-primary));
+    }
+}
+
+.leaflet-marker-pane .player__enemy {
+    border-radius: 50px;
+    animation: halo-blink 0.5s infinite;
+}
+
+@keyframes halo-blink {
+    0% {
+        outline: 0.25rem solid var(--color-secondary);
+        filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+    }
+
+    100% {
+        outline: 0.25rem solid transparent;
+        filter: drop-shadow(0 0 0 var(--color-secondary));
+    }
 }
 
 .leaflet-popup {
