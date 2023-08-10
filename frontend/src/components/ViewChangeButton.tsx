@@ -3,20 +3,15 @@ import {useNavigate} from "react-router-dom";
 import NavigationIcon from "./icons/NavigationIcon.tsx";
 import ListIcon from "./icons/ListIcon.tsx";
 import styled from "@emotion/styled";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import SwitchSound from "../assets/sounds/switch.mp3";
-import {useStore} from "../hooks/useStore.ts";
+import {useSwitchSound} from "../utils/sound.ts";
 
 type Props = {
     view: string;
 }
 
 export default function ViewChangeButton({view}: Props) {
-    const volume = useStore(state => state.volume)
     const navigate = useNavigate();
-    const [playSwitch] = useSound(SwitchSound, {volume})
+    const playSwitch = useSwitchSound()
 
     return <StyledViewButton onClick={() => {
         playSwitch()

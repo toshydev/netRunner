@@ -9,14 +9,13 @@ import {StyledHelperContainer} from "./styled/StyledHelperContainer.ts";
 import {Switch} from "@mui/material";
 import {useStore} from "../hooks/useStore.ts";
 import {useNavigate} from "react-router-dom";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import loginSuccess from "../assets/sounds/login_success.mp3";
-import error from "../assets/sounds/error.mp3";
-import keyPress from "../assets/sounds/key_press.mp3";
-import switchButton from "../assets/sounds/switch.mp3";
-import loadingOs from "../assets/sounds/loading_os.mp3";
+import {
+    useErrorSound,
+    useKeyPressSound,
+    useLoadingOsSound,
+    useLoginSuccessSound,
+    useSwitchSound
+} from "../utils/sound.ts";
 import VolumeBar from "./VolumeBar.tsx";
 
 export default function LoginPage() {
@@ -27,13 +26,12 @@ export default function LoginPage() {
     const [usernameError, setUsernameError] = useState<string>("Username must have at least three characters");
     const [emailError, setEmailError] = useState<string>("Invalid email");
     const [passwordError, setPasswordError] = useState<string>("Password must have at least three characters");
-    const volume = useStore(state => state.volume)
 
-    const [playLoginSuccess] = useSound(loginSuccess, {volume: volume});
-    const [playError] = useSound(error, {volume: volume});
-    const [playKeyPress] = useSound(keyPress, {volume: volume});
-    const [playSwitch] = useSound(switchButton, {volume: volume});
-    const [playLoadingOs] = useSound(loadingOs, {volume: volume});
+    const playLoginSuccess = useLoginSuccessSound()
+    const playError = useErrorSound()
+    const playKeyPress = useKeyPressSound()
+    const playSwitch = useSwitchSound()
+    const playLoadingOs = useLoadingOsSound()
 
     const login = useStore(state => state.login)
     const register = useStore(state => state.register)

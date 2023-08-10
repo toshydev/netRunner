@@ -4,12 +4,8 @@ import {nodeIcon} from "./icons/mapIcons.ts";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 import useCooldown from "../hooks/useCooldown.ts";
 import {useEffect, useState} from "react";
-import {useStore} from "../hooks/useStore.ts";
 import NodePopup from "./NodePopup.tsx";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import click from "../assets/sounds/click.mp3";
+import {useClickSound} from "../utils/sound.ts";
 
 
 type Props = {
@@ -23,9 +19,8 @@ export default function NodeMarker({node, player}: Props) {
     const [isClaimable, setIsClaimable] = useState<boolean>(false);
     const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
     const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
-    const volume = useStore(state => state.volume)
 
-    const [playClick] = useSound(click, {volume: volume});
+    const playClick = useClickSound()
 
     const distance = getDistanceBetweenCoordinates({
         latitude: player.coordinates.latitude,

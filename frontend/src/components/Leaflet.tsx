@@ -2,11 +2,7 @@ import {MapContainer, Marker, TileLayer, useMapEvents} from "react-leaflet";
 import {useStore} from "../hooks/useStore.ts";
 import "./css/leaflet.css";
 import {playerIcon} from "./icons/mapIcons.ts";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import ZoomIn from "../assets/sounds/zoom_in.mp3";
-import ZoomOut from "../assets/sounds/zoom_out.mp3";
+import {useZoomInSound, useZoomOutSound} from "../utils/sound.ts";
 import {useState} from "react";
 import NodeMarker from "./NodeMarker.tsx";
 
@@ -20,10 +16,10 @@ export default function Leaflet() {
     const player = useStore(state => state.player)
     const user = useStore(state => state.user)
     const enemies = useStore(state => state.enemies)
-    const volume = useStore(state => state.volume)
     const gps = useStore(state => state.gps)
-    const [playZoomIn] = useSound(ZoomIn, {volume})
-    const [playZoomOut] = useSound(ZoomOut, {volume})
+
+    const playZoomIn = useZoomInSound()
+    const playZoomOut = useZoomOutSound()
 
     function MapFunctions({tracking}: MapProps) {
         const map = useMapEvents({

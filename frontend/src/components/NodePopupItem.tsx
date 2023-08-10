@@ -9,12 +9,7 @@ import CooldownCounter from "./CooldownCounter.tsx";
 import HealthBar from "./HealthBar.tsx";
 import {useNavigate} from "react-router-dom";
 import UnlockIcon from "./icons/UnlockIcon.tsx";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import upgrade from "../assets/sounds/upgrade.mp3";
-import click from "../assets/sounds/click.mp3";
-import electricMachine from "../assets/sounds/electric_machine.mp3";
+import {useClickSound, useElectricMachineSound, useUpgradeSound} from "../utils/sound.ts";
 import MiniActionButton from "./MiniActionButton.tsx";
 import MiniDowngradeIcon from "./icons/MiniDowngradeIcon.tsx";
 import MiniAttackIcon from "./icons/MiniAttackIcon.tsx";
@@ -37,11 +32,9 @@ export default function NodePopupItem({node, player, distance, isUpdating, isAtt
     const [interactionText, setInteractionText] = useState<string>("");
     const [isInteraction, setIsInteraction] = useState<boolean>(false);
 
-    const volume = useStore(state => state.volume);
-
-    const [playUpgrade] = useSound(upgrade, {volume: volume});
-    const [playClick] = useSound(click, {volume: volume});
-    const [playElectricMachine] = useSound(electricMachine, {volume: volume});
+    const playUpgrade = useUpgradeSound();
+    const playClick = useClickSound();
+    const playElectricMachine = useElectricMachineSound();
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);

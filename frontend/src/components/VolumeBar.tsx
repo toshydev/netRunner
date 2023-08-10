@@ -3,16 +3,13 @@ import styled from "@emotion/styled";
 import {Button} from "@mui/material";
 import SoundIcon from "./icons/SoundIcon.tsx";
 import {useEffect, useState} from "react";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import click from "../assets/sounds/click.mp3";
+import {useClickSound} from "../utils/sound.ts";
 
 export default function VolumeBar() {
     const [previousVolume, setPreviousVolume] = useState<number>(0)
     const volume = useStore(state => state.volume)
     const setVolume = useStore(state => state.setVolume)
-    const [playClick] = useSound(click, {volume: volume});
+    const playClick = useClickSound()
 
     useEffect(() => {
         setPreviousVolume(volume)
@@ -20,6 +17,7 @@ export default function VolumeBar() {
 
     function handleVolumeToggle() {
         playClick()
+        console.log(volume)
         if (volume === 0) {
             setVolume(previousVolume)
         } else {

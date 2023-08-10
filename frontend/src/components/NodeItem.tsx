@@ -15,14 +15,13 @@ import UpgradeIcon from "./icons/UpgradeIcon.tsx";
 import DowngradeIcon from "./icons/DowngradeIcon.tsx";
 import UnlockIcon from "./icons/UnlockIcon.tsx";
 import TrashIcon from "./icons/TrashIcon.tsx";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import upgrade from "../assets/sounds/upgrade.mp3";
-import click from "../assets/sounds/click.mp3";
-import loginSuccess from "../assets/sounds/login_success.mp3";
-import error from "../assets/sounds/error.mp3";
-import electricMachine from "../assets/sounds/electric_machine.mp3";
+import {
+    useClickSound,
+    useElectricMachineSound,
+    useErrorSound,
+    useLoginSuccessSound,
+    useUpgradeSound
+} from "../utils/sound.ts";
 
 type Props = {
     node: Node;
@@ -40,13 +39,12 @@ export default function NodeItem({node, player, distance}: Props) {
     const [isInteraction, setIsInteraction] = useState<boolean>(false);
     const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
     const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
-    const volume = useStore(state => state.volume);
 
-    const [playUpgrade] = useSound(upgrade, {volume: volume});
-    const [playClick] = useSound(click, {volume: volume});
-    const [playLoginSuccess] = useSound(loginSuccess, {volume: volume});
-    const [playError] = useSound(error, {volume: volume});
-    const [playElectricMachine] = useSound(electricMachine, {volume: volume});
+    const playUpgrade = useUpgradeSound();
+    const playClick = useClickSound();
+    const playLoginSuccess = useLoginSuccessSound();
+    const playError = useErrorSound();
+    const playElectricMachine = useElectricMachineSound();
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);

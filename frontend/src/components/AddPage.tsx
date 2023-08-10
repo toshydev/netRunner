@@ -10,14 +10,7 @@ import {StyledHelperText} from "./styled/StyledHelperText.ts";
 import {StyledButtonContainer} from "./styled/StyledButtonContainer.ts";
 import {StyledFormButton} from "./styled/StyledFormButton.ts";
 import {Switch} from "@mui/material";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import click from "../assets/sounds/click.mp3";
-import loginSuccess from "../assets/sounds/login_success.mp3";
-import keyPress from "../assets/sounds/key_press.mp3";
-import switchButton from "../assets/sounds/switch.mp3";
-import error from "../assets/sounds/error.mp3";
+import {useClickSound, useErrorSound, useKeyPressSound, useLoginSuccessSound, useSwitchSound} from "../utils/sound.ts";
 
 export default function AddPage() {
     const [name, setName] = useState<string>("");
@@ -26,12 +19,12 @@ export default function AddPage() {
     const [nameError, setNameError] = useState<string>("Name cannot be empty");
     const [latitudeError, setLatitudeError] = useState<string>("");
     const [longitudeError, setLongitudeError] = useState<string>("");
-    const volume = useStore(state => state.volume);
-    const [playClick] = useSound(click, {volume: volume});
-    const [playLoginSuccess] = useSound(loginSuccess, {volume: volume});
-    const [playError] = useSound(error, {volume: volume});
-    const [playKeyPress] = useSound(keyPress, {volume: volume});
-    const [playSwitch] = useSound(switchButton, {volume: volume});
+
+    const playClick = useClickSound();
+    const playLoginSuccess = useLoginSuccessSound();
+    const playError = useErrorSound();
+    const playKeyPress = useKeyPressSound();
+    const playSwitch = useSwitchSound();
 
     const player = useStore(state => state.player);
     const addNode = useStore(state => state.addNode);
