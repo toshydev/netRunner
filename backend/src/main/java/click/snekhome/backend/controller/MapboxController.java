@@ -15,6 +15,12 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/api/map")
 public class MapboxController {
 
+    private final RestTemplate restTemplate;
+
+    public MapboxController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @Value("${mapbox.access.token}")
     private String mapboxAccessToken;
 
@@ -24,7 +30,6 @@ public class MapboxController {
         String mapboxApiUrl = "https://api.mapbox.com/styles/v1/antonroters/cll3ohya000fg01pl7cc9fuu8";
         String fullUrl = mapboxApiUrl + "/tiles/256/" + z + "/" + x + "/" + y + "@2x?access_token=" + mapboxAccessToken;
 
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
         HttpEntity<String> entity = new HttpEntity<>(headers);
