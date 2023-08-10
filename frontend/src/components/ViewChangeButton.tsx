@@ -3,15 +3,25 @@ import {useNavigate} from "react-router-dom";
 import NavigationIcon from "./icons/NavigationIcon.tsx";
 import ListIcon from "./icons/ListIcon.tsx";
 import styled from "@emotion/styled";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import useSound from "use-sound";
+import SwitchSound from "../assets/sounds/switch.mp3";
+import {useStore} from "../hooks/useStore.ts";
 
 type Props = {
     view: string;
 }
 
 export default function ViewChangeButton({view}: Props) {
+    const volume = useStore(state => state.volume)
     const navigate = useNavigate();
+    const [playSwitch] = useSound(SwitchSound, {volume})
 
-    return <StyledViewButton onClick={() => navigate(view === "map" ? "/map" : "/")}>
+    return <StyledViewButton onClick={() => {
+        playSwitch()
+        navigate(view === "map" ? "/map" : "/")
+    }}>
         {view === "map" ? <NavigationIcon/> : <ListIcon/>}
     </StyledViewButton>
 }
@@ -25,7 +35,7 @@ const StyledViewButton = styled(Button)`
     font-family: inherit;
     color: var(--color-primary);
     position: fixed;
-    bottom: 4rem;
+    bottom: 3rem;
     left: 2rem;
     filter: drop-shadow(0 0 0.75rem var(--color-black));
     z-index: 9;

@@ -18,21 +18,102 @@
 }
 
 .leaflet-marker-pane .node__player {
-    border: 1.5px solid var(--color-primary);
+    border: 2px solid var(--color-primary);
     border-radius: 5px;
+}
+
+.leaflet-marker-pane .node__player--update {
+    border: 2px solid var(--color-primary);
+    border-radius: 5px;
+    animation: pulse-update 1s infinite
+}
+
+.leaflet-marker-pane .node__player--attack {
+    border: 2px solid var(--color-primary);
+    border-radius: 5px;
+    animation: pulse-attack 1s infinite
 }
 
 .leaflet-marker-pane .node__enemy {
-    border: 1.5px solid var(--color-secondary);
+    border: 2px solid var(--color-secondary);
     border-radius: 5px;
 }
 
+.leaflet-marker-pane .node__enemy--update {
+    border: 2px solid var(--color-secondary);
+    border-radius: 5px;
+    animation: pulse-update 1s infinite
+}
+
+.leaflet-marker-pane .node__enemy--attack {
+    border: 2px solid var(--color-secondary);
+    border-radius: 5px;
+    animation: pulse-attack 1s infinite
+}
+
 .leaflet-marker-pane .node__neutral {
-    border: 1.5px solid var(--color-grey);
+    border: 2px solid var(--color-grey);
     border-radius: 5px;
 }
 
 .leaflet-marker-pane .player {
-    border: 1.5px solid black;
+    border: 2px solid black;
     border-radius: 50px;
+}
+
+.leaflet-popup {
+    background: transparent;
+}
+
+.leaflet-popup-tip-container .leaflet-popup-tip {
+    background: var(--color-semiblack);
+}
+
+.leaflet-popup .leaflet-popup-content-wrapper {
+    background: transparent;
+}
+
+.leaflet-popup .leaflet-popup-content-wrapper .leaflet-popup-content {
+    background: transparent;
+    width: 12rem;
+    height: 6rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.leaflet-popup-close-button {
+    display: none;
+}
+
+@keyframes pulse-update {
+    0% {
+        outline: 0.25rem solid var(--color-primary);
+        filter: drop-shadow(0 0 0.25rem var(--color-primary));
+    }
+    50% {
+        outline: 0.25rem solid transparent;
+        filter: drop-shadow(0 0 0 var(--color-primary));
+    }
+    100% {
+        outline: 0.25rem solid var(--color-primary);
+        filter: drop-shadow(0 0 0.25rem var(--color-primary));
+    }
+}
+
+@keyframes pulse-attack {
+    0% {
+        outline: 0.25rem solid var(--color-secondary);
+        filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+    }
+    50% {
+        outline: 0.25rem solid transparent;
+        filter: drop-shadow(0 0 0 var(--color-secondary));
+    }
+    100% {
+        outline: 0.25rem solid var(--color-secondary);
+        filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+    }
 }

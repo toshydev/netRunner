@@ -70,7 +70,7 @@ export default function LoginPage() {
     function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
         playKeyPress()
         setEmail(event.target.value);
-        if (!event.target.value.match(/^\w+@\w+\.\w+$/)) {
+        if (!/^\w+@\w+\.\w+$/.exec(event.target.value)) {
             setEmailError("Invalid email");
         } else {
             setEmailError("");
