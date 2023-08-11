@@ -17,7 +17,8 @@ public record Player(
         int maxHealth,
         int attack,
         int maxAttack,
-        int credits
+        int credits,
+        long lastScan
 ) {
 
 }

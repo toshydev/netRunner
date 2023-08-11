@@ -2,6 +2,8 @@ package click.snekhome.backend.util;
 
 import click.snekhome.backend.model.Player;
 
+import java.time.Instant;
+
 public class PlayerFunctions {
 
     private PlayerFunctions() {
@@ -37,7 +39,8 @@ public class PlayerFunctions {
                 player.maxHealth(),
                 newAttack,
                 newMaxAttack,
-                player.credits()
+                player.credits(),
+                player.lastScan()
         );
     }
 
@@ -56,7 +59,8 @@ public class PlayerFunctions {
                     player.maxHealth(),
                     newAttackPoints,
                     player.maxAttack(),
-                    player.credits()
+                    player.credits(),
+                    player.lastScan()
             );
         } else {
             return player;
@@ -77,7 +81,27 @@ public class PlayerFunctions {
                 player.maxHealth(),
                 player.attack(),
                 player.maxAttack(),
-                newCredits
+                newCredits,
+                player.lastScan()
+        );
+    }
+
+    public static Player useScan(Player player) {
+        long newLastScan = Instant.now().getEpochSecond();
+        return new Player(
+                player.id(),
+                player.userId(),
+                player.name(),
+                player.coordinates(),
+                player.level(),
+                player.experience(),
+                player.experienceToNextLevel(),
+                player.health(),
+                player.maxHealth(),
+                player.attack(),
+                player.maxAttack(),
+                player.credits(),
+                newLastScan
         );
     }
 }

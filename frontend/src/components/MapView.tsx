@@ -3,20 +3,30 @@ import {useStore} from "../hooks/useStore.ts";
 import "./css/leaflet.css";
 import {playerIcon} from "./icons/mapIcons.ts";
 import {useZoomInSound, useZoomOutSound} from "../utils/sound.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 import NodeItem from "./NodeItem.tsx";
+import {Node} from "../models.ts";
 
-export default function MapView() {
+type Props = {
+    nodes: Node[]
+}
+
+export default function MapView({nodes}: Props) {
     const [zoom, setZoom] = useState<number>(15)
-    const nodes = useStore(state => state.nodes)
     const player = useStore(state => state.player)
     const user = useStore(state => state.user)
     const enemies = useStore(state => state.enemies)
     const gps = useStore(state => state.gps)
+    const scanNodes = useStore(state => state.scanNodes)
+    const getNodes = useStore(state => state.getNodes)
 
     const playZoomIn = useZoomInSound()
     const playZoomOut = useZoomOutSound()
+
+    useEffect(() => {
+        getNodes()
+    }, [getNodes, scanNodes]);
 
     function ZoomSound() {
         const map = useMapEvents({
@@ -51,7 +61,7 @@ export default function MapView() {
                 scrollWheelZoom={true}
                 style={{minHeight: "75vh", minWidth: "95vw"}}
                 id={"map"}
-                maxZoom={18}
+                maxZoom={20}
             >
                 {gps ? <PlayerTracker/> : <ZoomSound/>}
                 <TileLayer

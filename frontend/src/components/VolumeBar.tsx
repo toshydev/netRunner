@@ -17,7 +17,6 @@ export default function VolumeBar() {
 
     function handleVolumeToggle() {
         playClick()
-        console.log(volume)
         if (volume === 0) {
             setVolume(previousVolume)
         } else {

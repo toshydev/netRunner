@@ -21,6 +21,7 @@ public class PlayerService {
 
     public void createPlayer(UserData userData) {
         IdService idService = new IdService();
+        long fiveMinutesAgo = Instant.now().getEpochSecond() - 300;
         Player player = new Player(
                 idService.generateId(),
                 userData.id(),
@@ -33,7 +34,8 @@ public class PlayerService {
                 100,
                 5,
                 10,
-                0
+                0,
+                fiveMinutesAgo
         );
         this.playerRepo.save(player);
     }
@@ -65,10 +67,10 @@ public class PlayerService {
                 player.maxHealth(),
                 player.attack(),
                 player.maxAttack(),
-                player.credits()
+                player.credits(),
+                player.lastScan()
         );
         return this.playerRepo.save(updatedPlayer);
-
     }
 
     public void updatePlayer(String id, Player updatedPlayer) {
@@ -85,7 +87,8 @@ public class PlayerService {
                 updatedPlayer.maxHealth(),
                 updatedPlayer.attack(),
                 updatedPlayer.maxAttack(),
-                updatedPlayer.credits()
+                updatedPlayer.credits(),
+                player.lastScan()
         );
         this.playerRepo.save(newPlayer);
     }
@@ -98,5 +101,4 @@ public class PlayerService {
         Player player = this.getPlayer(username);
         return this.playerRepo.findAllByNameIsNot(player.name());
     }
-
 }

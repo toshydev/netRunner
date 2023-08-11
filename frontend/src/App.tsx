@@ -18,6 +18,7 @@ import PlayerPage from "./components/PlayerPage.tsx";
 import NodeFilter from "./components/NodeFilter.tsx";
 import MapView from "./components/MapView.tsx";
 import ViewChangeButton from "./components/ViewChangeButton.tsx";
+import ScanButton from "./components/ScanButton.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -32,6 +33,7 @@ export default function App() {
     const nodes = useStore(state => state.nodes)
     const getNodes = useStore(state => state.getNodes)
     const getEnemies = useStore(state => state.getEnemies)
+    const scanNodes = useStore(state => state.scanNodes)
 
     useEffect(() => {
         try {
@@ -46,7 +48,7 @@ export default function App() {
         } finally {
             setInitialLoad(false)
         }
-    }, [getNodes, getPlayer, getEnemies, getUser, user])
+    }, [getNodes, getPlayer, getEnemies, getUser, user, scanNodes])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -89,8 +91,9 @@ export default function App() {
                         <Route path={"/map"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
-                                <MapView/>
+                                <MapView nodes={nodes}/>
                                 <ViewChangeButton view={"list"}/>
+                                <ScanButton player={player}/>
                             </>
                         }/>
                         <Route path={"/add"} element={<AddPage/>}/>

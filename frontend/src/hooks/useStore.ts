@@ -35,6 +35,7 @@ type State = {
     setVolume: (volume: number) => void
     enemies: Player[]
     getEnemies: () => void
+    scanNodes: (position: Coordinates) => void
 }
 
 export const useStore = create<State>(set => ({
@@ -274,6 +275,16 @@ export const useStore = create<State>(set => ({
             .then(data => {
                 set({enemies: data});
             })
+            .catch(console.error)
+            .then(() => set({isLoading: false}));
+    },
+
+    scanNodes: (position: Coordinates) => {
+        set({isLoading: true});
+        axios
+            .put("/api/nodes/scan", position)
+            .then((response) => response.data)
+            .then(data => console.log(data))
             .catch(console.error)
             .then(() => set({isLoading: false}));
     }

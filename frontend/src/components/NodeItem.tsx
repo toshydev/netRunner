@@ -60,7 +60,7 @@ export default function NodeItem({node, player, distance, type}: Props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (distance < 50) {
+        if (distance < 250) {
             setIsInRange(true)
         } else {
             setIsInRange(false)
