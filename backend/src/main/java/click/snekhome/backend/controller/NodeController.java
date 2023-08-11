@@ -22,7 +22,7 @@ public class NodeController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<Node> list() {
+    public List<Node> getNodes() {
         return this.nodeService.list();
     }
 

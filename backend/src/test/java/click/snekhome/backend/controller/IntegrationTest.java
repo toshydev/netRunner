@@ -864,4 +864,52 @@ class IntegrationTest {
         Player updatedPlayer = playerByName.get();
         assertEquals(100, updatedPlayer.credits());
     }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser(username = "player3")
+    void expectAllPlayersExceptCurrentPlayer() throws Exception {
+        Player player1 = new Player("abc", "123", "player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        Player player2 = new Player("def", "123", "player2", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        Player player3 = new Player("ghi", "123", "player3", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        playerRepo.save(player1);
+        playerRepo.save(player2);
+        playerRepo.save(player3);
+        String expected = """
+                [
+                    {
+                        "name": "player1",
+                        "coordinates": {
+                            "latitude": 0,
+                            "longitude": 0,
+                            "timestamp": 0
+                        },
+                        "level": 1,
+                        "experience": 0,
+                        "health": 100,
+                        "maxHealth": 100,
+                        "credits": 0,
+                        "attack": 5
+                    },
+                    {
+                        "name": "player2",
+                        "coordinates": {
+                            "latitude": 0,
+                            "longitude": 0,
+                            "timestamp": 0
+                        },
+                        "level": 1,
+                        "experience": 0,
+                        "health": 100,
+                        "maxHealth": 100,
+                        "credits": 0,
+                        "attack": 5
+                    }
+                ]
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/player/enemies")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
 }

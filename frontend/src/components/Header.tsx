@@ -2,11 +2,7 @@ import styled from "@emotion/styled";
 import {keyframes} from "@emotion/react";
 import {Button} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import click from "../assets/sounds/click.mp3";
-import {useStore} from "../hooks/useStore.ts";
+import {useClickSound} from "../utils/sound.ts";
 
 type Props = {
     user?: string
@@ -15,8 +11,7 @@ type Props = {
 export default function Header({user}: Props) {
     const isAuthenticated = user !== "" && user !== undefined && user !== "anonymousUser"
     const navigate = useNavigate()
-    const volume = useStore(state => state.volume);
-    const [playClick] = useSound(click, {volume: volume});
+    const playClick = useClickSound();
 
     return (
         <StyledHeader>

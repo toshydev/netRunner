@@ -6,6 +6,7 @@ export default function useCooldown(lastActionTimestamp: number) {
     const [isOnCooldown, setIsOnCooldown] = useState(false);
 
     useEffect(() => {
+
         const now = Math.floor(Date.now() / 1000);
         const remainingCooldown = Math.max(0, lastActionTimestamp + COOLDOWN_DURATION - now);
 

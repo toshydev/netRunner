@@ -1,11 +1,11 @@
 import {SvgIcon} from "@mui/material";
 
-export default function DowngradeIcon() {
+export default function MiniDowngradeIcon() {
     return <SvgIcon>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
              height={512}
              width={512}
-             style={{transform: "rotate(180deg) scale(1.5)"}}>
+             style={{transform: "rotate(180deg) scale(1)"}}>
             <path d="M0 0h512v512H0z" fill="#000" fillOpacity="0"></path>
             <g className="" transform="translate(0,0)">
                 <path

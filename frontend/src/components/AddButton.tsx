@@ -1,16 +1,12 @@
 import {useNavigate} from "react-router-dom";
 import styled from "@emotion/styled";
 import {Button, Tooltip} from "@mui/material";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import click from "../assets/sounds/click.mp3";
-import {useStore} from "../hooks/useStore";
+import {useClickSound} from "../utils/sound.ts";
 
 export default function AddButton() {
     const navigate = useNavigate();
-    const volume = useStore(state => state.volume);
-    const [playClick] = useSound(click, {volume: volume});
+
+    const playClick = useClickSound();
 
     return (
         <Tooltip title={

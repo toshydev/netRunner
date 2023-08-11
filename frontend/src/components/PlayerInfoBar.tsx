@@ -1,10 +1,7 @@
 import styled from "@emotion/styled";
 import {useStore} from "../hooks/useStore.ts";
 import {Player} from "../models.ts";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import useSound from "use-sound";
-import switchSound from "../assets/sounds/switch.mp3";
+import {useSwitchSound} from "../utils/sound.ts";
 
 type Props = {
     player: Player | null
@@ -12,8 +9,7 @@ type Props = {
 export default function PlayerInfoBar({player}: Props) {
     const gps = useStore(state => state.gps)
     const setGps = useStore(state => state.setGps)
-    const volume = useStore(state => state.volume);
-    const [playSwitch] = useSound(switchSound, {volume: volume});
+    const playSwitch = useSwitchSound()
 
     return <StyledContainer>
         {player && <StyledBar theme={"primary"} bg={"black"}>
