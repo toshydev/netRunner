@@ -24,7 +24,6 @@ public class PlayerFunctions {
             } else {
                 newAttack += 5 + (newLevel - 1) * 2;
             }
-            newAttack += 5 + (newLevel - 1) * 2;
             newMaxAttack = player.maxAttack() + 10 + (newLevel - 1) * 2;
         }
         return new Player(

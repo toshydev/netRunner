@@ -14,7 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +38,7 @@ class NodeServiceTest {
     String adminName = "admin";
     MongoUser player = new MongoUser("abc", playerName, "player@test.net", "password", Role.PLAYER);
     MongoUser admin = new MongoUser("1", adminName, "admin@test.net", "admin", Role.ADMIN);
-    Player playerunknown = new Player("123", "abc", "playerunknown", new Coordinates(0, 0, Instant.now().getEpochSecond()), 1, 0, 100, 100, 100, 5, 10, 0, 0);
+    Player playerunknown = new Player("123", "abc", "playerunknown", new Coordinates(0, 0, Instant.now().getEpochSecond()), 1, 0, 100, 100, 100, 5, 10, 0, Instant.now().getEpochSecond());
 
     @Test
     void expectAllNodesInList() {
@@ -229,5 +231,109 @@ class NodeServiceTest {
         assertEquals("Server farm", NodeService.getNodeName(store));
         assertEquals("CCTV control", NodeService.getNodeName(official));
         assertEquals("Database access", NodeService.getNodeName(hospital));
+    }
+
+    @Test
+    void expectUnchangedNodeWhenPlayerIsTooFarAway() {
+        //given
+        Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(55, 55, 0), 0, 0);
+        //when
+        when(authentication.getName()).thenReturn(playerName);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
+        when(nodeRepo.save(node)).thenReturn(node);
+        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
+        Node actual = nodeService.edit("abc", ActionType.HACK);
+        //then
+        assertEquals(node, actual);
+        verify(nodeRepo).findById("abc");
+        verify(playerService).getPlayer(playerName);
+    }
+
+    @Test
+    void expectUnchangedNodeWhenHackingBeforeCooldownIsOver() {
+        //given
+        Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(0, 0, 0), Instant.now().getEpochSecond(), 0);
+        //when
+        when(authentication.getName()).thenReturn(playerName);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
+        when(nodeRepo.save(node)).thenReturn(node);
+        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
+        Node actual = nodeService.edit("abc", ActionType.HACK);
+        //then
+        assertEquals(node, actual);
+        verify(nodeRepo).findById("abc");
+        verify(playerService).getPlayer(playerName);
+    }
+
+    @Test
+    void expectUnchangedNodeWhenAttackingOtherPlayerNodeBeforeCooldownIsOver() {
+        //given
+        Node node = new Node("abc", "456", "Home", 1, 100, new Coordinates(0, 0, 0), 0, Instant.now().getEpochSecond());
+        //when
+        when(authentication.getName()).thenReturn(playerName);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
+        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
+        when(nodeRepo.save(node)).thenReturn(node);
+        Node actual = nodeService.edit("abc", ActionType.HACK);
+        //then
+        verify(nodeRepo).findById("abc");
+        verify(playerService).getPlayer(playerName);
+        verify(nodeRepo).save(node);
+        assertEquals(node, actual);
+    }
+
+    @Test
+    void expectUnchangedNodeWhenAttackingOtherPlayerNodeWithNotEnoughAP() {
+        //given
+        Node node = new Node("abc", "456", "Home", 30, 100, new Coordinates(0, 0, 0), 0, 0);
+        //when
+        when(authentication.getName()).thenReturn(playerName);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
+        when(nodeRepo.save(node)).thenReturn(node);
+        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
+        Node actual = nodeService.edit("abc", ActionType.HACK);
+        //then
+        assertEquals(node, actual);
+        verify(nodeRepo).findById("abc");
+        verify(playerService).getPlayer(playerName);
+    }
+
+    @Test
+    void expectUnchangedNodeWhenAbandoningOtherPlayerNode() {
+        //given
+        Node node = new Node("abc", "456", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        //when
+        when(authentication.getName()).thenReturn(playerName);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
+        when(nodeRepo.save(node)).thenReturn(node);
+        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
+        Node actual = nodeService.edit("abc", ActionType.ABANDON);
+        //then
+        assertEquals(node, actual);
+        verify(nodeRepo).findById("abc");
+        verify(playerService).getPlayer(playerName);
+    }
+
+    @Test
+    void expectEmptyListWhenScanningNodesBeforeCooldownIsOver() throws IOException {
+        //when
+        when(authentication.getName()).thenReturn(playerName);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
+        List<Node> actual = nodeService.scan(new Coordinates(0, 0, 0));
+        //then
+        verify(playerService).getPlayer(playerName);
+        assertEquals(Collections.emptyList(), actual);
     }
 }

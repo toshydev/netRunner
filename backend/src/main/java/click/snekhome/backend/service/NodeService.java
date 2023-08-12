@@ -27,7 +27,6 @@ import static click.snekhome.backend.util.PlayerFunctions.*;
 @Service
 @EnableScheduling
 public class NodeService {
-
     private static final int MAX_DISTANCE = 250;
     private static final long MIN_TIME_BETWEEN_SCANS = 300;
     private final NodeRepo nodeRepo;
@@ -74,11 +73,9 @@ public class NodeService {
         Player player = this.playerService.getPlayer(username);
         Node node = this.nodeRepo.findById(id).orElseThrow();
         Node newNode;
-
         if (getDistance(player.coordinates().latitude(), player.coordinates().longitude(), node.coordinates().latitude(), node.coordinates().longitude()) > MAX_DISTANCE) {
             return node;
         }
-
         if (node.ownerId() == null || node.health() == 0) {
             newNode = handleNonOwnedNode(player, node, actionType);
         } else if (node.ownerId().equals(player.id())) {
@@ -86,7 +83,6 @@ public class NodeService {
         } else {
             newNode = handleAttackedNode(player, node, actionType);
         }
-
         return this.nodeRepo.save(newNode);
     }
 
@@ -97,7 +93,6 @@ public class NodeService {
             updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
             playerService.updatePlayer(player.id(), updatedPlayer);
             return newNode;
-
         }
         return node;
     }

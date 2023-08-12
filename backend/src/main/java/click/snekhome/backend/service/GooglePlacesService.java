@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class GooglePlacesService {
@@ -29,10 +30,8 @@ public class GooglePlacesService {
     public List<CustomPlacesResult> getUniquePlaces(String latitude, String longitude) throws IOException {
         CustomPlacesResponse atmResponse = this.getPlaces(latitude, longitude, "atm");
         CustomPlacesResponse universityResponse = this.getPlaces(latitude, longitude, "university");
-        List<CustomPlacesResult> allPlaces = combineArrays(
-                atmResponse.results(),
-                universityResponse.results()
-        );
+        List<CustomPlacesResult> allPlaces = Stream.concat(atmResponse.results().stream(), universityResponse.results().stream())
+                .toList();
         return removeDuplicateLocations(allPlaces);
     }
 
@@ -51,18 +50,15 @@ public class GooglePlacesService {
         return objectMapper.readValue(responseBody, CustomPlacesResponse.class);
     }
 
-    private static List<CustomPlacesResult> combineArrays(CustomPlacesResult[]... arrays) {
-        return Arrays.stream(arrays)
-                .flatMap(Arrays::stream).toList();
-    }
 
     private static List<CustomPlacesResult> removeDuplicateLocations(List<CustomPlacesResult> places) {
         Map<String, CustomPlacesResult> groupedPlaces = new HashMap<>();
 
-        for (CustomPlacesResult place : places) {
+        places.stream().filter(place -> place.geometry() != null).forEach(place -> {
             String location = getLocationString(place.geometry().location());
             groupedPlaces.putIfAbsent(location, place);
-        }
+        });
+
         return new ArrayList<>(groupedPlaces.values());
     }
 
