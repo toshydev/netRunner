@@ -16,7 +16,9 @@ public class GooglePlacesService {
 
     @Value("${google.api.key}")
     private String apiKey;
-    private static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch";
+
+    @Value("${google.api.url}")
+    private String baseUrl;
     private static final String RADIUS = "radius=500";
     private final OkHttpClient client;
 
@@ -27,13 +29,9 @@ public class GooglePlacesService {
     public List<CustomPlacesResult> getUniquePlaces(String latitude, String longitude) throws IOException {
         CustomPlacesResponse atmResponse = this.getPlaces(latitude, longitude, "atm");
         CustomPlacesResponse universityResponse = this.getPlaces(latitude, longitude, "university");
-        CustomPlacesResponse policeResponse = this.getPlaces(latitude, longitude, "police");
-        CustomPlacesResponse trainStationResponse = this.getPlaces(latitude, longitude, "train_station");
         List<CustomPlacesResult> allPlaces = combineArrays(
                 atmResponse.results(),
-                universityResponse.results(),
-                policeResponse.results(),
-                trainStationResponse.results()
+                universityResponse.results()
         );
         return removeDuplicateLocations(allPlaces);
     }
@@ -42,16 +40,15 @@ public class GooglePlacesService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "/json?location=" + latitude + "%2C" + longitude + "&" + RADIUS + "&type=" + type + "&key=" + apiKey)
+                .url(baseUrl + "/json?location=" + latitude + "%2C" + longitude + "&" + RADIUS + "&type=" + type + "&key=" + apiKey)
                 .method("GET", null)
                 .build();
 
+        String responseBody;
         try (Response response = client.newCall(request).execute()) {
-            String responseBody = Objects.requireNonNull(response.body()).string();
-            return objectMapper.readValue(responseBody, CustomPlacesResponse.class);
-        } catch (IOException e) {
-            throw new IOException("Error while fetching " + type , e);
+            responseBody = Objects.requireNonNull(response.body()).string();
         }
+        return objectMapper.readValue(responseBody, CustomPlacesResponse.class);
     }
 
     private static List<CustomPlacesResult> combineArrays(CustomPlacesResult[]... arrays) {

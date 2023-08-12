@@ -13,6 +13,7 @@ type State = {
     player: Player | null,
     nodes: Node[],
     isLoading: boolean,
+    isScanning: boolean,
     getPlayer: () => void,
     getUser: () => void,
     getNodes: () => void,
@@ -35,7 +36,7 @@ type State = {
     setVolume: (volume: number) => void
     enemies: Player[]
     getEnemies: () => void
-    scanNodes: (position: Coordinates) => void
+    scanNodes: (position: Coordinates, onSuccess: () => void, onError: () => void) => void
 }
 
 export const useStore = create<State>(set => ({
@@ -44,6 +45,7 @@ export const useStore = create<State>(set => ({
     nodes: [],
     enemies: [],
     isLoading: true,
+    isScanning: false,
     gps: false,
     sortDirection: "asc",
     ownerNodesFilter: false,
@@ -279,14 +281,26 @@ export const useStore = create<State>(set => ({
             .then(() => set({isLoading: false}));
     },
 
-    scanNodes: (position: Coordinates) => {
-        set({isLoading: true});
+    scanNodes: (position: Coordinates, onSuccess: () => void, onError: () => void) => {
+        set({isScanning: true});
         axios
-            .put("/api/nodes/scan", position)
-            .then((response) => response.data)
-            .then(data => console.log(data))
-            .catch(console.error)
-            .then(() => set({isLoading: false}));
+            .post("/api/nodes/scan", position)
+            .then(response => response.data)
+            .then(response => response.data)
+            .then(data => {
+                onSuccess()
+                if (data !== undefined) {
+                    set((state) => ({nodes: [...state.nodes, data]}));
+                }
+            })
+            .catch(error => {
+                onError()
+                console.error(error)
+            })
+            .then(() => {
+                useStore.getState().getNodes()
+                set({isScanning: false})
+            });
     }
 
 }));

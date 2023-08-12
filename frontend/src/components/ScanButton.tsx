@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import ScanIcon from "./icons/ScanIcon.tsx";
 import {Player} from "../models.ts";
 import {useStore} from "../hooks/useStore.ts";
-import {useLoadingOsSound} from "../utils/sound.ts";
+import {useLoadingOsSound, useErrorSound} from "../utils/sound.ts";
 
 type Props = {
     player: Player | null;
@@ -12,17 +12,17 @@ type Props = {
 export default function ScanButton({player}: Props) {
     const scanNodes = useStore(state => state.scanNodes)
     const playLoading = useLoadingOsSound()
+    const playError = useErrorSound()
 
-    return (
-        <StyledScanButton onClick={() => {
-            if (player) {
-                playLoading()
-                scanNodes(player.coordinates)
-            }
-        }}>
-            <ScanIcon/><StyledScanCounter variant="h6">test</StyledScanCounter>
-        </StyledScanButton>
-    )
+    if (player) {
+        return (
+            <StyledScanButton disabled={false} onClick={() => {
+                scanNodes(player.coordinates, playLoading, playError)
+            }}>
+                <ScanIcon/><StyledScanCounter variant="h6">test</StyledScanCounter>
+            </StyledScanButton>
+        )
+    }
 }
 
 const StyledScanButton = styled(Button)`
@@ -50,13 +50,14 @@ const StyledScanButton = styled(Button)`
 `;
 
 const StyledScanCounter = styled(Typography)`
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(50%, -50%);
-    background: var(--color-primary);
-    color: var(--color-black);
-    border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  background: var(--color-primary);
+  color: var(--color-black);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
 `;
+

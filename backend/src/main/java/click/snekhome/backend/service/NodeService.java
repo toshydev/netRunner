@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static click.snekhome.backend.util.Calculation.getDistance;
@@ -27,7 +29,7 @@ import static click.snekhome.backend.util.PlayerFunctions.*;
 public class NodeService {
 
     private static final int MAX_DISTANCE = 250;
-    private static final long MAX_TIME = 0;
+    private static final long MIN_TIME_BETWEEN_SCANS = 300;
     private final NodeRepo nodeRepo;
     private final IdService idService;
     private final MongoUserService mongoUserService;
@@ -155,20 +157,23 @@ public class NodeService {
         }
     }
 
-    public int scan(Coordinates coordinates) throws IOException {
+    public List<Node> scan(Coordinates coordinates) throws IOException {
         Player player = this.playerService.getPlayer(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (getSecondsSince(player.lastScan()) < MIN_TIME_BETWEEN_SCANS) {
+            return Collections.emptyList();
+        }
         Player updatedPlayer = useScan(player);
         this.playerService.updatePlayer(player.id(), updatedPlayer);
         return this.createNodes(coordinates);
     }
 
-    public int createNodes(Coordinates coordinates) throws IOException {
+    public List<Node> createNodes(Coordinates coordinates) throws IOException {
         String latitude = String.valueOf(coordinates.latitude());
         String longitude = String.valueOf(coordinates.longitude());
 
         List<CustomPlacesResult> placesList = this.googlePlacesService.getUniquePlaces(latitude, longitude);
 
-        int count = 0;
+        List<Node> newNodes = new ArrayList<>();
         List<Node> allNodes = this.nodeRepo.findAll();
         for (CustomPlacesResult place : placesList) {
             if (allNodes.stream().noneMatch(node -> node.coordinates().latitude() == place.geometry().location().lat && node.coordinates().longitude() == place.geometry().location().lng)) {
@@ -183,22 +188,22 @@ public class NodeService {
                         Instant.now().getEpochSecond(),
                         0
                 );
-                count++;
+                newNodes.add(node);
                 this.nodeRepo.insert(node);
             }
         }
-        return count;
+        return newNodes;
     }
 
-    private static String getNodeName(CustomPlacesResult place) {
-        if (place.types().contains("bank") || place.types().contains("atm") || place.types().contains("finance") || place.types().contains("accounting") || place.types().contains("insurance_agency") || place.types().contains("real_estate_agency")) {
-            return "Banking interface";
-        } else if (place.types().contains("clothing_store") || place.types().contains("convenience_store") || place.types().contains("department_store") || place.types().contains("electronics_store") || place.types().contains("furniture_store") || place.types().contains("hardware_store") || place.types().contains("home_goods_store") || place.types().contains("jewelry_store") || place.types().contains("liquor_store") || place.types().contains("pet_store") || place.types().contains("shoe_store") || place.types().contains("shopping_mall") || place.types().contains("store")) {
-            return "Server Farm";
+    static String getNodeName(CustomPlacesResult place) {
+        if (place.types().contains("bank") || place.types().contains("atm") || place.types().contains("accounting") || place.types().contains("insurance_agency") || place.types().contains("real_estate_agency") || place.types().contains("jewelry_store") || place.types().contains("liquor_store")) {
+            return "Trading interface";
+        } else if (place.types().contains("clothing_store") || place.types().contains("convenience_store") || place.types().contains("department_store") || place.types().contains("electronics_store") || place.types().contains("furniture_store") || place.types().contains("hardware_store") || place.types().contains("home_goods_store") || place.types().contains("pet_store") || place.types().contains("shoe_store") || place.types().contains("shopping_mall") || place.types().contains("store")) {
+            return "Server farm";
         } else if (place.types().contains("amusement_park") || place.types().contains("aquarium") || place.types().contains("art_gallery") || place.types().contains("bowling_alley") || place.types().contains("casino") || place.types().contains("movie_rental") || place.types().contains("movie_theater") || place.types().contains("museum") || place.types().contains("night_club") || place.types().contains("park") || place.types().contains("stadium") || place.types().contains("zoo")) {
-            return "Database Access";
+            return "CCTV control";
         } else {
-            return "CCTV Control";
+            return "Database access";
         }
     }
 }

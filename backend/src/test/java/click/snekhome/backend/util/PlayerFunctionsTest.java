@@ -10,7 +10,7 @@ class PlayerFunctionsTest {
 
     @Test
     void testAddExperienceWithLevelUp() {
-        Player initialPlayer = new Player("1", "user1", "Player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 200, 200, 50);
+        Player initialPlayer = new Player("1", "user1", "Player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 200, 200, 50, 0);
         int experienceToAdd = 200;
         int expectedNewLevel = initialPlayer.level() + 1;
         int expectedNewExperience = experienceToAdd - initialPlayer.experienceToNextLevel();
@@ -23,7 +23,7 @@ class PlayerFunctionsTest {
 
     @Test
     void testAddExperienceWithoutLevelUp() {
-        Player initialPlayer = new Player("1", "user1", "Player1", new Coordinates(0, 0, 0), 3, 150, 200, 100, 100, 100, 200, 50);
+        Player initialPlayer = new Player("1", "user1", "Player1", new Coordinates(0, 0, 0), 3, 150, 200, 100, 100, 100, 200, 50, 0);
         int experienceToAdd = 49;
         int expectedNewLevel = initialPlayer.level();
         int expectedNewExperience = initialPlayer.experience() + experienceToAdd;

@@ -9,6 +9,10 @@ import click.snekhome.backend.security.MongoUser;
 import click.snekhome.backend.security.MongoUserRepository;
 import click.snekhome.backend.security.Role;
 import click.snekhome.backend.service.NodeService;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +23,15 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,8 +58,21 @@ class IntegrationTest {
     @Autowired
     private PlayerRepo playerRepo;
 
+    static MockWebServer mockWebServer;
+
+    @BeforeAll
+    static void setUpGoogleServer() throws IOException {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+    }
+
+    @DynamicPropertySource
+    static void backendProperties(DynamicPropertyRegistry registry) {
+        registry.add("google.api.url", () -> mockWebServer.url("/").toString());
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUpUsers() {
         PasswordEncoder passwordEncoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
         MongoUser admin = new MongoUser("1", "admin", "admin@test.net", passwordEncoder.encode("admin"), Role.ADMIN);
         mongoUserRepository.save(admin);
@@ -716,7 +737,7 @@ class IntegrationTest {
         PasswordEncoder passwordEncoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
         MongoUser player = new MongoUser("123", "playerunknown", "player@player.net", passwordEncoder.encode("password"), Role.PLAYER);
         mongoUserRepository.save(player);
-        Player playerunknown = new Player("abc", "123", "playerunknown", null, 1, 0, 100, 100, 100, 5, 15, 0);
+        Player playerunknown = new Player("abc", "123", "playerunknown", null, 1, 0, 100, 100, 100, 5, 15, 0, 0);
         String nodeData = """
                 {
                     "name": "testNode",
@@ -743,7 +764,7 @@ class IntegrationTest {
     @Test
     @DirtiesContext
     void expectPlayerWhenGettingPlayerByName() throws Exception {
-        Player playerunknown = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        Player playerunknown = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0);
         playerRepo.save(playerunknown);
 
         String userData = """
@@ -852,7 +873,7 @@ class IntegrationTest {
     void expectPlayerWithIncreasedCreditsWhenCreditsAreGenerated() {
         Node node1 = new Node("abc", "abc", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);
         nodeRepo.save(node1);
-        Player player = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        Player player = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0);
         playerRepo.save(player);
         nodeService.generateCredits();
         Optional<Node> ownedNode = nodeRepo.findById("abc");
@@ -869,9 +890,9 @@ class IntegrationTest {
     @DirtiesContext
     @WithMockUser(username = "player3")
     void expectAllPlayersExceptCurrentPlayer() throws Exception {
-        Player player1 = new Player("abc", "123", "player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
-        Player player2 = new Player("def", "123", "player2", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
-        Player player3 = new Player("ghi", "123", "player3", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0);
+        Player player1 = new Player("abc", "123", "player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0);
+        Player player2 = new Player("def", "123", "player2", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0);
+        Player player3 = new Player("ghi", "123", "player3", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0);
         playerRepo.save(player1);
         playerRepo.save(player2);
         playerRepo.save(player3);
@@ -911,5 +932,93 @@ class IntegrationTest {
                         .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
+
+    @Test
+    @DirtiesContext
+    void expectOneNewNodeWhenScanReturnsOneUnusedLocation() throws Exception {
+        Node initialNode = new Node("abc", "123", "Home", 1, 100, new Coordinates(48.1241963, 11.5507127, 0), 0, 0);
+        nodeRepo.save(initialNode);
+        String userData = """
+                {
+                    "username":"testPlayer",
+                    "email":"testPlayer@test.net",
+                    "password":"12345678"
+                }
+                """;
+        String scannerPosition = """
+                {
+                    "latitude": 48.1241963,
+                    "longitude": 11.5507127,
+                    "timestamp": 0
+                }
+                """;
+        String serverResponse = """
+                {
+                   "html_attributions": [],
+                   "results": [
+                      {
+                         "geometry": {
+                            "location": {
+                               "lat": 48.1241963,
+                               "lng": 11.5507127
+                            }
+                         },
+                         "name": "Stadtsparkasse Munich - ATM",
+                         "types": [ "atm", "bank", "finance", "point_of_interest", "establishment" ]
+                      },
+                      {
+                         "geometry": {
+                            "location": {
+                               "lat": 48.1197551,
+                               "lng": 11.5485989
+                            }
+                         },
+                         "name": "Stadtsparkasse Munich - SB branch",
+                         "types": [ "atm", "bank", "finance", "point_of_interest", "establishment" ]
+                      }
+                   ],
+                   "status": "OK"
+                }
+                """;
+
+        String scanResponse = """
+                [
+                     {
+                         "name":"Trading interface",
+                         "level":0,
+                         "health":100,
+                         "coordinates": {
+                             "latitude": 48.1197551,
+                             "longitude": 11.5485989
+                             },
+                         "lastAttack":0
+                         }
+                 ]
+                 """;
+
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(serverResponse));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(serverResponse));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/register")
+                        .contentType("application/json")
+                        .content(userData)
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/user/login")
+                        .with(httpBasic("testPlayer", "12345678")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("testPlayer"));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/nodes/scan")
+                .content(scannerPosition).contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("testPlayer", "12345678")).with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().json(scanResponse));
+    }
+
+    @AfterAll
+    static void cleanUp() throws IOException {
+        mockWebServer.close();
     }
 }

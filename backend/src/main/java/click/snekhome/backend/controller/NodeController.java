@@ -50,9 +50,9 @@ public class NodeController {
         this.nodeService.delete(id);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping("scan")
-    public int scan(@RequestBody Coordinates coordinates) throws IOException {
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("scan")
+    public List<Node> scan(@RequestBody Coordinates coordinates) throws IOException {
         return this.nodeService.scan(coordinates);
     }
 }

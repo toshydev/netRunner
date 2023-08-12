@@ -45,8 +45,8 @@ export default function NodeItem({node, player, distance, type}: Props) {
     const [isClaimable, setIsClaimable] = useState<boolean>(false);
     const [interactionText, setInteractionText] = useState<string>("");
     const [isInteraction, setIsInteraction] = useState<boolean>(false);
-    const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate);
-    const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack);
+    const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate, 120);
+    const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack, 120);
 
     const playUpgrade = useUpgradeSound();
     const playClick = useClickSound();

@@ -49,8 +49,10 @@ export default function LoginPage() {
     function handleLogin(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        login(username, password, navigate, playLoginSuccess, playError);
-        playLoadingOs()
+        login(username, password, navigate, () => {
+            playLoginSuccess()
+            playLoadingOs()
+        }, playError);
     }
 
     function handleUsernameChange(event: ChangeEvent<HTMLInputElement>) {
@@ -90,7 +92,7 @@ export default function LoginPage() {
     }
 
     return <>
-        <VolumeBar />
+        <VolumeBar/>
         <StyledForm onSubmit={newUser ? handleRegister : handleLogin}>
             <legend>{newUser ? "Register" : "Login"}</legend>
             <StyledLabel htmlFor={"newUser"}>New User<Switch

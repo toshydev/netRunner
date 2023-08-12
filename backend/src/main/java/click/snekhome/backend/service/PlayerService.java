@@ -88,7 +88,7 @@ public class PlayerService {
                 updatedPlayer.attack(),
                 updatedPlayer.maxAttack(),
                 updatedPlayer.credits(),
-                player.lastScan()
+                updatedPlayer.lastScan()
         );
         this.playerRepo.save(newPlayer);
     }

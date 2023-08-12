@@ -18,7 +18,7 @@ import PlayerPage from "./components/PlayerPage.tsx";
 import NodeFilter from "./components/NodeFilter.tsx";
 import MapView from "./components/MapView.tsx";
 import ViewChangeButton from "./components/ViewChangeButton.tsx";
-import ScanButton from "./components/ScanButton.tsx";
+import RechargingButton from "./components/RechargingButton.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -91,9 +91,9 @@ export default function App() {
                         <Route path={"/map"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
-                                <MapView nodes={nodes}/>
+                                <MapView/>
+                                {player && <RechargingButton player={player}/>}
                                 <ViewChangeButton view={"list"}/>
-                                <ScanButton player={player}/>
                             </>
                         }/>
                         <Route path={"/add"} element={<AddPage/>}/>

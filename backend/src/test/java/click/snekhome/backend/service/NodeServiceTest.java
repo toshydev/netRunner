@@ -1,16 +1,14 @@
 package click.snekhome.backend.service;
 
 import click.snekhome.backend.exception.WrongRoleException;
-import click.snekhome.backend.model.Coordinates;
-import click.snekhome.backend.model.Node;
-import click.snekhome.backend.model.NodeData;
-import click.snekhome.backend.model.Player;
+import click.snekhome.backend.model.*;
 import click.snekhome.backend.repo.NodeRepo;
 import click.snekhome.backend.security.MongoUser;
 import click.snekhome.backend.security.MongoUserService;
 import click.snekhome.backend.security.Role;
 import click.snekhome.backend.util.ActionType;
 import click.snekhome.backend.util.IdService;
+import com.google.maps.model.LatLng;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -32,12 +30,13 @@ class NodeServiceTest {
     private final PlayerService playerService = mock(PlayerService.class);
     private final Authentication authentication = mock(Authentication.class);
     private final SecurityContext securityContext = mock(SecurityContext.class);
-    private final NodeService nodeService = new NodeService(nodeRepo, idService, mongoUserService, playerService);
+    private final GooglePlacesService googlePlacesService = mock(GooglePlacesService.class);
+    private final NodeService nodeService = new NodeService(nodeRepo, idService, mongoUserService, playerService, googlePlacesService);
     String playerName = "playerunknown";
     String adminName = "admin";
     MongoUser player = new MongoUser("abc", playerName, "player@test.net", "password", Role.PLAYER);
     MongoUser admin = new MongoUser("1", adminName, "admin@test.net", "admin", Role.ADMIN);
-    Player playerunknown = new Player("123", "abc", "playerunknown", new Coordinates(0, 0, Instant.now().getEpochSecond()), 1, 0, 100, 100, 100, 5, 10, 0);
+    Player playerunknown = new Player("123", "abc", "playerunknown", new Coordinates(0, 0, Instant.now().getEpochSecond()), 1, 0, 100, 100, 100, 5, 10, 0, 0);
 
     @Test
     void expectAllNodesInList() {
@@ -217,5 +216,18 @@ class NodeServiceTest {
         when(mongoUserService.getUserByUsername(playerName)).thenReturn(player);
         //then
         assertThrows(WrongRoleException.class, () -> nodeService.delete("def"));
+    }
+
+    @Test
+    void returnNodeNamesBasedOnPlaceType() {
+        CustomPlacesResult atm = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Evil Bank", List.of("atm", "bank"));
+        CustomPlacesResult store = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Conrad Electronics", List.of("store", "electronics_store"));
+        CustomPlacesResult official = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Arithmetikum", List.of("museum", "university"));
+        CustomPlacesResult hospital = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Charite", List.of("hospital", "pharmacy"));
+
+        assertEquals("Trading interface", NodeService.getNodeName(atm));
+        assertEquals("Server farm", NodeService.getNodeName(store));
+        assertEquals("CCTV control", NodeService.getNodeName(official));
+        assertEquals("Database access", NodeService.getNodeName(hospital));
     }
 }

@@ -8,25 +8,23 @@ import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 import NodeItem from "./NodeItem.tsx";
 import {Node} from "../models.ts";
 
-type Props = {
-    nodes: Node[]
-}
-
-export default function MapView({nodes}: Props) {
+export default function MapView() {
     const [zoom, setZoom] = useState<number>(15)
+    const [markers, setMarkers] = useState<Node[]>([])
     const player = useStore(state => state.player)
     const user = useStore(state => state.user)
     const enemies = useStore(state => state.enemies)
     const gps = useStore(state => state.gps)
-    const scanNodes = useStore(state => state.scanNodes)
-    const getNodes = useStore(state => state.getNodes)
+    const nodes = useStore(state => state.nodes)
+    const isScanning = useStore(state => state.isScanning)
 
     const playZoomIn = useZoomInSound()
     const playZoomOut = useZoomOutSound()
 
+    // reload markers when scanning is done
     useEffect(() => {
-        getNodes()
-    }, [getNodes, scanNodes]);
+        setMarkers(nodes)
+    }, [nodes]);
 
     function ZoomSound() {
         const map = useMapEvents({
@@ -68,7 +66,7 @@ export default function MapView({nodes}: Props) {
                     attribution='Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
                     url={"api/map/{z}/{x}/{y}"}
                 />
-                {nodes.map(node => <NodeItem
+                {!isScanning && markers.map(node => <NodeItem
                     key={node.id}
                     type={"map"}
                     node={node}

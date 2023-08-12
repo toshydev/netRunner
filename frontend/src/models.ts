@@ -11,6 +11,7 @@ export type Player = {
     attack: number,
     maxAttack: number,
     credits: number,
+    lastScan: number
 }
 
 export type Node = {
