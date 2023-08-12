@@ -1,33 +1,22 @@
 import {Avatar, Card, Typography, useTheme} from "@mui/material";
 import styled from "@emotion/styled";
 import usePlayer from "../hooks/usePlayer.ts";
-import {StyledButtonContainer} from "./styled/StyledButtonContainer.ts";
-import {StyledFormButton} from "./styled/StyledFormButton.ts";
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
 import AvatarImage from "../assets/images/avatar.png";
 import NodeList from "./NodeList.tsx";
 import useNodes from "../hooks/useNodes.ts";
-import {useClickSound, useErrorSound, useLoginSuccessSound} from "../utils/sound.ts";
-import VolumeBar from "./VolumeBar.tsx";
 import {Node} from "../models.ts";
 
 export default function PlayerPage() {
     const [name, setName] = useState<string>("")
     const [id, setId] = useState<string>("")
     const params = useParams()
-    const navigate = useNavigate()
     const player = usePlayer(name)
     const nodes = useNodes(id)
     const user = useStore(state => state.user)
-    const logout = useStore(state => state.logout)
     const theme = useTheme()
-
-    const playClick = useClickSound()
-    const playError = useErrorSound()
-    const playLoginSuccess = useLoginSuccessSound()
-
     const isEnemy = user !== player?.name
 
     const incomePerHour = (nodes: Node[]): number => {
@@ -48,7 +37,6 @@ export default function PlayerPage() {
     if (typeof player !== "undefined") {
         return (
             <>
-                <VolumeBar />
             <StyledCard>
                 <StyledAvatar isenemy={`${isEnemy}`} src={`${AvatarImage}`} sx={{width: 125, height: 125}}/>
                 <StyledPlayerDetails>
@@ -69,13 +57,6 @@ export default function PlayerPage() {
                 </StyledPlayerCoordinates>
             </StyledCard>
                 <Typography color={theme.palette.success.main} variant={"h5"}>Nodes</Typography>
-                <StyledButtonContainer>
-                    <StyledFormButton theme={"primary"} onClick={() => {
-                        playClick()
-                        navigate("/")
-                    }}>Nodelist</StyledFormButton>
-                    <StyledFormButton theme={"error"} onClick={() => logout(navigate, playLoginSuccess, playError)}>Logout</StyledFormButton>
-                </StyledButtonContainer>
                 {nodes && <NodeList player={player} nodes={nodes}/>}
         </>
         )

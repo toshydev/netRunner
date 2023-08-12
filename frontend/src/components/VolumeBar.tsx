@@ -45,8 +45,6 @@ export default function VolumeBar() {
 }
 
 const StyledVolumeBar = styled.div`
-  margin-top: 1rem;
-  margin-left: auto;
   width: 10rem;
   height: 3rem;
   display: flex;
@@ -72,7 +70,7 @@ const StyledSoundButton = styled.button<{isvolume: string}>`
 
 const StyledOnOffButton = styled(Button)<{isvolume: string}>`
   width: 5rem;
-    height: 5rem;
+  height: 5rem;
   scale: 0.6;
   color: var(--color-${({isvolume}) => isvolume === "true" ? "primary" : "grey"});
   border: 0.25rem solid var(--color-${({isvolume}) => isvolume === "true" ? "primary" : "grey"});

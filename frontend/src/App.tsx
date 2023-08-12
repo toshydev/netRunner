@@ -1,4 +1,3 @@
-import Header from "./components/Header.tsx";
 import NodeList from "./components/NodeList.tsx";
 import GlobalStyle from "./GlobalStyle.tsx";
 import {Route, Routes} from "react-router-dom";
@@ -19,6 +18,7 @@ import NodeFilter from "./components/NodeFilter.tsx";
 import MapView from "./components/MapView.tsx";
 import ViewChangeButton from "./components/ViewChangeButton.tsx";
 import RechargingButton from "./components/RechargingButton.tsx";
+import NavBar from "./components/NavBar.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -85,7 +85,7 @@ export default function App() {
         <ThemeProvider theme={theme}>
             <GlobalStyle/>
             <StyledContent>
-                <Header user={user}/>
+                <NavBar user={user}/>
                 <Routes>
                     <Route element={<ProtectedRoutes user={user}/>}>
                         <Route path={"/map"} element={
@@ -97,7 +97,12 @@ export default function App() {
                             </>
                         }/>
                         <Route path={"/add"} element={<AddPage/>}/>
-                        <Route path={"/player/:name"} element={<PlayerPage/>}/>
+                        <Route path={"/player/:name"} element={
+                            <>
+                            <PlayerPage/>
+                                <ViewChangeButton view={"map"}/>
+
+                            </>}/>
                         <Route path={"/"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
@@ -121,5 +126,4 @@ const StyledContent = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 3rem;
 `;

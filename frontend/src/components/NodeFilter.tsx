@@ -42,9 +42,8 @@ const StyledContainer = styled.div`
   width: 100%;
   height: 3rem;
   position: sticky;
-  top: 8rem;
+  top: 5rem;
   z-index: 6;
-  background: linear-gradient(var(--color-black) 5%, var(--color-black) 10%, transparent 95%);
 `;
 
 const StyledSortToggle = styled(Button)<{direction: string}>`

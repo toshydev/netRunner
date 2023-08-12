@@ -47,9 +47,9 @@ const StyledContainer = styled.div`
   height: 5rem;
   gap: 0.5rem;
   position: sticky;
-  top: 3.3rem;
+  top: 0;
   z-index: 6;
-  background: linear-gradient(var(--color-black) 0%, var(--color-black) 85%);
+  background: linear-gradient(var(--color-black) 0%, var(--color-black) 90%, transparent);
 `;
 
 const StyledBar = styled.div<{ theme: string, bg: string }>`
