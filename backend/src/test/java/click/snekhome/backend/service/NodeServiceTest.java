@@ -8,8 +8,10 @@ import click.snekhome.backend.security.MongoUserService;
 import click.snekhome.backend.security.Role;
 import click.snekhome.backend.util.ActionType;
 import click.snekhome.backend.util.IdService;
-import com.google.maps.model.LatLng;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -221,19 +224,6 @@ class NodeServiceTest {
     }
 
     @Test
-    void returnNodeNamesBasedOnPlaceType() {
-        CustomPlacesResult atm = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Evil Bank", List.of("atm", "bank"));
-        CustomPlacesResult store = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Conrad Electronics", List.of("store", "electronics_store"));
-        CustomPlacesResult official = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Arithmetikum", List.of("museum", "university"));
-        CustomPlacesResult hospital = new CustomPlacesResult("abc", new Geometry(new LatLng(0, 0)), "Charite", List.of("hospital", "pharmacy"));
-
-        assertEquals("Trading interface", NodeService.getNodeName(atm));
-        assertEquals("Server farm", NodeService.getNodeName(store));
-        assertEquals("CCTV control", NodeService.getNodeName(official));
-        assertEquals("Database access", NodeService.getNodeName(hospital));
-    }
-
-    @Test
     void expectUnchangedNodeWhenPlayerIsTooFarAway() {
         //given
         Node node = new Node("abc", "123", "Home", 1, 100, new Coordinates(55, 55, 0), 0, 0);
@@ -335,5 +325,29 @@ class NodeServiceTest {
         //then
         verify(playerService).getPlayer(playerName);
         assertEquals(Collections.emptyList(), actual);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getNodeNameTestData")
+    void returnRightNodeNameBasedOnPlaceTypes(String expected, List<String> types) {
+        CustomPlacesResult place = new CustomPlacesResult("placeId", null, "name", types);
+        String actual = NodeService.getNodeName(place);
+        assertEquals(expected, actual);
+    }
+
+    private static Stream<Arguments> getNodeNameTestData() {
+        return Stream.of(
+                Arguments.of("Trading interface", List.of("bank", "store")),
+                Arguments.of("Server farm", List.of("clothing_store", "shopping_mall")),
+                Arguments.of("CCTV control", List.of("amusement_park", "park")),
+                Arguments.of("Database access", List.of("unknown_type")),
+                Arguments.of("Trading interface", List.of("bank", "atm")),
+                Arguments.of("Server farm", List.of("department_store", "electronics_store")),
+                Arguments.of("CCTV control", List.of("art_gallery", "night_club")),
+                Arguments.of("Database access", List.of("unknown_type")),
+                Arguments.of("Trading interface", List.of("jewelry_store", "liquor_store")),
+                Arguments.of("Server farm", List.of("store")),
+                Arguments.of("CCTV control", List.of("amusement_park", "zoo"))
+        );
     }
 }
