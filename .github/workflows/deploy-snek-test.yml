@@ -1,4 +1,4 @@
-name: "Deploy App on SNEK"
+name: "Deploy Test-App on SNEK"
 
 on:
   push:
