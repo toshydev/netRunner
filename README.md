@@ -23,7 +23,7 @@ NetRunner is a unique real-world exploration game set in a cyberpunk-inspired un
 
 5. **User Authentication:** Players must register and log in to access the game's features. Spring Security ensures secure user authentication and management.
 
-6. **Customizable Protagonist:** Players can personalize their in-game character, choosing the protagonist's gender, appearance, and background to create a unique identity in the cyberpunk universe.
+6. **Customizable Protagonist:** Players can personalize their in-game character, choosing the appearance, and theme to create a unique identity in the cyberpunk universe.
 
 **Current State of the Project:**
 NetRunner is currently under development, with the frontend designed using React, Vite, and Mapbox to integrate the cyberpunk-themed interface with real-world map exploration based on players' GPS positions. The backend relies on Spring Boot, Spring WebFlux, and MongoDB to handle real-time multiplayer interactions, node data, and user profiles effectively. Comprehensive testing, utilizing JUnit, AssertJ, Mockito, and MockMvc, ensures stable and reliable gameplay.
