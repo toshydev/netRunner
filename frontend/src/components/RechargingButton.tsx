@@ -23,13 +23,14 @@ export default function RechargingButton({player}: Props) {
         setIsUpdating(isOnCooldown)
             setPercentage(100 - counter / 300 * 100)
         }
-    }, [counter, isOnCooldown, scanNodes]);
+    }, [counter, isOnCooldown, scanNodes, player]);
 
     function handleScan() {
         scanNodes(player.coordinates, playLoading, playError);
+        setIsUpdating(true);
     }
 
-    return <StyledButton disabled={isUpdating} onClick={handleScan}>
+    return <StyledButton disabled={isUpdating} onClick={handleScan} isupdating={String(isUpdating)}>
         <StyledBackgroundContainer>
             {isUpdating && <StyledRechargingBackground percentage={percentage}/>}
             <ScanIcon/>
@@ -37,26 +38,19 @@ export default function RechargingButton({player}: Props) {
     </StyledButton>
 }
 
-const StyledButton = styled(Button)`
+const StyledButton = styled(Button)<{isupdating: string}>`
   position: absolute;
   bottom: 3rem;
   right: 2rem;
   background: var(--color-black);
-  border: 3px solid var(--color-primary);
+  border: 3px solid ${({isupdating}) => isupdating === "false" ? "var(--color-primary)" : "var(--color-semiblack)"};
   border-radius: 50%;
   width: 4rem;
   height: 4rem;
   z-index: 9;
   padding: 0;
-  color: var(--color-primary);
-  filter: drop-shadow(0 0 0.25rem var(--color-primary));
-
-  &:disabled {
-    background: var(--color-black);
-    border-color: var(--color-semiblack);
-    color: var(--color-semiblack);
-    filter: drop-shadow(0 0 0.75rem var(--color-black));
-  }
+  color: ${({isupdating}) => isupdating === "false" ? "var(--color-primary)" : "var(--color-semiblack)"};
+  filter: drop-shadow(0 0 0.25rem ${({isupdating}) => isupdating === "false" ? "var(--color-primary)" : "var(--color-black)"});
 
   &:hover {
     background: inherit;
@@ -64,6 +58,8 @@ const StyledButton = styled(Button)`
 
   &:active {
     background: inherit;
+    scale: 0.9;
+    filter: drop-shadow(0 0 1rem var(--color-primary));
   }
 `;
 

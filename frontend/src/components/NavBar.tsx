@@ -2,7 +2,7 @@ import {AppBar, Avatar, Box, Container, IconButton, Menu, MenuItem, Toolbar, Too
 import styled from "@emotion/styled";
 import Intelligence from "../assets/images/intelligence.png"
 import PlayerAvatar from "../assets/images/avatar.png"
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import React, {useState} from "react";
 import {keyframes} from "@emotion/react";
 import {useClickSound, useErrorSound, useLoginSuccessSound} from "../utils/sound.ts";
@@ -21,6 +21,23 @@ export default function NavBar({user}: Props) {
     const playClick = useClickSound();
     const playError = useErrorSound();
     const playLoginSuccess = useLoginSuccessSound();
+    const location = useLocation();
+
+    function getPageName() {
+        const page = location.pathname.split("/")[1]
+        const subPage = location.pathname.split("/")[2]
+        if (page === "") {
+            return "Nodes List"
+        } else if(page === "map") {
+            return "Nodes Map"
+        } else if(page === "add") {
+            return "Add Node"
+        } else if(page === "login") {
+            return "NetRunner"
+        } else {
+            return subPage.charAt(0).toUpperCase() + subPage.slice(1)
+        }
+    }
     function handleOpenUserMenu(event: React.MouseEvent<HTMLElement>) {
         playClick()
         setAnchorElUser(event.currentTarget);
@@ -38,7 +55,7 @@ export default function NavBar({user}: Props) {
                     playClick()
                     navigate("/")
                 }}/>
-                {!isAuthenticated && <StyledHeading>NetRunner</StyledHeading>}
+                <StyledHeading>{getPageName()}</StyledHeading>
                 {isAuthenticated && <Box sx={{flexGrow: 0, ml: "auto"}}>
                     <Tooltip title="Open settings">
                         <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
@@ -102,7 +119,7 @@ const pulse = keyframes`
 const StyledLogo = styled.img`
   width: 3rem;
   height: 3rem;
-  animation: ${pulse} 10s infinite;
+  animation: ${pulse} 4s infinite;
 `;
 
 const blink = keyframes`

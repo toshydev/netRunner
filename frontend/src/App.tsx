@@ -99,7 +99,7 @@ export default function App() {
                         <Route path={"/add"} element={<AddPage/>}/>
                         <Route path={"/player/:name"} element={
                             <>
-                            <PlayerPage/>
+                                <PlayerPage/>
                                 <ViewChangeButton view={"map"}/>
 
                             </>}/>
