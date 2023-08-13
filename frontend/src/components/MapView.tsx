@@ -3,20 +3,28 @@ import {useStore} from "../hooks/useStore.ts";
 import "./css/leaflet.css";
 import {playerIcon} from "./icons/mapIcons.ts";
 import {useZoomInSound, useZoomOutSound} from "../utils/sound.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 import NodeItem from "./NodeItem.tsx";
+import {Node} from "../models.ts";
 
 export default function MapView() {
     const [zoom, setZoom] = useState<number>(15)
-    const nodes = useStore(state => state.nodes)
+    const [markers, setMarkers] = useState<Node[]>([])
     const player = useStore(state => state.player)
     const user = useStore(state => state.user)
     const enemies = useStore(state => state.enemies)
     const gps = useStore(state => state.gps)
+    const nodes = useStore(state => state.nodes)
+    const isScanning = useStore(state => state.isScanning)
 
     const playZoomIn = useZoomInSound()
     const playZoomOut = useZoomOutSound()
+
+    // reload markers when scanning is done
+    useEffect(() => {
+        setMarkers(nodes)
+    }, [nodes]);
 
     function ZoomSound() {
         const map = useMapEvents({
@@ -51,14 +59,14 @@ export default function MapView() {
                 scrollWheelZoom={true}
                 style={{minHeight: "75vh", minWidth: "95vw"}}
                 id={"map"}
-                maxZoom={18}
+                maxZoom={20}
             >
                 {gps ? <PlayerTracker/> : <ZoomSound/>}
                 <TileLayer
                     attribution='Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
                     url={"api/map/{z}/{x}/{y}"}
                 />
-                {nodes.map(node => <NodeItem
+                {!isScanning && markers.map(node => <NodeItem
                     key={node.id}
                     type={"map"}
                     node={node}

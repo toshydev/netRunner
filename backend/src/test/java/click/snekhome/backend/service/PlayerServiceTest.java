@@ -19,7 +19,7 @@ class PlayerServiceTest {
     @Test
     void expectPlayerNameWhenIdIsGiven() {
         //given
-        Player player = new Player("abc", "123", "playerunknown", null, 1, 0, 100, 100, 100, 5, 10, 0);
+        Player player = new Player("abc", "123", "playerunknown", null, 1, 0, 100, 100, 100, 5, 10, 0, 0);
         String id = "abc";
         String expected = "playerunknown";
         //when

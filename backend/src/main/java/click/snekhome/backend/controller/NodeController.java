@@ -1,13 +1,13 @@
 package click.snekhome.backend.controller;
 
-import click.snekhome.backend.model.Node;
-import click.snekhome.backend.model.NodeData;
+import click.snekhome.backend.model.*;
 import click.snekhome.backend.service.NodeService;
 import click.snekhome.backend.util.ActionType;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -48,5 +48,11 @@ public class NodeController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id) {
         this.nodeService.delete(id);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("scan")
+    public List<Node> scan(@RequestBody Coordinates coordinates) throws IOException {
+        return this.nodeService.scan(coordinates);
     }
 }

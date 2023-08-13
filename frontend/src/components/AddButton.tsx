@@ -43,4 +43,10 @@ const StyledAddButton = styled(Button)`
   &:hover {
     background: var(--color-black);
   }
+
+  &:active {
+    background: inherit;
+    scale: 0.9;
+    filter: drop-shadow(0 0 0.5rem var(--color-primary));
+  }
 `;
