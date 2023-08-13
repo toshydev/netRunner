@@ -80,7 +80,7 @@ jobs:
       - name: Restart docker container
         uses: appleboy/ssh-action@master
         with:
-          host: test.snekhome.click
+          host: snekhome.click
           port: ${{ secrets.SSH_PORT_SNEK }}
           username: ${{ secrets.SSH_USERNAME_SNEK }}
           password: ${{ secrets.SSH_PASSWORD_SNEK }}
