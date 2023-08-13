@@ -144,7 +144,7 @@ export const useStore = create<State>(set => ({
             .post("/api/user/login", null, {auth: {username, password}})
             .then((response) => {
                 set({user: response.data});
-                navigate("/");
+                navigate("/map");
                 toast.success(`Welcome ${username}`, {autoClose: 2000});
                 onSuccess();
             })
@@ -299,6 +299,7 @@ export const useStore = create<State>(set => ({
             })
             .then(() => {
                 useStore.getState().getNodes()
+                useStore.getState().getPlayer()
                 set({isScanning: false})
             });
     }

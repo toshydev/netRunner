@@ -17,6 +17,7 @@ function buildIconClass(isPlayerOwned: boolean, isClaimable: boolean, status: st
     let className = "node__";
     if (isClaimable) {
         className += "neutral"
+        return className;
     } else if (isPlayerOwned) {
         className += "player"
     } else {

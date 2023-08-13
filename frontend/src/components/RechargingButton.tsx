@@ -6,19 +6,22 @@ import {Player} from "../models.ts";
 import {useStore} from "../hooks/useStore.ts";
 import {useLoadingOsSound, useErrorSound} from "../utils/sound.ts";
 import {useEffect, useState} from "react";
+import {keyframes} from "@emotion/react";
 
 type Props = {
     player: Player;
 }
 export default function RechargingButton({player}: Props) {
-    const {isOnCooldown, counter} = useCooldown(player.lastScan, 300);
+    const [timestamp, setTimestamp] = useState<number>(0);
     const [isUpdating, setIsUpdating] = useState(false);
     const [percentage, setPercentage] = useState(0);
+    const {isOnCooldown, counter} = useCooldown(timestamp, 300);
     const scanNodes = useStore(state => state.scanNodes);
     const playLoading = useLoadingOsSound();
     const playError = useErrorSound();
 
     useEffect(() => {
+        setTimestamp(player.lastScan)
         if (isOnCooldown) {
         setIsUpdating(isOnCooldown)
             setPercentage(100 - counter / 300 * 100)
@@ -26,8 +29,9 @@ export default function RechargingButton({player}: Props) {
     }, [counter, isOnCooldown, scanNodes, player]);
 
     function handleScan() {
-        scanNodes(player.coordinates, playLoading, playError);
         setIsUpdating(true);
+        setTimestamp(Date.now());
+        scanNodes(player.coordinates, playLoading, playError);
     }
 
     return <StyledButton disabled={isUpdating} onClick={handleScan} isupdating={String(isUpdating)}>
@@ -37,6 +41,20 @@ export default function RechargingButton({player}: Props) {
         </StyledBackgroundContainer>
     </StyledButton>
 }
+
+const blink = keyframes`
+    0% {
+      filter: drop-shadow(0 0 0.25rem var(--color-black));
+    }
+  
+    50% {
+        filter: drop-shadow(0 0 0.25rem var(--color-secondary));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 0.25rem var(--color-black));
+    }
+`;
 
 const StyledButton = styled(Button)<{isupdating: string}>`
   position: absolute;
@@ -51,6 +69,7 @@ const StyledButton = styled(Button)<{isupdating: string}>`
   padding: 0;
   color: ${({isupdating}) => isupdating === "false" ? "var(--color-primary)" : "var(--color-semiblack)"};
   filter: drop-shadow(0 0 0.25rem ${({isupdating}) => isupdating === "false" ? "var(--color-primary)" : "var(--color-black)"});
+    animation: ${({isupdating}) => isupdating === "true" ? blink : "none"} 1s infinite;
 
   &:hover {
     background: inherit;
