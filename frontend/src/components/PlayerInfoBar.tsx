@@ -17,7 +17,7 @@ export default function PlayerInfoBar({player}: Props) {
             <StyledInfoContainer>
                 <StyledText color={"primary"}>LVL {player.level}</StyledText>
                 <StyledText color={"secondary"}>{player.health}HP</StyledText>
-                <StyledText color={"secondary"}>{player.attack}AP</StyledText>
+                <StyledText color={"secondary"}>D:{player.attack}</StyledText>
                 <StyledText color={"primary"}>{player.credits}$</StyledText>
             </StyledInfoContainer>
         </StyledBar>}

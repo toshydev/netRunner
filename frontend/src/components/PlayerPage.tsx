@@ -47,7 +47,7 @@ export default function PlayerPage() {
                 </StyledPlayerDetails>
                 <StyledPlayerStats>
                     <StyledText>Credits: {player.credits}$</StyledText>
-                    <StyledText color={"secondary"}>Attack: {player.attack}AP</StyledText>
+                    <StyledText color={"secondary"}>Daemons: {player.attack}</StyledText>
                     <StyledText>Income/Hour: {nodes ? incomePerHour(nodes) : 0}$</StyledText>
                 </StyledPlayerStats>
                 <StyledPlayerCoordinates>
@@ -64,7 +64,7 @@ export default function PlayerPage() {
 }
 
 const StyledCard = styled(Card)`
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   width: 95%;
   height: 50vh;
   background: var(--color-semiblack);

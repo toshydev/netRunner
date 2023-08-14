@@ -46,7 +46,9 @@ export default function MapView() {
     function PlayerTracker() {
         const map = useMap();
         if (player && gps) {
-            map.flyTo([player.coordinates.latitude, player.coordinates.longitude])
+            map.setView([player.coordinates.latitude, player.coordinates.longitude], map.getZoom(), {
+                animate: true
+            })
         }
         return null
     }
