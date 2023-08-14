@@ -90,9 +90,9 @@ const StyledBackgroundContainer = styled.div`
   
     svg {
       position: relative;
-      top: 20%;
-      width: 2rem;
-      height: 2rem;
+      top: 15%;
+      width: 1.5rem;
+      height: 2.5rem;
     }
 `;
 

@@ -103,4 +103,49 @@ public class PlayerFunctions {
                 newLastScan
         );
     }
+
+    public static int increaseAttackPoints(int attackPoints, int maxAttackPoints, int increase) {
+        return Math.min(attackPoints + increase, maxAttackPoints);
+    }
+
+    public static Player buyAttackPoints(Player player, ItemSize itemSize) {
+        int newCredits = player.credits();
+        int newAttackPoints = switch (itemSize) {
+            case SMALL -> {
+                if (player.credits() >= 1000) {
+                    newCredits = player.credits() - 1000;
+                    yield increaseAttackPoints(player.attack(), player.maxAttack(), 1);
+                }
+                yield player.attack();
+            }
+            case MEDIUM -> {
+                if (player.credits() >= 4000) {
+                    newCredits = player.credits() - 4000;
+                    yield increaseAttackPoints(player.attack(), player.maxAttack(), 5);
+                }
+                yield player.attack();
+            }
+            case LARGE -> {
+                if (player.credits() >= 7500) {
+                    newCredits = player.credits() - 7500;
+                    yield increaseAttackPoints(player.attack(), player.maxAttack(), 10);
+                }
+                yield player.attack();
+            }
+        };
+        return new Player(
+                player.id(),
+                player.userId(),
+                player.name(),
+                player.coordinates(),
+                player.level(),
+                player.experience(),
+                player.experienceToNextLevel(),
+                player.health(),
+                player.maxHealth(),
+                newAttackPoints,
+                player.maxAttack(),
+                newCredits,
+                player.lastScan()
+        );}
 }

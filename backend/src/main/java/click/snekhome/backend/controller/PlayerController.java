@@ -3,6 +3,7 @@ package click.snekhome.backend.controller;
 import click.snekhome.backend.model.Coordinates;
 import click.snekhome.backend.model.Player;
 import click.snekhome.backend.service.PlayerService;
+import click.snekhome.backend.util.ItemSize;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -52,4 +53,9 @@ public class PlayerController {
         return this.playerService.getEnemies();
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PutMapping("store")
+    public Player buyItem(@RequestBody String itemSize) {
+        return this.playerService.buyItem(ItemSize.valueOf(itemSize));
+    }
 }

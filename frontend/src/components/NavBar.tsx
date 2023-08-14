@@ -34,6 +34,8 @@ export default function NavBar({user}: Props) {
             return "Add Node"
         } else if(page === "login") {
             return "NetRunner"
+        } else if(page === "store") {
+            return "Store"
         } else {
             return subPage.charAt(0).toUpperCase() + subPage.slice(1)
         }
@@ -46,6 +48,12 @@ export default function NavBar({user}: Props) {
     function handleCloseUserMenu() {
         playClick()
         setAnchorElUser(null);
+    }
+
+    function handleNavigate(path: string) {
+        playClick()
+        setAnchorElUser(null);
+        navigate(path)
     }
 
     return <StyledAppBar position="static">
@@ -78,8 +86,14 @@ export default function NavBar({user}: Props) {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
-                        <MenuItem onClick={() => navigate(`/player/${user}`)}>
+                        <MenuItem onClick={() => handleNavigate(`/player/${user}`)}>
                             <StyledText textAlign="center">Profile</StyledText>
+                        </MenuItem>
+                        <MenuItem onClick={() => handleNavigate("/store")}>
+                            <StyledText textAlign="center">Store</StyledText>
+                        </MenuItem>
+                        <MenuItem onClick={() => handleNavigate("/settings")}>
+                            <StyledText textAlign="center">Settings</StyledText>
                         </MenuItem>
                         <MenuItem onClick={() => {
                             setAnchorElUser(null);
@@ -87,9 +101,7 @@ export default function NavBar({user}: Props) {
                         }}>
                             <StyledText textAlign="center" color="error">Logout</StyledText>
                         </MenuItem>
-                        <MenuItem>
                             <VolumeBar/>
-                        </MenuItem>
                     </StyledMenu>
                 </Box>}
             </Toolbar>
