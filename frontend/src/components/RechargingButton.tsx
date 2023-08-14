@@ -57,7 +57,7 @@ const blink = keyframes`
 `;
 
 const StyledButton = styled(Button)<{isupdating: string}>`
-  position: absolute;
+  position: fixed;
   bottom: 3rem;
   right: 2rem;
   background: var(--color-black);

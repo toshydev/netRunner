@@ -76,9 +76,9 @@ public class NodeService {
         if (getDistance(player.coordinates().latitude(), player.coordinates().longitude(), node.coordinates().latitude(), node.coordinates().longitude()) > MAX_DISTANCE) {
             return node;
         }
-        if (node.ownerId() == null || node.health() == 0) {
+        if (!hasOwner(node) || node.health() == 0) {
             newNode = handleNonOwnedNode(player, node, actionType);
-        } else if (node.ownerId().equals(player.id())) {
+        } else if (isOwner(player, node)) {
             newNode = handleOwnedNode(player, node, actionType);
         } else {
             newNode = handleAttackedNode(player, node, actionType);
@@ -116,8 +116,7 @@ public class NodeService {
     private Node handleAttackedNode(Player player, Node node, ActionType actionType) {
         if (actionType == ActionType.HACK && (player.attack() >= node.level()) && (getSecondsSince(node.lastAttack()) > 120)) {
             Node newNode = takeDamage(node, player.level() * 10);
-            Player updatedPlayer = getCredits(player, newNode.level() * 10);
-            updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
+            Player updatedPlayer = hack(player, node);
             playerService.updatePlayer(player.id(), updatedPlayer);
             return newNode;
 

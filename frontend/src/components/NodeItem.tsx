@@ -203,10 +203,6 @@ export default function NodeItem({node, player, distance, type}: Props) {
                         <StyledLevel><strong>{level}</strong></StyledLevel>
                     </StyledLevelContainer>
                 </StyledLevelArea>
-                <StyledLocationContainer outofrange={`${!isInRange}`}>
-                    <StyledTextPrimary>Lat: {node.coordinates.latitude}</StyledTextPrimary>
-                    <StyledTextPrimary>Lon: {node.coordinates.longitude}</StyledTextPrimary>
-                </StyledLocationContainer>
                 <StyledStatusContainer>
                     {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} label={"Update"}/>}
                     {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} label={"Attack"}/>}
@@ -287,19 +283,14 @@ const StyledListItem = styled(Card)<{ isplayerowned: string; status: string, css
   padding: 0.5rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   position: relative;
   ${({css}) => css};
 `;
 
-const StyledTextPrimary = styled(Typography)`
-  color: inherit;
-  font: inherit;
-`;
-
 const StyledNameContainer = styled.div`
   display: flex;
-  grid-column: 1 / 4;
+  grid-column: 1 / 3;
   grid-row: 1;
   align-items: center;
   padding-right: 0.5rem;
@@ -316,18 +307,6 @@ const StyledStatsContainer = styled.div`
   grid-column: 1 / 4;
   grid-row: 2;
   gap: 0.5rem;
-`;
-
-const StyledLocationContainer = styled.div<{ outofrange: string }>`
-  display: flex;
-  flex-direction: column;
-  border-radius: 16px;
-  border: 2px solid ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
-  background: var(--color-black);
-  color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
-  padding: 0.5rem;
-  grid-column: 1 / 4;
-  grid-row: 3;
 `;
 
 const StyledOwnerArea = styled.div`
@@ -397,8 +376,8 @@ const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
 `;
 
 const StyledStatusContainer = styled.div`
-  grid-column: 4 / 6;
-  grid-row: 4;
+  grid-column: 3 / 5;
+  grid-row: 1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -408,12 +387,12 @@ const StyledStatusContainer = styled.div`
 
 const StyledDistanceInfo = styled(Typography)<{ outofrange: string }>`
   color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
-  grid-column: 1 / 5;
-  grid-row: 4;
+  grid-column: 1 / 4;
+  grid-row: 3;
   font-size: 1.5rem;
   font-family: inherit;
   align-self: center;
-  z-index: 4;
+  z-index: 5;
 `;
 
 const ModalContainer = styled.div`

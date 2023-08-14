@@ -22,6 +22,5 @@ const StyledPlayerName = styled(Button)`
   border: 2px solid currentColor;
   border-radius: 5px;
   font-family: "3270", monospace;
-  width: 100%;
   height: 100%;
 `;

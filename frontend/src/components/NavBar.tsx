@@ -56,7 +56,7 @@ export default function NavBar({user}: Props) {
         navigate(path)
     }
 
-    return <StyledAppBar position="static">
+    return <StyledAppBar position="sticky">
         <Container maxWidth="xl">
             <Toolbar disableGutters>
                 <StyledLogo src={Intelligence} alt={"netrunner logo"} onClick={() => {

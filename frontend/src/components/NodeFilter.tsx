@@ -42,7 +42,7 @@ const StyledContainer = styled.div`
   width: 100%;
   height: 3rem;
   position: sticky;
-  top: 5rem;
+  top: 6.5rem;
   z-index: 6;
 `;
 
