@@ -7,6 +7,7 @@ import {useEffect, useState} from "react";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 import NodeItem from "./NodeItem.tsx";
 import {Node} from "../models.ts";
+import PlayerPopup from "./PlayerPopup.tsx";
 
 export default function MapView() {
     const [zoom, setZoom] = useState<number>(15)
@@ -87,7 +88,9 @@ export default function MapView() {
                 {enemies.map(enemy => <Marker
                     key={enemy.id}
                     icon={playerIcon(user, enemy.name)}
-                    position={[enemy.coordinates.latitude, enemy.coordinates.longitude]}/>)}
+                    position={[enemy.coordinates.latitude, enemy.coordinates.longitude]}>
+                    <PlayerPopup player={enemy}/>
+                </Marker>)}
             </MapContainer>
         );
     }
