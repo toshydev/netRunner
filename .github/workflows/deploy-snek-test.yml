@@ -87,7 +87,7 @@ jobs:
           script: |
             docker stop netrunner-test
             docker rm netrunner-test
-            docker run --pull=always --name netrunner-test -p 8081:8088 --restart always --detach --env MONGO_DB_URI="${{ secrets.MONGO_DB_URI_TEST }}" --env MAPBOX_ACCESS_TOKEN="${{ secrets.MAPBOX_ACCESS_TOKEN }}" --env GOOGLE_API_KEY="${{ secrets.GOOGLE_API_KEY }}" toshymoshy/netrunner:aarch64-test
+            docker run --pull=always --name netrunner-test -p 8081:8080 --restart always --detach --env MONGO_DB_URI="${{ secrets.MONGO_DB_URI_TEST }}" --env MAPBOX_ACCESS_TOKEN="${{ secrets.MAPBOX_ACCESS_TOKEN }}" --env GOOGLE_API_KEY="${{ secrets.GOOGLE_API_KEY }}" toshymoshy/netrunner:aarch64-test
             sleep 15s
             docker logs netrunner-test
 
