@@ -14,12 +14,9 @@ import AttackIcon from "./icons/AttackIcon.tsx";
 import UpgradeIcon from "./icons/UpgradeIcon.tsx";
 import DowngradeIcon from "./icons/DowngradeIcon.tsx";
 import UnlockIcon from "./icons/UnlockIcon.tsx";
-import TrashIcon from "./icons/TrashIcon.tsx";
 import {
     useClickSound,
     useElectricMachineSound,
-    useErrorSound,
-    useLoginSuccessSound,
     useUpgradeSound
 } from "../utils/sound.ts";
 import {Marker, MarkerProps, Popup} from "react-leaflet";
@@ -28,6 +25,7 @@ import MiniActionButton from "./MiniActionButton.tsx";
 import MiniDowngradeIcon from "./icons/MiniDowngradeIcon.tsx";
 import MiniUpgradeIcon from "./icons/MiniUpgradeIcon.tsx";
 import MiniAttackIcon from "./icons/MiniAttackIcon.tsx";
+import getDistanceString from "../utils/getDistanceString.ts";
 
 
 type Props = {
@@ -50,13 +48,10 @@ export default function NodeItem({node, player, distance, type}: Props) {
 
     const playUpgrade = useUpgradeSound();
     const playClick = useClickSound();
-    const playLoginSuccess = useLoginSuccessSound();
-    const playError = useErrorSound();
     const playElectricMachine = useElectricMachineSound();
 
     const owner = useOwner(node.ownerId);
     const editNode = useStore(state => state.editNode);
-    const deleteNode = useStore(state => state.deleteNode);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -146,7 +141,17 @@ export default function NodeItem({node, player, distance, type}: Props) {
         `;
     }
 
-    const icon = nodeIcon(isPlayerOwned, isClaimable, isInRange, status)
+    const getOwnerString = () => {
+        if (isPlayerOwned) {
+            return "player"
+        } else if (!isPlayerOwned && !isClaimable) {
+            return "enemy"
+        } else {
+            return "none"
+        }
+    }
+
+    const icon = nodeIcon(node.name, getOwnerString(), status, isInRange)
 
     const markerProps: MarkerProps = {
         position: [node.coordinates.latitude, node.coordinates.longitude],
@@ -179,11 +184,8 @@ export default function NodeItem({node, player, distance, type}: Props) {
                         onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
                     >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
                 </StyledOwnerArea>
-                <StyledDeleteButton onClick={() => deleteNode(node.id, playLoginSuccess, playError)}>
-                    <TrashIcon/>
-                </StyledDeleteButton>
                 <StyledDistanceInfo
-                    outofrange={`${!isInRange}`}>{`Distance: ${distance / 1000} KM`}</StyledDistanceInfo>
+                    outofrange={`${!isInRange}`}>{`Distance: ${getDistanceString(distance)}`}</StyledDistanceInfo>
                 {node.ownerId !== null && <StyledActionArea>
                     {node.ownerId === player.id &&
                         <ActionButton inactive={abandonDisabled} action={ActionType.ABANDON}
@@ -234,7 +236,7 @@ export default function NodeItem({node, player, distance, type}: Props) {
                         >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupClaimButton>
                     </StyledPopupOwnerArea>
                     <StyledPopupDistanceInfo
-                        outofrange={`${!isInRange}`}>{`${distance / 1000} KM`}</StyledPopupDistanceInfo>
+                        outofrange={`${!isInRange}`}>{`${getDistanceString(distance)}`}</StyledPopupDistanceInfo>
                     {node.ownerId !== null && <StyledPopupActionArea>
                         {node.ownerId === player.id &&
                             <MiniActionButton inactive={abandonDisabled} action={ActionType.ABANDON}
@@ -285,7 +287,7 @@ const StyledListItem = styled(Card)<{ isplayerowned: string; status: string, css
   padding: 0.5rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(4, 1fr) 2rem;
+  grid-template-rows: repeat(4, 1fr);
   position: relative;
   ${({css}) => css};
 `;
@@ -394,29 +396,6 @@ const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
     }
 `;
 
-const StyledDeleteButton = styled(Button)`
-  align-self: center;
-  width: 4rem;
-  height: 4rem;
-  scale: 0.4;
-  font-family: inherit;
-  font-size: 3rem;
-  background: var(--color-semiblack);
-  color: var(--color-secondary);
-  border: 2px solid var(--color-secondary);
-  border-radius: 8px;
-  transition: all 0.2s ease-in-out;
-  grid-column: 5 / 6;
-  grid-row: 5;
-
-  &:active {
-    background: var(--color-secondary);
-    color: var(--color-black);
-    border: 2px solid var(--color-black);
-    scale: 0.3;
-  }
-`;
-
 const StyledStatusContainer = styled.div`
   grid-column: 4 / 6;
   grid-row: 4;
@@ -431,7 +410,7 @@ const StyledDistanceInfo = styled(Typography)<{ outofrange: string }>`
   color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
   grid-column: 1 / 5;
   grid-row: 4;
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-family: inherit;
   align-self: center;
   z-index: 4;
@@ -513,7 +492,7 @@ const StyledPopupNameContainer = styled.div`
 const StyledPopupHeading = styled(Typography)<{ length: number }>`
   color: inherit;
   font: inherit;
-  font-size: ${({length}) => length > 10 ? "1rem" : "1.5rem"};
+  font-size: ${({length}) => length > 10 ? "0.8rem" : "1.5rem"};
 `;
 
 const StyledPopupStatsContainer = styled.div`
@@ -609,7 +588,7 @@ const StyledPopupDistanceInfo = styled(Typography)<{ outofrange: string }>`
   font-size: 0.5rem;
   font-family: inherit;
   align-self: center;
-  z-index: 4;
+  z-index: 6;
   padding-left: 0.5rem;
 `;
 

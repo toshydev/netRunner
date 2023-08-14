@@ -17,51 +17,31 @@
     border-color: var(--color-primary);
 }
 
-.leaflet-marker-pane .node__player {
-    border: 2px solid var(--color-primary);
-    border-radius: 5px;
-}
-
-.leaflet-marker-pane .node__player--update {
-    border: 2px solid var(--color-primary);
-    border-radius: 5px;
-    animation: pulse-update 1s infinite
-}
-
-.leaflet-marker-pane .node__player--attack {
-    border: 2px solid var(--color-primary);
-    border-radius: 5px;
-    animation: pulse-attack 1s infinite
-}
-
-.leaflet-marker-pane .node__enemy {
-    border: 2px solid var(--color-secondary);
-    border-radius: 5px;
-}
-
-.leaflet-marker-pane .node__enemy--update {
-    border: 2px solid var(--color-secondary);
-    border-radius: 5px;
-    animation: pulse-update 1s infinite
-}
-
-.leaflet-marker-pane .node__enemy--attack {
-    border: 2px solid var(--color-secondary);
-    border-radius: 5px;
-    animation: pulse-attack 1s infinite
-}
-
-.leaflet-marker-pane .node__neutral {
+.node {
     border: 2px solid var(--color-grey);
     border-radius: 5px;
 }
 
+.--player {
+    border: 2px solid var(--color-primary);
+}
+
+.--enemy {
+    border: 2px solid var(--color-secondary);
+}
+
+.--update {
+    animation: pulse-update 1s infinite
+}
+
+.--attack {
+    animation: pulse-attack 1s infinite
+}
 .leaflet-marker-pane .player {
     border-radius: 50px;
     animation: halo-pulse 2s ease-in-out infinite;
 }
 
-/* Blinking halo animation around player */
 @keyframes halo-pulse {
     0% {
         outline: 0.25rem solid var(--color-primary);
@@ -119,6 +99,16 @@
 
 .leaflet-popup-close-button {
     display: none;
+}
+
+.player-popup .leaflet-popup-content-wrapper {
+    padding: 0;
+    margin: 0;
+}
+
+.player-popup .leaflet-popup-content-wrapper .leaflet-popup-content {
+    width: 2rem;
+    height: 2rem;
 }
 
 @keyframes pulse-update {
