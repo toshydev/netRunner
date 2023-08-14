@@ -31,7 +31,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1015,6 +1014,92 @@ class IntegrationTest {
                 .with(httpBasic("testPlayer", "12345678")).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().json(scanResponse));
+    }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser(username = "playerunknown")
+    void expectUnchangedPlayerWhenBuyingItemWithNotEnoughCredits() throws Exception {
+        Player player = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0);
+        this.playerRepo.insert(player);
+        String expected = """
+                {
+                    "name": "playerunknown",
+                    "id": "abc",
+                    "userId": "123",
+                    "coordinates": {
+                        "latitude": 0,
+                        "longitude": 0,
+                        "timestamp": 0
+                    },
+                    "level": 1,
+                    "experience": 0,
+                    "health": 100,
+                    "maxHealth": 100,
+                    "credits": 0,
+                    "attack": 5,
+                    "maxAttack": 15,
+                    "lastScan": 0
+                }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/store")
+                .content("SMALL")
+                .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/store")
+                        .content("MEDIUM")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/store")
+                        .content("LARGE")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
+    }
+
+    @Test
+    @DirtiesContext
+    @WithMockUser(username = "playerunknown")
+    void expectMaximumPlayerAttackWhenBuyingTooManyItemsWithEnoughCredits() throws Exception {
+        Player player = new Player("abc", "123", "playerunknown", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 20000, 0);
+        this.playerRepo.insert(player);
+        String expected = """
+                {
+                    "name": "playerunknown",
+                    "id": "abc",
+                    "userId": "123",
+                    "coordinates": {
+                        "latitude": 0,
+                        "longitude": 0,
+                        "timestamp": 0
+                    },
+                    "level": 1,
+                    "experience": 0,
+                    "health": 100,
+                    "maxHealth": 100,
+                    "credits": 7500,
+                    "attack": 15,
+                    "maxAttack": 15,
+                    "lastScan": 0
+                }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/store")
+                        .content("SMALL")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/store")
+                        .content("MEDIUM")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isAccepted());
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/player/store")
+                        .content("LARGE")
+                        .with(csrf()))
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
+                .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
     @AfterAll

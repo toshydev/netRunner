@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import axios from "axios";
-import {ActionType, Coordinates, Node, NodeData, Player} from "../models.ts";
+import {ActionType, Coordinates, ItemSize, Node, NodeData, Player} from "../models.ts";
 import {NavigateFunction} from "react-router-dom";
 import {toast} from "react-toastify";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
@@ -37,6 +37,7 @@ type State = {
     enemies: Player[]
     getEnemies: () => void
     scanNodes: (position: Coordinates, onSuccess: () => void, onError: () => void) => void
+    buyDaemons: (amount: ItemSize, onSuccess: () => void, onError: () => void) => void
 }
 
 export const useStore = create<State>(set => ({
@@ -301,6 +302,20 @@ export const useStore = create<State>(set => ({
                 useStore.getState().getNodes()
                 useStore.getState().getPlayer()
                 set({isScanning: false})
+            });
+    },
+
+    buyDaemons: (amount: ItemSize, onSuccess: () => void, onError: () => void) => {
+        axios
+            .put("/api/player/store", amount, {headers: {"Content-Type": "text/plain"}})
+            .then(response => response.data)
+            .then(data => {
+                set({player: data});
+                onSuccess()
+            })
+            .catch(error => {
+                onError()
+                console.error(error)
             });
     }
 

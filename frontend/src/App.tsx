@@ -19,6 +19,7 @@ import MapView from "./components/MapView.tsx";
 import ViewChangeButton from "./components/ViewChangeButton.tsx";
 import RechargingButton from "./components/RechargingButton.tsx";
 import NavBar from "./components/NavBar.tsx";
+import StorePage from "./components/StorePage.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -108,6 +109,12 @@ export default function App() {
                                 <PlayerInfoBar player={player}/>
                                 <NodeFilter/>
                                 <NodeList player={player} nodes={nodes}/>
+                                <ViewChangeButton view={"map"}/>
+                            </>
+                        }/>
+                        <Route path={"/store"} element={
+                            <>
+                                <StorePage/>
                                 <ViewChangeButton view={"map"}/>
                             </>
                         }/>

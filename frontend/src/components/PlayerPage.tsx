@@ -41,13 +41,13 @@ export default function PlayerPage() {
                 <StyledAvatar isenemy={`${isEnemy}`} src={`${AvatarImage}`} sx={{width: 125, height: 125}}/>
                 <StyledPlayerDetails>
                     <StyledText>Name: {player.name}</StyledText>
-                    <StyledText>Health: {player.health}/{player.maxHealth}HP</StyledText>
+                    <StyledText>Health: {player.health}/{player.maxHealth}</StyledText>
                     <StyledText>Level: {player.level}</StyledText>
                     <StyledText>Experience: {player.experience}/{player.experienceToNextLevel}XP</StyledText>
                 </StyledPlayerDetails>
                 <StyledPlayerStats>
                     <StyledText>Credits: {player.credits}$</StyledText>
-                    <StyledText color={"secondary"}>Attack: {player.attack}AP</StyledText>
+                    <StyledText color={"secondary"}>Daemons: {player.attack}/{player.maxAttack}</StyledText>
                     <StyledText>Income/Hour: {nodes ? incomePerHour(nodes) : 0}$</StyledText>
                 </StyledPlayerStats>
                 <StyledPlayerCoordinates>
@@ -57,14 +57,14 @@ export default function PlayerPage() {
                 </StyledPlayerCoordinates>
             </StyledCard>
                 <Typography color={theme.palette.success.main} variant={"h5"}>Nodes</Typography>
-                {nodes && <NodeList player={player} nodes={nodes}/>}
+                {nodes && nodes.length > 0 ? <NodeList player={player} nodes={nodes}/> : <p>No nodes yet</p>}
         </>
         )
     }
 }
 
 const StyledCard = styled(Card)`
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   width: 95%;
   height: 50vh;
   background: var(--color-semiblack);

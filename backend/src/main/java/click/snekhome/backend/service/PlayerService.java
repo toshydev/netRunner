@@ -6,11 +6,14 @@ import click.snekhome.backend.model.Player;
 import click.snekhome.backend.repo.PlayerRepo;
 import click.snekhome.backend.security.UserData;
 import click.snekhome.backend.util.IdService;
+import click.snekhome.backend.util.ItemSize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+
+import static click.snekhome.backend.util.PlayerFunctions.buyAttackPoints;
 
 @Service
 public class PlayerService {
@@ -100,5 +103,15 @@ public class PlayerService {
                 .getName();
         Player player = this.getPlayer(username);
         return this.playerRepo.findAllByNameIsNot(player.name());
+    }
+
+    public Player buyItem(ItemSize itemSize) {
+        String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        Player player = this.getPlayer(username);
+        Player updatedPlayer = buyAttackPoints(player, itemSize);
+        return this.playerRepo.save(updatedPlayer);
     }
 }

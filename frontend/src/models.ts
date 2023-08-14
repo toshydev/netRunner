@@ -40,3 +40,9 @@ export enum ActionType {
     HACK = "HACK",
     ABANDON = "ABANDON",
 }
+
+export enum ItemSize {
+    SMALL = "SMALL",
+    MEDIUM = "MEDIUM",
+    LARGE = "LARGE",
+}
