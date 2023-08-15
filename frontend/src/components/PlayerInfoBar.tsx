@@ -1,19 +1,28 @@
 import styled from "@emotion/styled";
 import {Player} from "../models.ts";
 import CpuIcon from "./icons/CpuIcon.tsx";
+import {useNavigate} from "react-router-dom";
+import {useClickSound} from "../utils/sound.ts";
 
 type Props = {
     player: Player | null
 }
 export default function PlayerInfoBar({player}: Props) {
+    const navigate = useNavigate()
+    const playClick = useClickSound()
+
+    function handleNavigate(path: string) {
+        playClick()
+        navigate(path)
+    }
 
     return <StyledContainer>
         {player && <StyledBar theme={"primary"} bg={"black"}>
-            <StyledText color={"primary"}>{player.name}</StyledText>
+            <StyledText color={"primary"} onClick={() => handleNavigate("/player")}>{player.name}</StyledText>
             <StyledInfoContainer>
                 <StyledText color={"primary"}>LVL {player.level}</StyledText>
                 <StyledText color={"secondary"}>{player.health}HP</StyledText>
-                <StyledDaemonsContainer>
+                <StyledDaemonsContainer onClick={() => handleNavigate("/store")}>
                     <StyledText color={"secondary"}>{player.attack}</StyledText>
                     <CpuIcon/>
                 </StyledDaemonsContainer>
@@ -54,6 +63,10 @@ const StyledBar = styled.div<{ theme: string, bg: string }>`
 
 const StyledText = styled.p<{ color: string }>`
   color: var(--color-${props => props.color});
+  
+  &:active {
+    scale: 0.95;
+  }
 `;
 
 const StyledInfoContainer = styled.div`
@@ -68,4 +81,8 @@ const StyledDaemonsContainer = styled.div`
     display: flex;
   justify-content: space-around;
     align-items: center;
+  
+  &:active {
+    scale: 0.95;
+  }
 `;

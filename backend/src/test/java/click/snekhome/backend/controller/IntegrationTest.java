@@ -985,7 +985,6 @@ class IntegrationTest {
                 [
                      {
                          "name":"Trading interface",
-                         "level":0,
                          "health":100,
                          "coordinates": {
                              "latitude": 48.1197551,
@@ -996,6 +995,7 @@ class IntegrationTest {
                  ]
                  """;
 
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(serverResponse));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(serverResponse));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(serverResponse));
 

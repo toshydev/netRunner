@@ -117,8 +117,8 @@ export default function NodeItem({node, player, distance, type}: Props) {
         navigate(path)
     }
 
-    const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
-    const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
+    const ownerButtonDisabled = node.ownerId === null || node.ownerId === ""
+    const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange)
     const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange || node.health === 0
 
     let status;
@@ -179,10 +179,10 @@ export default function NodeItem({node, player, distance, type}: Props) {
                     <HealthBar health={node.health}/>
                 </StyledStatsContainer>
                 <StyledOwnerArea>
-                    <StyledClaimButton
+                    <StyledOwnerButton
                         isplayerowned={`${isPlayerOwned}`}
-                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
-                    >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
+                        onClick={() => !ownerButtonDisabled && handleNavigate(`/player/${owner}`)}
+                    >{owner !== "" ? owner : <UnlockIcon/>}</StyledOwnerButton>
                 </StyledOwnerArea>
                 <StyledDistanceInfo
                     outofrange={`${!isInRange}`}>{`Distance: ${getDistanceString(distance)}`}</StyledDistanceInfo>
@@ -226,10 +226,10 @@ export default function NodeItem({node, player, distance, type}: Props) {
                         <HealthBar health={node.health}/>
                     </StyledPopupStatsContainer>
                     <StyledPopupOwnerArea>
-                        <StyledPopupClaimButton
+                        <StyledPopupOwnerButton
                             isplayerowned={`${isPlayerOwned}`}
-                            onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
-                        >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupClaimButton>
+                            onClick={() => !ownerButtonDisabled && handleNavigate(`/player/${owner}`)}
+                        >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupOwnerButton>
                     </StyledPopupOwnerArea>
                     <StyledPopupDistanceInfo
                         outofrange={`${!isInRange}`}>{`${getDistanceString(distance)}`}</StyledPopupDistanceInfo>
@@ -357,7 +357,7 @@ const StyledLevel = styled(Typography)`
   font-family: inherit;
 `
 
-const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
+const StyledOwnerButton = styled(Button)<{ isplayerowned: string }>`
   margin-left: auto;
   background: var(--color-black);
   color: ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
@@ -529,7 +529,7 @@ const StyledPopupLevel = styled(Typography)`
   font-family: inherit;
 `
 
-const StyledPopupClaimButton = styled(Button)<{ isplayerowned: string }>`
+const StyledPopupOwnerButton = styled(Button)<{ isplayerowned: string }>`
   margin-left: auto;
   background: var(--color-black);
   color: ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};

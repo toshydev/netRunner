@@ -27,6 +27,7 @@ import static click.snekhome.backend.util.PlayerFunctions.*;
 @Service
 @EnableScheduling
 public class NodeService {
+    private final List<String> initialPlayers = List.of("Arasaka", "Militech", "Kang Tao", "Biotechnica", "Petrochem", "Kendachi", "NetWatch");
     private static final int MAX_DISTANCE = 250;
     private static final long MIN_TIME_BETWEEN_SCANS = 300;
     private final NodeRepo nodeRepo;
@@ -172,11 +173,13 @@ public class NodeService {
         for (CustomPlacesResult place : placesList) {
             if (allNodes.stream().noneMatch(node -> node.coordinates().latitude() == place.geometry().location().lat && node.coordinates().longitude() == place.geometry().location().lng)) {
                 String nodeName = getNodeName(place);
+                int level = calculateLevel(nodeName);
+                String owner = getRandomString(this.initialPlayers);
                 Node node = new Node(
                         this.idService.generateId(),
-                        null,
+                        owner,
                         nodeName,
-                        0,
+                        level,
                         100,
                         new Coordinates(place.geometry().location().lat, place.geometry().location().lng, Instant.now().getEpochSecond()),
                         Instant.now().getEpochSecond(),

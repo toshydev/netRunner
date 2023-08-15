@@ -5,6 +5,7 @@ import click.snekhome.backend.model.Node;
 
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.List;
 
 public class NodeFunctions {
 
@@ -85,21 +86,21 @@ public class NodeFunctions {
     }
 
     public static Modifier getModifier(Node node) {
-        int experienceModifier = 0;
+        int experienceModifier = 1;
         int attackModifier = 0;
-        int creditsModifier = 0;
+        int creditsModifier = 1;
         int randInt = new SecureRandom().nextInt(3);
         switch (node.name()) {
             case "Trading interface" -> creditsModifier = 2;
-            case "Server farm" -> experienceModifier = 2;
-            case "Database access" -> attackModifier = 1;
+            case "Server farm" -> attackModifier = 1;
+            case "Database access" -> experienceModifier = 2;
             case "CCTV control" -> {
                 if (randInt == 0) {
                     creditsModifier = 2;
                 } else if (randInt == 1) {
                     experienceModifier = 2;
                 } else {
-                    attackModifier = 2;
+                    attackModifier = 1;
                 }
             }
             default -> {
@@ -113,5 +114,24 @@ public class NodeFunctions {
                 attackModifier,
                 creditsModifier
         );
+    }
+
+    public static int calculateLevel(String nodeName) {
+        int level;
+        SecureRandom random = new SecureRandom();
+        switch (nodeName) {
+            case "Trading interface" -> level = random.nextInt(5) + 1;
+            case "Server farm" -> level = random.nextInt(1, 15) + 16;
+            case "Database access" -> level = random.nextInt(1, 5) + 6;
+            case "CCTV control" -> level = random.nextInt(10) + 1;
+            default -> level = random.nextInt(3) + 1;
+        }
+        return level;
+    }
+
+    public static String getRandomString(List<String> strings) {
+        SecureRandom random = new SecureRandom();
+        int randInt = random.nextInt(strings.size());
+        return strings.get(randInt);
     }
 }

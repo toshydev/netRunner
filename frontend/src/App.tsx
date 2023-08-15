@@ -21,6 +21,7 @@ import RechargingButton from "./components/RechargingButton.tsx";
 import NavBar from "./components/NavBar.tsx";
 import StorePage from "./components/StorePage.tsx";
 import GpsButton from "./components/GpsButton.tsx";
+import SettingsPage from "./components/SettingsPage.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -118,6 +119,12 @@ export default function App() {
                         <Route path={"/store"} element={
                             <>
                                 <StorePage/>
+                                <ViewChangeButton view={"map"}/>
+                            </>
+                        }/>
+                        <Route path={"/settings"} element={
+                            <>
+                                <SettingsPage/>
                                 <ViewChangeButton view={"map"}/>
                             </>
                         }/>

@@ -30,7 +30,8 @@ public class GooglePlacesService {
     public List<CustomPlacesResult> getUniquePlaces(String latitude, String longitude) throws IOException {
         CustomPlacesResponse atmResponse = this.getPlaces(latitude, longitude, "atm");
         CustomPlacesResponse universityResponse = this.getPlaces(latitude, longitude, "university");
-        List<CustomPlacesResult> allPlaces = Stream.concat(atmResponse.results().stream(), universityResponse.results().stream())
+        CustomPlacesResponse shoppingResponse = this.getPlaces(latitude, longitude, "shopping_mall");
+        List<CustomPlacesResult> allPlaces = Stream.concat(shoppingResponse.results().stream(), Stream.concat(atmResponse.results().stream(), universityResponse.results().stream()))
                 .toList();
         return removeDuplicateLocations(allPlaces);
     }

@@ -1,6 +1,6 @@
 import {Icon} from "leaflet";
 import CharacterEnemy from "../../assets/svg/character_enemy.svg";
-import PlayerAvatar from "../../assets/images/avatar.png";
+import PlayerAvatar from "../../assets/images/defaultAvatar.webp";
 import DatabaseNeutral from "../../assets/svg/database_neutral.svg";
 import DatabasePlayer from "../../assets/svg/databanse_player.svg";
 import DatabaseEnemy from "../../assets/svg/database_enemy.svg";

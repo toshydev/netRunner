@@ -40,6 +40,7 @@
 .leaflet-marker-pane .player {
     border-radius: 50px;
     animation: halo-pulse 2s ease-in-out infinite;
+    background: var(--color-black);
 }
 
 @keyframes halo-pulse {
