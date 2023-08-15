@@ -1,11 +1,9 @@
 import NodeItem from "./NodeItem.tsx";
 import {useStore} from "../hooks/useStore.ts";
 import styled from "@emotion/styled";
-import AddButton from "./AddButton.tsx";
 import {useEffect, useState} from "react";
 import {Node, Player} from "../models.ts";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
-import {useLocation} from "react-router-dom";
 
 type Props = {
     player: Player | null;
@@ -22,8 +20,6 @@ export default function NodeList({ player, nodes }: Props) {
     const filterNodesByOwner = useStore(state => state.filterNodesByOwner);
     const rangeFilter = useStore(state => state.rangeFilter);
     const filterNodesByRange = useStore(state => state.filterNodesByRange);
-    const location = useLocation()
-    const path = location.pathname
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -53,7 +49,6 @@ export default function NodeList({ player, nodes }: Props) {
                         })}
                     />
                 ))}
-                {path === "/" && <AddButton/>}
             </StyledList>
         );
     }

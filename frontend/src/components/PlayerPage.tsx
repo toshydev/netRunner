@@ -4,7 +4,7 @@ import usePlayer from "../hooks/usePlayer.ts";
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useStore} from "../hooks/useStore.ts";
-import AvatarImage from "../assets/images/avatar.png";
+import AvatarImage from "../assets/images/defaultAvatar.webp";
 import NodeList from "./NodeList.tsx";
 import useNodes from "../hooks/useNodes.ts";
 import {Node} from "../models.ts";
@@ -18,6 +18,7 @@ export default function PlayerPage() {
     const user = useStore(state => state.user)
     const theme = useTheme()
     const isEnemy = user !== player?.name
+    const currentPlayer = useStore(state => state.player)
 
     const incomePerHour = (nodes: Node[]): number => {
         return nodes.reduce((acc, node) => {
@@ -57,7 +58,7 @@ export default function PlayerPage() {
                 </StyledPlayerCoordinates>
             </StyledCard>
                 <Typography color={theme.palette.success.main} variant={"h5"}>Nodes</Typography>
-                {nodes && nodes.length > 0 ? <NodeList player={player} nodes={nodes}/> : <p>No nodes yet</p>}
+                {nodes && nodes.length > 0 ? <NodeList player={currentPlayer} nodes={nodes}/> : <p>No nodes yet</p>}
         </>
         )
     }
@@ -77,7 +78,8 @@ const StyledAvatar = styled(Avatar)<{isenemy: string}>`
   grid-row: 1;
   grid-column: 1;
   display: flex;
-  margin: auto;
+  margin: 1rem;
+  background: var(--color-black);
   border: 2px solid ${props => props.isenemy === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
   filter: drop-shadow(0 0 0.15rem ${props => props.isenemy === "true" ? "var(--color-secondary)" : "var(--color-primary)"});
 `;

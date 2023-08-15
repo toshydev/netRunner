@@ -32,10 +32,11 @@ export default function VolumeBar() {
 
     return <StyledVolumeBar>
         <StyledOnOffButton isvolume={`${volume > 0}`} onClick={handleVolumeToggle} variant={"contained"}>
-            <SoundIcon />
+            <SoundIcon/>
         </StyledOnOffButton>
         <StyledButtonContainer>
-            <StyledSoundButton onClick={() => handleVolumeChange(0.25)} isvolume={`${volume >= 0.25}`}> </StyledSoundButton>
+            <StyledSoundButton onClick={() => handleVolumeChange(0.25)}
+                               isvolume={`${volume >= 0.25}`}> </StyledSoundButton>
             <StyledSoundButton onClick={() => handleVolumeChange(0.5)} isvolume={`${volume >= 0.5}`}/>
             <StyledSoundButton onClick={() => handleVolumeChange(0.75)} isvolume={`${volume >= 0.75}`}/>
             <StyledSoundButton onClick={() => handleVolumeChange(1)} isvolume={`${volume === 1}`}/>
@@ -45,30 +46,27 @@ export default function VolumeBar() {
 }
 
 const StyledVolumeBar = styled.div`
-  width: 10rem;
   height: 3rem;
   display: flex;
-  justify-content: center;
   align-items: center;
 `;
 
 const StyledButtonContainer = styled.div`
   height: 90%;
   display: flex;
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
   gap: 0.25rem;
 `;
 
-const StyledSoundButton = styled.button<{isvolume: string}>`
-  width: 0.15rem;
+const StyledSoundButton = styled.button<{ isvolume: string }>`
   height: 100%;
   background: var(--color-${({isvolume}) => isvolume === "true" ? "primary" : "grey"});
   ${({isvolume}) => isvolume === "true" ? "box-shadow: 0 0 0.5rem var(--color-primary);" : ""}
-    border: none;
+  border: none;
 `;
 
-const StyledOnOffButton = styled(Button)<{isvolume: string}>`
+const StyledOnOffButton = styled(Button)<{ isvolume: string }>`
   width: 5rem;
   height: 5rem;
   scale: 0.6;

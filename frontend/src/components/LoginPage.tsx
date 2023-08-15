@@ -89,6 +89,9 @@ export default function LoginPage() {
 
     function handleNewUserSwitch() {
         setNewUser(!newUser);
+        setUsername("");
+        setEmail("");
+        setPassword("");
     }
 
     return <>

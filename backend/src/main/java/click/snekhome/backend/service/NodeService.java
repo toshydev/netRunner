@@ -27,6 +27,7 @@ import static click.snekhome.backend.util.PlayerFunctions.*;
 @Service
 @EnableScheduling
 public class NodeService {
+    private final List<String> initialPlayers = List.of("Arasaka", "Militech", "Kang Tao", "Biotechnica", "Petrochem", "Kendachi", "NetWatch");
     private static final int MAX_DISTANCE = 250;
     private static final long MIN_TIME_BETWEEN_SCANS = 300;
     private final NodeRepo nodeRepo;
@@ -76,9 +77,9 @@ public class NodeService {
         if (getDistance(player.coordinates().latitude(), player.coordinates().longitude(), node.coordinates().latitude(), node.coordinates().longitude()) > MAX_DISTANCE) {
             return node;
         }
-        if (node.ownerId() == null || node.health() == 0) {
+        if (!hasOwner(node) || node.health() == 0) {
             newNode = handleNonOwnedNode(player, node, actionType);
-        } else if (node.ownerId().equals(player.id())) {
+        } else if (isOwner(player, node)) {
             newNode = handleOwnedNode(player, node, actionType);
         } else {
             newNode = handleAttackedNode(player, node, actionType);
@@ -116,8 +117,7 @@ public class NodeService {
     private Node handleAttackedNode(Player player, Node node, ActionType actionType) {
         if (actionType == ActionType.HACK && (player.attack() >= node.level()) && (getSecondsSince(node.lastAttack()) > 120)) {
             Node newNode = takeDamage(node, player.level() * 10);
-            Player updatedPlayer = getCredits(player, newNode.level() * 10);
-            updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
+            Player updatedPlayer = hack(player, node);
             playerService.updatePlayer(player.id(), updatedPlayer);
             return newNode;
 
@@ -173,11 +173,13 @@ public class NodeService {
         for (CustomPlacesResult place : placesList) {
             if (allNodes.stream().noneMatch(node -> node.coordinates().latitude() == place.geometry().location().lat && node.coordinates().longitude() == place.geometry().location().lng)) {
                 String nodeName = getNodeName(place);
+                int level = calculateLevel(nodeName);
+                String owner = getRandomString(this.initialPlayers);
                 Node node = new Node(
                         this.idService.generateId(),
-                        null,
+                        owner,
                         nodeName,
-                        0,
+                        level,
                         100,
                         new Coordinates(place.geometry().location().lat, place.geometry().location().lng, Instant.now().getEpochSecond()),
                         Instant.now().getEpochSecond(),

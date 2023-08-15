@@ -1,11 +1,11 @@
 package click.snekhome.backend.util;
 
 import click.snekhome.backend.model.Coordinates;
+import click.snekhome.backend.model.Node;
 import click.snekhome.backend.model.Player;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerFunctionsTest {
 
@@ -56,5 +56,43 @@ class PlayerFunctionsTest {
         int attackPointsToUse = 20;
         Player newPlayer = PlayerFunctions.useAttackPoints(initialPlayer, attackPointsToUse);
         assertEquals(initialPlayer, newPlayer);
+    }
+
+    @Test
+    void testPlayerGetsCreditModifierWhenHackingOwnedTradingInterface() {
+        Node node = new Node("1", "someOwner", "Trading interface", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Player initPlayer = new Player("abc", "someUser", "Player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 15, 25, 50, 0);
+        Player updatedPlayer = PlayerFunctions.hack(initPlayer, node);
+        assertEquals(70, updatedPlayer.credits());
+        assertEquals(10, updatedPlayer.experience());
+        assertEquals(15, updatedPlayer.attack());
+    }
+
+    @Test
+    void testPlayerGetsAttackModifierWhenHackingOwnedServerFarm() {
+        Node node = new Node("1", "someOwner", "Server farm", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Player initPlayer = new Player("abc", "someUser", "Player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 15, 25, 50, 0);
+        Player updatedPlayer = PlayerFunctions.hack(initPlayer, node);
+        assertEquals(60, updatedPlayer.credits());
+        assertEquals(10, updatedPlayer.experience());
+        assertEquals(16, updatedPlayer.attack());
+    }
+
+    @Test
+    void testPlayerGetsExperienceModifierWhenHackingOwnedDatabaseAccess() {
+        Node node = new Node("1", "someOwner", "Database access", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Player initPlayer = new Player("abc", "someUser", "Player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 15, 25, 50, 0);
+        Player updatedPlayer = PlayerFunctions.hack(initPlayer, node);
+        assertEquals(60, updatedPlayer.credits());
+        assertEquals(20, updatedPlayer.experience());
+        assertEquals(15, updatedPlayer.attack());
+    }
+
+    @Test
+    void testPlayerGetsRandomModifierWhenHackingOwnedCctvControl() {
+        Node node = new Node("1", "someOwner", "CCTV control", 1, 100, new Coordinates(0, 0, 0), 0, 0);
+        Player initPlayer = new Player("abc", "someUser", "Player1", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 15, 25, 50, 0);
+        Player updatedPlayer = PlayerFunctions.hack(initPlayer, node);
+        assertNotEquals(initPlayer, updatedPlayer);
     }
 }

@@ -1,13 +1,12 @@
 import {AppBar, Avatar, Box, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography} from "@mui/material";
 import styled from "@emotion/styled";
 import Intelligence from "../assets/images/intelligence.png"
-import PlayerAvatar from "../assets/images/avatar.png"
+import PlayerAvatar from "../assets/images/defaultAvatar.webp"
 import {useLocation, useNavigate} from "react-router-dom";
 import React, {useState} from "react";
 import {keyframes} from "@emotion/react";
 import {useClickSound, useErrorSound, useLoginSuccessSound} from "../utils/sound.ts";
 import {useStore} from "../hooks/useStore.ts";
-import VolumeBar from "./VolumeBar.tsx";
 
 type Props = {
     user?: string
@@ -27,15 +26,15 @@ export default function NavBar({user}: Props) {
         const page = location.pathname.split("/")[1]
         const subPage = location.pathname.split("/")[2]
         if (page === "") {
-            return "Nodes List"
+            return "Access Points"
         } else if(page === "map") {
-            return "Nodes Map"
-        } else if(page === "add") {
-            return "Add Node"
+            return "Map"
         } else if(page === "login") {
-            return "NetRunner"
+            return "Netrunner"
         } else if(page === "store") {
-            return "Store"
+            return "Daemon Store"
+        } else if(page === "settings") {
+            return "Settings"
         } else {
             return subPage.charAt(0).toUpperCase() + subPage.slice(1)
         }
@@ -56,14 +55,16 @@ export default function NavBar({user}: Props) {
         navigate(path)
     }
 
-    return <StyledAppBar position="static">
+    const heading = getPageName()
+
+    return <StyledAppBar position="sticky">
         <Container maxWidth="xl">
             <Toolbar disableGutters>
                 <StyledLogo src={Intelligence} alt={"netrunner logo"} onClick={() => {
                     playClick()
-                    navigate("/")
+                    navigate("/map")
                 }}/>
-                <StyledHeading>{getPageName()}</StyledHeading>
+                <StyledHeading length={heading.length}>{heading}</StyledHeading>
                 {isAuthenticated && <Box sx={{flexGrow: 0, ml: "auto"}}>
                     <Tooltip title="Open settings">
                         <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
@@ -101,7 +102,6 @@ export default function NavBar({user}: Props) {
                         }}>
                             <StyledText textAlign="center" color="error">Logout</StyledText>
                         </MenuItem>
-                            <VolumeBar/>
                     </StyledMenu>
                 </Box>}
             </Toolbar>
@@ -114,6 +114,8 @@ const StyledAppBar = styled(AppBar)`
   color: var(--color-primary);
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(255, 0, 79, 0.12);
   z-index: 10;
+  border: 2px solid transparent;
+  border-bottom-color: var(--color-secondary);
 `;
 
 const pulse = keyframes`
@@ -132,6 +134,11 @@ const StyledLogo = styled.img`
   width: 3rem;
   height: 3rem;
   animation: ${pulse} 4s infinite;
+  transition: scale 0.15s ease-in-out;
+  
+  &:active {
+    scale: 0.95;
+  }
 `;
 
 const blink = keyframes`
@@ -158,12 +165,14 @@ const blink = keyframes`
   }
 `;
 
-const StyledHeading = styled.h1`
+const StyledHeading = styled.h1<{length: number}>`
   color: var(--color-primary);
   text-shadow: -1px -1px 1px var(--color-secondary);
   animation: ${blink} 3s infinite;
   filter: drop-shadow(0 0 1rem var(--color-black));
-    margin-left: 1rem;
+  margin-left: 1rem;
+  font-family: var(--font-cyberpunk);
+  font-size: ${({length}) => length > 10 ? "1.5rem" : "2rem"};
 `;
 
 const StyledMenu = styled(Menu)`

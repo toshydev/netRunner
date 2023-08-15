@@ -25,21 +25,27 @@ export default function StorePage() {
         buyDaemons(amount, playLoginSuccess, playError)
     }
 
+    const isDisabled = (cost: number, apIncrease: number) => {
+        if (player) {
+            return player.credits < cost || player.attack + apIncrease > player?.maxAttack
+        }
+    }
+
     if (player) {
         return <StyledCard>
             <StyledPlayerStats>
                 <StyledText isupdating={`${isUpdating}`} color="secondary">Daemons: {player.attack}</StyledText>
                 <StyledText isupdating={`${isUpdating}`}>Credits: {player.credits}$</StyledText>
             </StyledPlayerStats>
-            <StyledSmallStoreItem disabled={player.credits < 1000} onClick={() => handleBuyDaemons(ItemSize.SMALL)}>
+            <StyledSmallStoreItem disabled={isDisabled(1000, 1)} onClick={() => handleBuyDaemons(ItemSize.SMALL)}>
                 <StyledItemHeading color={"secondary"} variant={"h5"}>1 Daemon</StyledItemHeading>
                 <StyledItemHeading variant={"h6"}>Cost: 1000$</StyledItemHeading>
             </StyledSmallStoreItem>
-            <StyledSmallStoreItem disabled={player.credits < 4000} onClick={() => handleBuyDaemons(ItemSize.MEDIUM)}>
+            <StyledSmallStoreItem disabled={isDisabled(4000, 5)} onClick={() => handleBuyDaemons(ItemSize.MEDIUM)}>
                 <StyledItemHeading color={"secondary"} variant={"h5"}>5 Daemons</StyledItemHeading>
                 <StyledItemHeading variant={"h6"}>Cost: 4000$</StyledItemHeading>
             </StyledSmallStoreItem>
-            <StyledLargeStoreItem disabled={player.credits < 7500} onClick={() => handleBuyDaemons(ItemSize.LARGE)}>
+            <StyledLargeStoreItem disabled={isDisabled(7500, 10)} onClick={() => handleBuyDaemons(ItemSize.LARGE)}>
                 <StyledItemHeading color={"secondary"} variant={"h4"}>10 Daemons</StyledItemHeading>
                 <StyledItemHeading variant={"h5"}>Cost: 7500$</StyledItemHeading>
             </StyledLargeStoreItem>

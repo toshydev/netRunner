@@ -2,13 +2,31 @@
 <html lang="en">
   <head>
       <meta charset="UTF-8"/>
-      <link rel="icon" type="image/svg+xml" href="/vite.svg"/>
+      <link rel="icon" type="image/png" href="/netrunner.png"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Play&display=swap" rel="stylesheet">
+      <style>
+          @font-face {
+              font-family: '3270';
+              src: url('./src/assets/fonts/3270/3270NerdFont-Regular.ttf') format('truetype');
+              font-weight: 400;
+              font-style: normal;
+          }
+
+          @font-face {
+              font-family: 'Cyberpunk';
+              src: url('./src/assets/fonts/Cyberpunk/Cyberpunk.ttf') format('truetype');
+              font-weight: 400;
+              font-style: normal;
+          }
+      </style>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <meta name="description" content="Real-world cyberpunk exploration game">
       <title>NetRunner</title>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>

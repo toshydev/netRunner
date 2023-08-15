@@ -20,6 +20,8 @@ import ViewChangeButton from "./components/ViewChangeButton.tsx";
 import RechargingButton from "./components/RechargingButton.tsx";
 import NavBar from "./components/NavBar.tsx";
 import StorePage from "./components/StorePage.tsx";
+import GpsButton from "./components/GpsButton.tsx";
+import SettingsPage from "./components/SettingsPage.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
@@ -94,6 +96,7 @@ export default function App() {
                                 <PlayerInfoBar player={player}/>
                                 <MapView/>
                                 {player && <RechargingButton player={player}/>}
+                                <GpsButton/>
                                 <ViewChangeButton view={"list"}/>
                             </>
                         }/>
@@ -101,20 +104,27 @@ export default function App() {
                         <Route path={"/player/:name"} element={
                             <>
                                 <PlayerPage/>
+                                <GpsButton/>
                                 <ViewChangeButton view={"map"}/>
-
                             </>}/>
                         <Route path={"/"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
                                 <NodeFilter/>
                                 <NodeList player={player} nodes={nodes}/>
+                                <GpsButton/>
                                 <ViewChangeButton view={"map"}/>
                             </>
                         }/>
                         <Route path={"/store"} element={
                             <>
                                 <StorePage/>
+                                <ViewChangeButton view={"map"}/>
+                            </>
+                        }/>
+                        <Route path={"/settings"} element={
+                            <>
+                                <SettingsPage/>
                                 <ViewChangeButton view={"map"}/>
                             </>
                         }/>

@@ -117,8 +117,8 @@ export default function NodeItem({node, player, distance, type}: Props) {
         navigate(path)
     }
 
-    const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange || notEnoughAP)
-    const claimDisabled = !isClaimable || !isInRange || isUpdating || isAttacked
+    const ownerButtonDisabled = node.ownerId === null || node.ownerId === ""
+    const hackDisabled = isPlayerOwned ? (isUpdating || !isInRange || notEnoughAP) : (isAttacked || !isInRange)
     const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange || node.health === 0
 
     let status;
@@ -179,10 +179,10 @@ export default function NodeItem({node, player, distance, type}: Props) {
                     <HealthBar health={node.health}/>
                 </StyledStatsContainer>
                 <StyledOwnerArea>
-                    <StyledClaimButton
+                    <StyledOwnerButton
                         isplayerowned={`${isPlayerOwned}`}
-                        onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
-                    >{owner !== "" ? owner : <UnlockIcon/>}</StyledClaimButton>
+                        onClick={() => !ownerButtonDisabled && handleNavigate(`/player/${owner}`)}
+                    >{owner !== "" ? owner : <UnlockIcon/>}</StyledOwnerButton>
                 </StyledOwnerArea>
                 <StyledDistanceInfo
                     outofrange={`${!isInRange}`}>{`Distance: ${getDistanceString(distance)}`}</StyledDistanceInfo>
@@ -203,10 +203,6 @@ export default function NodeItem({node, player, distance, type}: Props) {
                         <StyledLevel><strong>{level}</strong></StyledLevel>
                     </StyledLevelContainer>
                 </StyledLevelArea>
-                <StyledLocationContainer outofrange={`${!isInRange}`}>
-                    <StyledTextPrimary>Lat: {node.coordinates.latitude}</StyledTextPrimary>
-                    <StyledTextPrimary>Lon: {node.coordinates.longitude}</StyledTextPrimary>
-                </StyledLocationContainer>
                 <StyledStatusContainer>
                     {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} label={"Update"}/>}
                     {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} label={"Attack"}/>}
@@ -230,10 +226,10 @@ export default function NodeItem({node, player, distance, type}: Props) {
                         <HealthBar health={node.health}/>
                     </StyledPopupStatsContainer>
                     <StyledPopupOwnerArea>
-                        <StyledPopupClaimButton
+                        <StyledPopupOwnerButton
                             isplayerowned={`${isPlayerOwned}`}
-                            onClick={() => !claimDisabled ? handleEdit(ActionType.HACK) : handleNavigate(`/player/${owner}`)}
-                        >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupClaimButton>
+                            onClick={() => !ownerButtonDisabled && handleNavigate(`/player/${owner}`)}
+                        >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupOwnerButton>
                     </StyledPopupOwnerArea>
                     <StyledPopupDistanceInfo
                         outofrange={`${!isInRange}`}>{`${getDistanceString(distance)}`}</StyledPopupDistanceInfo>
@@ -287,19 +283,14 @@ const StyledListItem = styled(Card)<{ isplayerowned: string; status: string, css
   padding: 0.5rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   position: relative;
   ${({css}) => css};
 `;
 
-const StyledTextPrimary = styled(Typography)`
-  color: inherit;
-  font: inherit;
-`;
-
 const StyledNameContainer = styled.div`
   display: flex;
-  grid-column: 1 / 4;
+  grid-column: 1 / 3;
   grid-row: 1;
   align-items: center;
   padding-right: 0.5rem;
@@ -316,18 +307,6 @@ const StyledStatsContainer = styled.div`
   grid-column: 1 / 4;
   grid-row: 2;
   gap: 0.5rem;
-`;
-
-const StyledLocationContainer = styled.div<{ outofrange: string }>`
-  display: flex;
-  flex-direction: column;
-  border-radius: 16px;
-  border: 2px solid ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
-  background: var(--color-black);
-  color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
-  padding: 0.5rem;
-  grid-column: 1 / 4;
-  grid-row: 3;
 `;
 
 const StyledOwnerArea = styled.div`
@@ -378,7 +357,7 @@ const StyledLevel = styled(Typography)`
   font-family: inherit;
 `
 
-const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
+const StyledOwnerButton = styled(Button)<{ isplayerowned: string }>`
   margin-left: auto;
   background: var(--color-black);
   color: ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
@@ -397,8 +376,8 @@ const StyledClaimButton = styled(Button)<{ isplayerowned: string }>`
 `;
 
 const StyledStatusContainer = styled.div`
-  grid-column: 4 / 6;
-  grid-row: 4;
+  grid-column: 3 / 5;
+  grid-row: 1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -408,12 +387,12 @@ const StyledStatusContainer = styled.div`
 
 const StyledDistanceInfo = styled(Typography)<{ outofrange: string }>`
   color: ${({outofrange}) => outofrange === "true" ? "var(--color-secondary)" : "var(--color-primary)"};
-  grid-column: 1 / 5;
-  grid-row: 4;
+  grid-column: 1 / 4;
+  grid-row: 3;
   font-size: 1.5rem;
   font-family: inherit;
   align-self: center;
-  z-index: 4;
+  z-index: 5;
 `;
 
 const ModalContainer = styled.div`
@@ -550,7 +529,7 @@ const StyledPopupLevel = styled(Typography)`
   font-family: inherit;
 `
 
-const StyledPopupClaimButton = styled(Button)<{ isplayerowned: string }>`
+const StyledPopupOwnerButton = styled(Button)<{ isplayerowned: string }>`
   margin-left: auto;
   background: var(--color-black);
   color: ${({isplayerowned}) => isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};

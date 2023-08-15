@@ -1,12 +1,33 @@
 package click.snekhome.backend.util;
 
+import click.snekhome.backend.model.Modifier;
+import click.snekhome.backend.model.Node;
 import click.snekhome.backend.model.Player;
 
 import java.time.Instant;
 
+import static click.snekhome.backend.util.NodeFunctions.getModifier;
+
 public class PlayerFunctions {
 
     private PlayerFunctions() {
+    }
+
+    public static Player hack(Player player, Node node) {
+        Modifier modifier = getModifier(node);
+        return
+                getAttackPoints(
+                        getCredits(
+                                addExperience(
+                                        player,
+                                        node.level() * 10 * modifier.experienceModifier()
+                                ),
+                                node.level() * 10 * modifier.creditsModifier()),
+                        modifier.attackModifier());
+    }
+
+    public static boolean isOwner(Player player, Node node) {
+        return player.id().equals(node.ownerId());
     }
 
     public static Player addExperience(Player player, int experience) {
@@ -85,6 +106,25 @@ public class PlayerFunctions {
         );
     }
 
+    public static Player getAttackPoints(Player player, int attackPoints) {
+        int newAttackPoints = player.attack() + attackPoints;
+        return new Player(
+                player.id(),
+                player.userId(),
+                player.name(),
+                player.coordinates(),
+                player.level(),
+                player.experience(),
+                player.experienceToNextLevel(),
+                player.health(),
+                player.maxHealth(),
+                newAttackPoints,
+                player.maxAttack(),
+                player.credits(),
+                player.lastScan()
+        );
+    }
+
     public static Player useScan(Player player) {
         long newLastScan = Instant.now().getEpochSecond();
         return new Player(
@@ -147,5 +187,6 @@ public class PlayerFunctions {
                 player.maxAttack(),
                 newCredits,
                 player.lastScan()
-        );}
+        );
+    }
 }
