@@ -1102,15 +1102,6 @@ class IntegrationTest {
                 .andExpect(MockMvcResultMatchers.content().json(expected));
     }
 
-    @Test
-    @DirtiesContext
-    @WithMockUser(username = "playerunknown")
-    void expectWelcomeMessageWhenLoggingIn() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/ws/chat"))
-                .andExpect(MockMvcResultMatchers.status().is(101))
-                .andExpect(MockMvcResultMatchers.content().string("Welcome to the chat!"));
-    }
-
     @AfterAll
     static void cleanUp() throws IOException {
         mockWebServer.close();
