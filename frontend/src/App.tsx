@@ -22,10 +22,12 @@ import NavBar from "./components/NavBar.tsx";
 import StorePage from "./components/StorePage.tsx";
 import GpsButton from "./components/GpsButton.tsx";
 import SettingsPage from "./components/SettingsPage.tsx";
+import ChatPage from "./components/ChatPage.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
     const [location, setLocation] = useState<Coordinates | null>(null)
+    const initiateWebSocket = useStore(state => state.initiateWebSocket)
     const user = useStore(state => state.user)
     const getUser = useStore(state => state.getUser)
     const getPlayer = useStore(state => state.getPlayer)
@@ -42,6 +44,7 @@ export default function App() {
         try {
             getUser()
             if (user !== "" && user !== "anonymousUser") {
+                initiateWebSocket()
                 getPlayer()
                 getNodes()
                 getEnemies()
@@ -125,6 +128,12 @@ export default function App() {
                         <Route path={"/settings"} element={
                             <>
                                 <SettingsPage/>
+                                <ViewChangeButton view={"map"}/>
+                            </>
+                        }/>
+                        <Route path={"/chat"} element={
+                            <>
+                                <ChatPage/>
                                 <ViewChangeButton view={"map"}/>
                             </>
                         }/>

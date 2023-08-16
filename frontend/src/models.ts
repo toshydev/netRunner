@@ -36,6 +36,12 @@ export type Coordinates = {
     timestamp: number
 }
 
+export type Message = {
+    username: string,
+    message: string,
+    timestamp: number
+}
+
 export enum ActionType {
     HACK = "HACK",
     ABANDON = "ABANDON",

@@ -176,7 +176,7 @@ const StyledHeading = styled.h1<{length: number}>`
   filter: drop-shadow(0 0 1rem var(--color-black));
   margin-left: 1rem;
   font-family: var(--font-cyberpunk);
-  font-size: ${({length}) => length > 10 ? "1.5rem" : "2rem"};
+  font-size: ${({length}) => length > 7 ? "1.2rem" : "2rem"};
 `;
 
 const StyledMenu = styled(Menu)`

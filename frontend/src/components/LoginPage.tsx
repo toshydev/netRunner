@@ -13,7 +13,6 @@ import {
     useErrorSound,
     useKeyPressSound,
     useLoadingOsSound,
-    useLoginSuccessSound,
     useSwitchSound
 } from "../utils/sound.ts";
 import VolumeBar from "./VolumeBar.tsx";
@@ -27,7 +26,6 @@ export default function LoginPage() {
     const [emailError, setEmailError] = useState<string>("Invalid email");
     const [passwordError, setPasswordError] = useState<string>("Password must have at least three characters");
 
-    const playLoginSuccess = useLoginSuccessSound()
     const playError = useErrorSound()
     const playKeyPress = useKeyPressSound()
     const playSwitch = useSwitchSound()
@@ -50,7 +48,6 @@ export default function LoginPage() {
         event.preventDefault()
 
         login(username, password, navigate, () => {
-            playLoginSuccess()
             playLoadingOs()
         }, playError);
     }

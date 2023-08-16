@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import axios from "axios";
-import {ActionType, Coordinates, ItemSize, Node, NodeData, Player} from "../models.ts";
+import {ActionType, Coordinates, ItemSize, Message, Node, NodeData, Player} from "../models.ts";
 import {NavigateFunction} from "react-router-dom";
 import {toast} from "react-toastify";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
@@ -38,6 +38,11 @@ type State = {
     getEnemies: () => void
     scanNodes: (position: Coordinates, onSuccess: () => void, onError: () => void) => void
     buyDaemons: (amount: ItemSize, onSuccess: () => void, onError: () => void) => void
+    messages: Message[]
+    initiateWebSocket: () => void
+    sendMessage: (message: string) => void
+    webSocket: WebSocket | null
+    onMessage: (event: MessageEvent) => void
 }
 
 export const useStore = create<State>(set => ({
@@ -52,6 +57,8 @@ export const useStore = create<State>(set => ({
     ownerNodesFilter: false,
     rangeFilter: false,
     volume: 0.5,
+    webSocket: null,
+    messages: [],
 
     getPlayer: () => {
         set({isLoading: true})
@@ -317,6 +324,26 @@ export const useStore = create<State>(set => ({
                 onError()
                 console.error(error)
             });
+    },
+
+    initiateWebSocket: () => {
+        const webSocket = new WebSocket("ws://localhost:8080/api/ws/chat");
+        webSocket.onmessage = (event) => {
+            useStore.getState().onMessage(event);
+        }
+        set({webSocket: webSocket});
+    },
+
+    onMessage: (event: MessageEvent) => {
+        const message = JSON.parse(event.data);
+        set((state) => ({messages: [...state.messages, message]}));
+    },
+
+    sendMessage: (message: string) => {
+        const webSocket = useStore.getState().webSocket;
+        if (webSocket) {
+            webSocket.send(message);
+        }
     }
 
 }));

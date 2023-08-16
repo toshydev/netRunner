@@ -26,7 +26,10 @@ export default function GlobalStyle() {
                 --color-grey: #868e96;
                 --color-primary: #01fae6;
                 --color-secondary: #ff004f;
-                
+                --color-primary-dark: #002321;
+                --color-secondary-dark: #ffd1dc;
+                --color-special: #ffdf00;
+
                 --font-play: 'Play', sans-serif;
                 --font-3270: '3270', monospace, sans-serif;
                 --font-cyberpunk: 'Cyberpunk', monospace, sans-serif;

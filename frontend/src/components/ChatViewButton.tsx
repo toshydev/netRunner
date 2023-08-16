@@ -11,7 +11,7 @@ export default function ChatViewButton() {
 
     const path = location.pathname.split("/")[1]
 
-    return <StyledViewButton onpage={`${path === "chat"}`} onClick={() => {
+    return <StyledViewButton ispage={`${path === "chat"}`} onClick={() => {
         playSwitch()
         navigate("/chat")
     }}>
@@ -19,12 +19,12 @@ export default function ChatViewButton() {
     </StyledViewButton>
 }
 
-const StyledViewButton = styled(Button)<{onpage: string}>`
+const StyledViewButton = styled(Button)<{ispage: string}>`
   width: 4rem;
   height: 4rem;
   border-radius: 8px;
   background: var(--color-black);
-  ${props => props.onpage === "true" ? "border: 3px solid var(--color-primary);" : ""}
+  ${props => props.ispage === "true" ? "border: 3px solid var(--color-primary);" : ""}
   font-family: inherit;
   color: var(--color-primary);
   scale: 0.65;
