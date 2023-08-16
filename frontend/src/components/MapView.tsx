@@ -1,4 +1,12 @@
-import {MapContainer, Marker, TileLayer, useMap, useMapEvents} from "react-leaflet";
+import {
+    LayerGroup,
+    LayersControl,
+    MapContainer,
+    Marker,
+    TileLayer,
+    useMap,
+    useMapEvents
+} from "react-leaflet";
 import {useStore} from "../hooks/useStore.ts";
 import "./css/leaflet.css";
 import {playerIcon} from "./icons/mapIcons.ts";
@@ -12,6 +20,7 @@ import PlayerPopup from "./PlayerPopup.tsx";
 export default function MapView() {
     const [zoom, setZoom] = useState<number>(15)
     const [markers, setMarkers] = useState<Node[]>([])
+
     const player = useStore(state => state.player)
     const user = useStore(state => state.user)
     const enemies = useStore(state => state.enemies)
@@ -54,6 +63,7 @@ export default function MapView() {
         return null
     }
 
+
     if (player && nodes) {
         return (
             <MapContainer
@@ -69,28 +79,38 @@ export default function MapView() {
                     attribution='Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
                     url={"api/map/{z}/{x}/{y}"}
                 />
-                {!isScanning && markers.map(node => <NodeItem
-                    key={node.id}
-                    type={"map"}
-                    node={node}
-                    player={player}
-                    distance={getDistanceBetweenCoordinates({
-                        latitude: player.coordinates.latitude,
-                        longitude: player.coordinates.longitude
-                    }, {
-                        latitude: node.coordinates.latitude,
-                        longitude: node.coordinates.longitude
-                    })}
-                />)}
-                <Marker
-                    icon={playerIcon(user, player.name)}
-                    position={[player.coordinates.latitude, player.coordinates.longitude]}/>
-                {enemies.map(enemy => <Marker
-                    key={enemy.id}
-                    icon={playerIcon(user, enemy.name)}
-                    position={[enemy.coordinates.latitude, enemy.coordinates.longitude]}>
-                    <PlayerPopup player={enemy}/>
-                </Marker>)}
+                <LayersControl position={"topright"}>
+                    <LayersControl.Overlay checked name={"Access points"}>
+                        <LayerGroup>
+                            {!isScanning && markers.map(node => <NodeItem
+                                key={node.id}
+                                type={"map"}
+                                node={node}
+                                player={player}
+                                distance={getDistanceBetweenCoordinates({
+                                    latitude: player.coordinates.latitude,
+                                    longitude: player.coordinates.longitude
+                                }, {
+                                    latitude: node.coordinates.latitude,
+                                    longitude: node.coordinates.longitude
+                                })}
+                            />)}
+                        </LayerGroup>
+                    </LayersControl.Overlay>
+                    <LayersControl.Overlay checked name={"Netwalkers"}>
+                        <LayerGroup>
+                            <Marker
+                                icon={playerIcon(user, player.name)}
+                                position={[player.coordinates.latitude, player.coordinates.longitude]}/>
+                            {enemies.map(enemy => <Marker
+                                key={enemy.id}
+                                icon={playerIcon(user, enemy.name)}
+                                position={[enemy.coordinates.latitude, enemy.coordinates.longitude]}>
+                                <PlayerPopup player={enemy}/>
+                            </Marker>)}
+                        </LayerGroup>
+                    </LayersControl.Overlay>
+                </LayersControl>
             </MapContainer>
         );
     }

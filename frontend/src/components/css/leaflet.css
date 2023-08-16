@@ -141,3 +141,31 @@
         filter: drop-shadow(0 0 0.25rem var(--color-secondary));
     }
 }
+
+div.leaflet-control-layers {
+    background: transparent;
+    border-radius: 50%;
+}
+
+.leaflet-control-layers-toggle {
+    background: var(--color-semiblack);
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+}
+
+.leaflet-retina .leaflet-control .leaflet-control-layers-toggle {
+    background-image: url("../../assets/svg/layers.svg");
+    color: var(--color-primary);
+
+}
+
+div.leaflet-control-layers-expanded {
+    background: var(--color-semiblack);
+    border: 2px solid var(--color-semiblack);
+    color: var(--color-primary);
+    border-radius: 5px;
+}
+
+input.leaflet-control-layers-selector:checked {
+    accent-color: var(--color-primary);
+}

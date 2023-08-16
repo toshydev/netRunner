@@ -6,7 +6,6 @@ export const StyledInput = styled.input`
   border: none;
   color: var(--color-secondary);
   font: inherit;
-  width: 100%;
   height: 3rem;
   font-size: 1.5rem;
   text-align: center;
@@ -15,4 +14,12 @@ export const StyledInput = styled.input`
   &::placeholder {
     color: var(--color-secondary);
   }
+  
+  @media (min-width: 768px) {
+    width: 50%;
+  }
+  
+    @media (min-width: 1024px) {
+    width: 30%;
+    }
 `;
