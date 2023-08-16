@@ -30,7 +30,7 @@ export default function NavBar({user}: Props) {
         } else if(page === "map") {
             return "Map"
         } else if(page === "login") {
-            return "Netrunner"
+            return "Netwalker"
         } else if(page === "store") {
             return "Daemon Store"
         } else if(page === "settings") {
