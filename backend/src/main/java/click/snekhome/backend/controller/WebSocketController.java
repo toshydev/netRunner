@@ -55,7 +55,10 @@ public class WebSocketController extends TextWebSocketHandler {
         for (WebSocketSession activeSession : activeSessions) {
             activeSession.sendMessage(textMessage);
         }
+        if (type.equals("login")) sendWelcomeMessage(session);
+    }
 
+    void sendWelcomeMessage(WebSocketSession session) throws IOException {
         String serverMessage = "Welcome to Netwalker! You are now connected to the new chat server. Join us on Discord: https://discord.gg/CmtvmcbPCq";
         ChatMessage welcomeMessage = new ChatMessage("Netwalker", serverMessage, Instant.now().getEpochSecond());
         TextMessage welcomeTextMessage = new TextMessage(welcomeMessage.toString());
