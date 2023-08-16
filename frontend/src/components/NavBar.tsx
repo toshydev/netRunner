@@ -7,6 +7,7 @@ import React, {useState} from "react";
 import {keyframes} from "@emotion/react";
 import {useClickSound, useErrorSound, useLoginSuccessSound} from "../utils/sound.ts";
 import {useStore} from "../hooks/useStore.ts";
+import ChatViewButton from "./ChatViewButton.tsx";
 
 type Props = {
     user?: string
@@ -35,6 +36,8 @@ export default function NavBar({user}: Props) {
             return "Daemon Store"
         } else if(page === "settings") {
             return "Settings"
+        } else if(page === "chat") {
+            return "Chat"
         } else {
             return subPage.charAt(0).toUpperCase() + subPage.slice(1)
         }
@@ -66,6 +69,7 @@ export default function NavBar({user}: Props) {
                 }}/>
                 <StyledHeading length={heading.length}>{heading}</StyledHeading>
                 {isAuthenticated && <Box sx={{flexGrow: 0, ml: "auto"}}>
+                    <ChatViewButton/>
                     <Tooltip title="Open settings">
                         <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
                             <Avatar alt="player avatag" src={PlayerAvatar}/>
