@@ -30,13 +30,6 @@
     border: 2px solid var(--color-secondary);
 }
 
-.--update {
-    animation: pulse-update 1s infinite
-}
-
-.--attack {
-    animation: pulse-attack 1s infinite
-}
 .leaflet-marker-pane .player {
     border-radius: 50px;
     animation: halo-pulse 2s ease-in-out infinite;

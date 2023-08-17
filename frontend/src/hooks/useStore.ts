@@ -39,7 +39,7 @@ type State = {
     scanNodes: (position: Coordinates, onSuccess: () => void, onError: () => void) => void
     buyDaemons: (amount: ItemSize, onSuccess: () => void, onError: () => void) => void
     messages: Message[]
-    initiateWebSocket: () => void
+    initiateWebSocket: (url: string) => void
     sendMessage: (message: string) => void
     webSocket: WebSocket | null
     onMessage: (event: MessageEvent) => void
@@ -332,8 +332,8 @@ export const useStore = create<State>(set => ({
             });
     },
 
-    initiateWebSocket: () => {
-        const webSocket = new WebSocket("ws://localhost:8080/api/ws/chat");
+    initiateWebSocket: (url: string) => {
+        const webSocket = new WebSocket(url);
         webSocket.onmessage = (event) => {
             useStore.getState().onMessage(event);
         }
