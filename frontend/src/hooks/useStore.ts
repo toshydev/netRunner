@@ -43,6 +43,10 @@ type State = {
     sendMessage: (message: string) => void
     webSocket: WebSocket | null
     onMessage: (event: MessageEvent) => void
+    unreadMessages: number
+    increaseUnreadMessages: () => void
+    resetUnreadMessages: () => void
+    activePlayers: string[]
 }
 
 export const useStore = create<State>(set => ({
@@ -59,6 +63,8 @@ export const useStore = create<State>(set => ({
     volume: 0.5,
     webSocket: null,
     messages: [],
+    unreadMessages: 0,
+    activePlayers: [],
 
     getPlayer: () => {
         set({isLoading: true})
@@ -335,8 +341,15 @@ export const useStore = create<State>(set => ({
     },
 
     onMessage: (event: MessageEvent) => {
-        const message = JSON.parse(event.data);
-        set((state) => ({messages: [...state.messages, message]}));
+        let payload = event.data
+        if (payload.startsWith("{")) {
+            payload = JSON.parse(payload) as Message;
+            set((state) => ({messages: [...state.messages, payload]}));
+            useStore.getState().increaseUnreadMessages();
+        } else {
+            payload = JSON.parse(payload) as string;
+            set(() => ({activePlayers: payload}));
+        }
     },
 
     sendMessage: (message: string) => {
@@ -344,6 +357,14 @@ export const useStore = create<State>(set => ({
         if (webSocket) {
             webSocket.send(message);
         }
-    }
+    },
+
+    increaseUnreadMessages: () => {
+        set((state) => ({unreadMessages: state.unreadMessages + 1}));
+    },
+
+    resetUnreadMessages: () => {
+        set({unreadMessages: 0});
+    },
 
 }));

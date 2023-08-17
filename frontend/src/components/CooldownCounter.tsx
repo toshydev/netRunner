@@ -3,20 +3,21 @@ import styled from "@emotion/styled";
 
 type Props = {
     lastActionTimestamp: number;
+    duration: number;
     label: "Update" | "Attack";
 };
 
-export default function CooldownCounter({ lastActionTimestamp, label }: Props) {
+export default function CooldownCounter({ lastActionTimestamp, duration, label }: Props) {
     const [remainingCooldown, setRemainingCooldown] = useState(0);
 
     useEffect(() => {
         const now = Math.floor(Date.now() / 1000);
-        const remaining = Math.max(0, lastActionTimestamp + 120 - now);
+        const remaining = Math.max(0, lastActionTimestamp + duration - now);
         setRemainingCooldown(remaining);
 
         if (remaining > 0) {
             const cooldownInterval = setInterval(() => {
-                const updatedRemaining = Math.max(0, lastActionTimestamp + 120 - Math.floor(Date.now() / 1000));
+                const updatedRemaining = Math.max(0, lastActionTimestamp + duration - Math.floor(Date.now() / 1000));
                 setRemainingCooldown(updatedRemaining);
                 if (updatedRemaining === 0) {
                     clearInterval(cooldownInterval);

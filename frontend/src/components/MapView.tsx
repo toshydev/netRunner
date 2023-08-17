@@ -14,19 +14,25 @@ import {useZoomInSound, useZoomOutSound} from "../utils/sound.ts";
 import {useEffect, useState} from "react";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
 import NodeItem from "./NodeItem.tsx";
-import {Node} from "../models.ts";
+import {Node, Player} from "../models.ts";
 import PlayerPopup from "./PlayerPopup.tsx";
+import L from "leaflet";
 
-export default function MapView() {
+type Props = {
+    player: Player,
+}
+
+export default function MapView({player}: Props) {
     const [zoom, setZoom] = useState<number>(15)
     const [markers, setMarkers] = useState<Node[]>([])
 
-    const player = useStore(state => state.player)
     const user = useStore(state => state.user)
     const enemies = useStore(state => state.enemies)
     const gps = useStore(state => state.gps)
     const nodes = useStore(state => state.nodes)
     const isScanning = useStore(state => state.isScanning)
+
+    const range = 0.05;
 
     const playZoomIn = useZoomInSound()
     const playZoomOut = useZoomOutSound()
@@ -35,6 +41,11 @@ export default function MapView() {
     useEffect(() => {
         setMarkers(nodes)
     }, [nodes]);
+
+    function getBounds(player: Player) {
+        return L.latLngBounds(L.latLng(player.coordinates.latitude - range, player.coordinates.longitude - range),
+            L.latLng(player.coordinates.latitude + range, player.coordinates.longitude + range))
+    }
 
     function ZoomSound() {
         const map = useMapEvents({
@@ -63,7 +74,6 @@ export default function MapView() {
         return null
     }
 
-
     if (player && nodes) {
         return (
             <MapContainer
@@ -72,7 +82,9 @@ export default function MapView() {
                 scrollWheelZoom={true}
                 style={{minHeight: "75vh", minWidth: "95vw"}}
                 id={"map"}
-                maxZoom={20}
+                minZoom={10}
+                maxZoom={18}
+                maxBounds={getBounds(player)}
             >
                 {gps ? <PlayerTracker/> : <ZoomSound/>}
                 <TileLayer

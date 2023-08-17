@@ -6,18 +6,12 @@ import React, {useEffect, useRef, useState} from "react";
 import ChatMessage from "./ChatMessage.tsx";
 import {nanoid} from "nanoid";
 import {useStore} from "../hooks/useStore.ts";
-import {useLoginSuccessSound} from "../utils/sound.ts";
 
 export default function ChatPage() {
     const [text, setText] = useState<string>("")
     const messages = useStore(state => state.messages);
     const sendMessage = useStore(state => state.sendMessage);
     const messageListRef = useRef<HTMLUListElement>(null);
-    const playLoginSuccessSound = useLoginSuccessSound();
-
-    useEffect(() => {
-        playLoginSuccessSound()
-    }, [messages]);
 
     useEffect(() => {
         if (messageListRef.current) {

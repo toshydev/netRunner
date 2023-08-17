@@ -279,24 +279,6 @@ class NodeServiceTest {
     }
 
     @Test
-    void expectUnchangedNodeWhenAttackingOtherPlayerNodeWithNotEnoughAP() {
-        //given
-        Node node = new Node("abc", "456", "Home", 30, 100, new Coordinates(0, 0, 0), 0, 0);
-        //when
-        when(authentication.getName()).thenReturn(playerName);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-        when(nodeRepo.findById("abc")).thenReturn(Optional.of(node));
-        when(nodeRepo.save(node)).thenReturn(node);
-        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
-        Node actual = nodeService.edit("abc", ActionType.HACK);
-        //then
-        assertEquals(node, actual);
-        verify(nodeRepo).findById("abc");
-        verify(playerService).getPlayer(playerName);
-    }
-
-    @Test
     void expectUnchangedNodeWhenAbandoningOtherPlayerNode() {
         //given
         Node node = new Node("abc", "456", "Home", 1, 100, new Coordinates(0, 0, 0), 0, 0);

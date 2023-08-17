@@ -54,7 +54,7 @@ export default function App() {
         } finally {
             setInitialLoad(false)
         }
-    }, [getNodes, getPlayer, getEnemies, getUser, user, scanNodes])
+    }, [getNodes, getPlayer, getEnemies, getUser, user, scanNodes, initiateWebSocket])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -97,7 +97,7 @@ export default function App() {
                         <Route path={"/map"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
-                                <MapView/>
+                                {player && <MapView player={player}/>}
                                 {player && <RechargingButton player={player}/>}
                                 <GpsButton/>
                                 <ViewChangeButton view={"list"}/>
