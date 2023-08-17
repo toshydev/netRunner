@@ -9,7 +9,6 @@ type Props = {
 
 export default function ChatMessage({message}: Props) {
     const user = useStore(state => state.user);
-
     const isUser = message.username === user;
     const isAdmin = message.username === "Netwalker";
     const usernameColor = (isUser: boolean, isAdmin: boolean) => {

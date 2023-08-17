@@ -24,7 +24,8 @@ export default function RechargingButton({player}: Props) {
         setTimestamp(player.lastScan)
         if (isOnCooldown) {
         setIsUpdating(isOnCooldown)
-            setPercentage(100 - counter / 300 * 100)
+            setPercentage(Math.ceil(100 - counter / 300 * 100))
+            console.log(percentage)
         }
     }, [counter, isOnCooldown, scanNodes, player]);
 
@@ -36,7 +37,7 @@ export default function RechargingButton({player}: Props) {
 
     return <StyledButton disabled={isUpdating} onClick={handleScan} isupdating={String(isUpdating)}>
         <StyledBackgroundContainer>
-            {isUpdating && <StyledRechargingBackground percentage={percentage}/>}
+            {percentage !== 100 && <StyledRechargingBackground percentage={percentage}/>}
             <ScanIcon/>
         </StyledBackgroundContainer>
     </StyledButton>
@@ -72,11 +73,11 @@ const StyledButton = styled(Button)<{isupdating: string}>`
     animation: ${({isupdating}) => isupdating === "true" ? blink : "none"} 1s infinite;
 
   &:hover {
-    background: inherit;
+    background: var(--color-black);
   }
 
   &:active {
-    background: inherit;
+    background: var(--color-black);
     scale: 0.9;
     filter: drop-shadow(0 0 1rem var(--color-primary));
   }
@@ -102,7 +103,7 @@ const StyledRechargingBackground = styled.div<{percentage: number}>`
     left: 0;
     background: var(--color-primary);
     width: 100%;
-    height: ${({percentage}) => percentage}%;
+    height: ${({percentage}) => percentage < 100 ? percentage : 0}%;
   opacity: 0.8;
   filter: drop-shadow(0 0 0.25rem var(--color-primary));
 `;
