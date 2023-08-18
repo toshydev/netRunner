@@ -39,7 +39,7 @@ export default function NavBar({user}: Props) {
         } else if(page === "chat") {
             return "Chat"
         } else {
-            return subPage.charAt(0).toUpperCase() + subPage.slice(1)
+            return subPage.charAt(0) + subPage.slice(1)
         }
     }
     function handleOpenUserMenu(event: React.MouseEvent<HTMLElement>) {

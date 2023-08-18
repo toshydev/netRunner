@@ -20,7 +20,10 @@ export default function ChatMessage({message}: Props) {
     return <StyledMessage isuser={`${isUser}`} isadmin={`${isAdmin}`}>
         <StyledUsername color={usernameColor(isUser, isAdmin)}>{message.username}</StyledUsername>
         <p>{message.message}</p>
-        <StyledTimestamp>{new Date(message.timestamp).toLocaleTimeString("en-US")}</StyledTimestamp>
+        <StyledTimestamp>{new Date(message.timestamp * 1000).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+        })}</StyledTimestamp>
     </StyledMessage>
 }
 

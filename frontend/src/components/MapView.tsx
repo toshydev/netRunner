@@ -31,6 +31,7 @@ export default function MapView({player}: Props) {
     const gps = useStore(state => state.gps)
     const nodes = useStore(state => state.nodes)
     const isScanning = useStore(state => state.isScanning)
+    const initialNodeFilter = useStore(state => state.initialNodeFilter)
 
     const range = 0.05;
 
@@ -39,8 +40,14 @@ export default function MapView({player}: Props) {
 
     // reload markers when scanning is done
     useEffect(() => {
-        setMarkers(nodes)
-    }, [nodes]);
+        if (player && nodes) {
+            const initialFilteredNodes = initialNodeFilter({
+                latitude: player.coordinates.latitude,
+                longitude: player.coordinates.longitude
+            }, nodes);
+            setMarkers(initialFilteredNodes)
+        }
+    }, [initialNodeFilter, nodes, player]);
 
     function getBounds(player: Player) {
         return L.latLngBounds(L.latLng(player.coordinates.latitude - range, player.coordinates.longitude - range),

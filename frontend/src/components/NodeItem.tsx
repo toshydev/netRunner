@@ -151,7 +151,7 @@ export default function NodeItem({node, player, distance, type}: Props) {
                 <StyledOwnerArea>
                     <StyledOwnerButton
                         isplayerowned={`${isPlayerOwned}`}
-                        onClick={() => !ownerButtonDisabled && handleNavigate(`/player/${owner}`)}
+                        onClick={() => !ownerButtonDisabled && handleNavigate(owner !== "" && owner !== null ? `/player/${owner}` : "/map")}
                     >{owner !== "" ? owner : <UnlockIcon/>}</StyledOwnerButton>
                 </StyledOwnerArea>
                 <StyledDistanceInfo
@@ -197,7 +197,7 @@ export default function NodeItem({node, player, distance, type}: Props) {
                     <StyledPopupOwnerArea>
                         <StyledPopupOwnerButton
                             isplayerowned={`${isPlayerOwned}`}
-                            onClick={() => !ownerButtonDisabled && handleNavigate(`/player/${owner}`)}
+                            onClick={() => !ownerButtonDisabled && handleNavigate(owner !== "" && owner !== null ? `/player/${owner}` : "/map")}
                         >{owner !== "" ? owner : <UnlockIcon/>}</StyledPopupOwnerButton>
                     </StyledPopupOwnerArea>
                     <StyledPopupDistanceInfo
