@@ -31,7 +31,8 @@ type State = {
     filterNodesByOwner: (ownerId: string, nodes: Node[]) => Node[]
     rangeFilter: boolean
     toggleRangeFilter: () => void
-    filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[]) => Node[]
+    initialNodeFilter: (position: { latitude: number, longitude: number }, nodes: Node[]) => Node[]
+    filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[], range: number) => Node[]
     volume: number
     setVolume: (volume: number) => void
     enemies: Player[]
@@ -264,7 +265,17 @@ export const useStore = create<State>(set => ({
         set((state) => ({rangeFilter: !state.rangeFilter}));
     },
 
-    filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[]) => {
+    initialNodeFilter: (position: { latitude: number, longitude: number }, nodes: Node[]) => {
+            return nodes.filter((node) => {
+                const distance = getDistanceBetweenCoordinates(position, {
+                    latitude: node.coordinates.latitude,
+                    longitude: node.coordinates.longitude
+                });
+                return distance <= 25000;
+            });
+    },
+
+    filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[], range: number) => {
         const filter = useStore.getState().rangeFilter;
         if (filter) {
             return nodes.filter((node) => {
@@ -272,7 +283,7 @@ export const useStore = create<State>(set => ({
                     latitude: node.coordinates.latitude,
                     longitude: node.coordinates.longitude
                 });
-                return distance <= 50;
+                return distance <= range;
             });
         } else {
             return nodes.slice();
