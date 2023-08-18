@@ -34,6 +34,7 @@ The project's CI/CD pipeline, powered by GitHub Actions and Docker, facilitates 
 
 As development continues, NetRunner aims to provide an immersive experience, enabling players to explore the real world through the lens of a cyberpunk universe, strategize their territorial control, and engage in thrilling multiplayer encounters within the futuristic cityscape.
 
+Join our [![Join Discord](https://img.shields.io/badge/Discord-7289DA?style=plastic&logo=discord&logoColor=white)](https://discord.gg/7EJQP7TS) community.
 ---
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-orange.svg)](https://sonarcloud.io/summary/new_code?id=netRunner_backend)
