@@ -68,7 +68,7 @@ export default function NavBar({user}: Props) {
                     navigate("/map")
                 }}/>
                 <StyledHeading length={heading.length}>{heading}</StyledHeading>
-                {isAuthenticated && <Box sx={{flexGrow: 0, ml: "auto"}}>
+                {isAuthenticated && <Box sx={{display: "flex", flexGrow: 0, ml: "auto"}}>
                     <ChatViewButton/>
                     <Tooltip title="Open settings">
                         <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
@@ -175,8 +175,8 @@ const StyledHeading = styled.h1<{length: number}>`
   animation: ${blink} 3s infinite;
   filter: drop-shadow(0 0 1rem var(--color-black));
   margin-left: 1rem;
-  font-family: var(--font-cyberpunk);
-  font-size: ${({length}) => length > 7 ? "1.2rem" : "2rem"};
+  font-family: var(--font-3270);
+  font-size: ${({length}) => length > 9 ? "1.3rem" : "1.8rem"};
 `;
 
 const StyledMenu = styled(Menu)`
