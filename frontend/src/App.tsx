@@ -40,7 +40,7 @@ export default function App() {
     const getEnemies = useStore(state => state.getEnemies)
     const scanNodes = useStore(state => state.scanNodes)
     const currentPort = window.location.port;
-    const websocketURL = currentPort === "5173" ? "ws://localhost:8080/api/ws/chat" : "wss://test.snekhome.click/api/ws/chat";
+    const websocketURL = currentPort === "5173" ? "ws://localhost:8080/api/ws/chat" : "wss://snekhome.click/api/ws/chat";
 
     useEffect(() => {
         try {
@@ -56,7 +56,7 @@ export default function App() {
         } finally {
             setInitialLoad(false)
         }
-    }, [getNodes, getPlayer, getEnemies, getUser, user, scanNodes, initiateWebSocket])
+    }, [getNodes, getPlayer, getEnemies, getUser, user, scanNodes, initiateWebSocket, websocketURL])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
