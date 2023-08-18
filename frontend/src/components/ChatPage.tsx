@@ -22,7 +22,9 @@ export default function ChatPage() {
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         sendMessage(text);
-        setText("");
+        setText("")
+        e.currentTarget.reset()
+        e.currentTarget.focus()
     }
 
     return <StyledCard>
@@ -37,7 +39,7 @@ export default function ChatPage() {
                 value={text}
                 onChange={event => setText(event.target.value)}
                 maxLength={500} />
-            <StyledSendButton theme={"success"} disabled={text.length <= 0}>Send</StyledSendButton>
+            <StyledSendButton type="submit" theme={"success"} disabled={text.length <= 0}>Send</StyledSendButton>
         </StyledInputForm>
     </StyledCard>
 }
