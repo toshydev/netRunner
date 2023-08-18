@@ -18,7 +18,7 @@ export default function PlayerInfoBar({player}: Props) {
 
     return <StyledContainer>
         {player && <StyledBar theme={"primary"} bg={"black"}>
-            <StyledText color={"primary"} onClick={() => handleNavigate("/player")}>{player.name}</StyledText>
+            <StyledText color={"primary"} onClick={() => handleNavigate(`/player/${player.name}`)}>{player.name}</StyledText>
             <StyledInfoContainer>
                 <StyledText color={"primary"}>LVL {player.level}</StyledText>
                 <StyledText color={"secondary"}>{player.health}HP</StyledText>

@@ -334,6 +334,7 @@ const StyledOwnerButton = styled(Button)<{ isplayerowned: string }>`
   border-radius: 8px;
   font: inherit;
   z-index: 5;
+  text-transform: unset;
   
     &:active {
     background: var(--color-black);
@@ -483,6 +484,7 @@ const StyledPopupOwnerButton = styled(Button)<{ isplayerowned: string }>`
   font: inherit;
   z-index: 5;
   scale: 0.75;
+  text-transform: unset;
 
   &:active {
     background: var(--color-black);
