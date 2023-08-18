@@ -22,10 +22,12 @@ import NavBar from "./components/NavBar.tsx";
 import StorePage from "./components/StorePage.tsx";
 import GpsButton from "./components/GpsButton.tsx";
 import SettingsPage from "./components/SettingsPage.tsx";
+import ChatPage from "./components/ChatPage.tsx";
 
 export default function App() {
     const [initialLoad, setInitialLoad] = useState(true)
     const [location, setLocation] = useState<Coordinates | null>(null)
+    const initiateWebSocket = useStore(state => state.initiateWebSocket)
     const user = useStore(state => state.user)
     const getUser = useStore(state => state.getUser)
     const getPlayer = useStore(state => state.getPlayer)
@@ -37,11 +39,14 @@ export default function App() {
     const getNodes = useStore(state => state.getNodes)
     const getEnemies = useStore(state => state.getEnemies)
     const scanNodes = useStore(state => state.scanNodes)
+    const currentPort = window.location.port;
+    const websocketURL = currentPort === "5173" ? "ws://localhost:8080/api/ws/chat" : "wss://snekhome.click/api/ws/chat";
 
     useEffect(() => {
         try {
             getUser()
             if (user !== "" && user !== "anonymousUser") {
+                initiateWebSocket(websocketURL)
                 getPlayer()
                 getNodes()
                 getEnemies()
@@ -51,7 +56,7 @@ export default function App() {
         } finally {
             setInitialLoad(false)
         }
-    }, [getNodes, getPlayer, getEnemies, getUser, user, scanNodes])
+    }, [getNodes, getPlayer, getEnemies, getUser, user, scanNodes, initiateWebSocket, websocketURL])
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
@@ -94,7 +99,7 @@ export default function App() {
                         <Route path={"/map"} element={
                             <>
                                 <PlayerInfoBar player={player}/>
-                                <MapView/>
+                                {player && <MapView player={player}/>}
                                 {player && <RechargingButton player={player}/>}
                                 <GpsButton/>
                                 <ViewChangeButton view={"list"}/>
@@ -125,6 +130,12 @@ export default function App() {
                         <Route path={"/settings"} element={
                             <>
                                 <SettingsPage/>
+                                <ViewChangeButton view={"map"}/>
+                            </>
+                        }/>
+                        <Route path={"/chat"} element={
+                            <>
+                                <ChatPage/>
                                 <ViewChangeButton view={"map"}/>
                             </>
                         }/>

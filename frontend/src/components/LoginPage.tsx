@@ -13,10 +13,10 @@ import {
     useErrorSound,
     useKeyPressSound,
     useLoadingOsSound,
-    useLoginSuccessSound,
     useSwitchSound
 } from "../utils/sound.ts";
 import VolumeBar from "./VolumeBar.tsx";
+import styled from "@emotion/styled";
 
 export default function LoginPage() {
     const [newUser, setNewUser] = useState<boolean>(false);
@@ -27,7 +27,6 @@ export default function LoginPage() {
     const [emailError, setEmailError] = useState<string>("Invalid email");
     const [passwordError, setPasswordError] = useState<string>("Password must have at least three characters");
 
-    const playLoginSuccess = useLoginSuccessSound()
     const playError = useErrorSound()
     const playKeyPress = useKeyPressSound()
     const playSwitch = useSwitchSound()
@@ -50,7 +49,6 @@ export default function LoginPage() {
         event.preventDefault()
 
         login(username, password, navigate, () => {
-            playLoginSuccess()
             playLoadingOs()
         }, playError);
     }
@@ -89,15 +87,20 @@ export default function LoginPage() {
 
     function handleNewUserSwitch() {
         setNewUser(!newUser);
-        setUsername("");
-        setEmail("");
-        setPassword("");
+        if(!newUser) {
+            setUsername("");
+            setEmail("");
+            setPassword("");
+            setUsernameError("Username must have at least three characters")
+            setEmailError("Invalid email")
+            setPasswordError("Password must have at least three characters")
+        }
     }
 
     return <>
         <VolumeBar/>
         <StyledForm onSubmit={newUser ? handleRegister : handleLogin}>
-            <legend>{newUser ? "Register" : "Login"}</legend>
+            <StyledLegend>{newUser ? "Register" : "Login"}</StyledLegend>
             <StyledLabel htmlFor={"newUser"}>New User<Switch
                 id="newUser"
                 checked={newUser}
@@ -168,3 +171,7 @@ export default function LoginPage() {
         </StyledForm>
     </>
 }
+
+const StyledLegend = styled.legend`
+  color: var(--color-primary);
+`;

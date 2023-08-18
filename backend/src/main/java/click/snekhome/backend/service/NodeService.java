@@ -99,7 +99,7 @@ public class NodeService {
     }
 
     private Node handleOwnedNode(Player player, Node node, ActionType actionType) {
-        if (actionType == ActionType.HACK && (player.attack() >= node.level()) && (getSecondsSince(node.lastUpdate()) > 120)) {
+        if (actionType == ActionType.HACK && (player.attack() >= node.level()) && (getSecondsSince(node.lastUpdate()) > node.level() * 60L)) {
             Node newNode = upgradeNode(node);
             Player updatedPlayer = useAttackPoints(player, newNode.level());
             updatedPlayer = addExperience(updatedPlayer, newNode.level() * 10);
@@ -115,7 +115,7 @@ public class NodeService {
     }
 
     private Node handleAttackedNode(Player player, Node node, ActionType actionType) {
-        if (actionType == ActionType.HACK && (player.attack() >= node.level()) && (getSecondsSince(node.lastAttack()) > 120)) {
+        if (actionType == ActionType.HACK && (getSecondsSince(node.lastAttack()) > node.level() * 60L)) {
             Node newNode = takeDamage(node, player.level() * 10);
             Player updatedPlayer = hack(player, node);
             playerService.updatePlayer(player.id(), updatedPlayer);

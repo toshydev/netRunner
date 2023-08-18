@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import axios from "axios";
-import {ActionType, Coordinates, ItemSize, Node, NodeData, Player} from "../models.ts";
+import {ActionType, Coordinates, ItemSize, Message, Node, NodeData, Player} from "../models.ts";
 import {NavigateFunction} from "react-router-dom";
 import {toast} from "react-toastify";
 import {getDistanceBetweenCoordinates} from "../utils/calculation.ts";
@@ -38,6 +38,15 @@ type State = {
     getEnemies: () => void
     scanNodes: (position: Coordinates, onSuccess: () => void, onError: () => void) => void
     buyDaemons: (amount: ItemSize, onSuccess: () => void, onError: () => void) => void
+    messages: Message[]
+    initiateWebSocket: (url: string) => void
+    sendMessage: (message: string) => void
+    webSocket: WebSocket | null
+    onMessage: (event: MessageEvent) => void
+    unreadMessages: number
+    increaseUnreadMessages: () => void
+    resetUnreadMessages: () => void
+    activePlayers: string[]
 }
 
 export const useStore = create<State>(set => ({
@@ -52,6 +61,10 @@ export const useStore = create<State>(set => ({
     ownerNodesFilter: false,
     rangeFilter: false,
     volume: 0.5,
+    webSocket: null,
+    messages: [],
+    unreadMessages: 0,
+    activePlayers: [],
 
     getPlayer: () => {
         set({isLoading: true})
@@ -317,6 +330,41 @@ export const useStore = create<State>(set => ({
                 onError()
                 console.error(error)
             });
-    }
+    },
+
+    initiateWebSocket: (url: string) => {
+        const webSocket = new WebSocket(url);
+        webSocket.onmessage = (event) => {
+            useStore.getState().onMessage(event);
+        }
+        set({webSocket: webSocket});
+    },
+
+    onMessage: (event: MessageEvent) => {
+        let payload = event.data
+        if (payload.startsWith("{")) {
+            payload = JSON.parse(payload) as Message;
+            set((state) => ({messages: [...state.messages, payload]}));
+            useStore.getState().increaseUnreadMessages();
+        } else {
+            payload = JSON.parse(payload) as string;
+            set(() => ({activePlayers: payload}));
+        }
+    },
+
+    sendMessage: (message: string) => {
+        const webSocket = useStore.getState().webSocket;
+        if (webSocket) {
+            webSocket.send(message);
+        }
+    },
+
+    increaseUnreadMessages: () => {
+        set((state) => ({unreadMessages: state.unreadMessages + 1}));
+    },
+
+    resetUnreadMessages: () => {
+        set({unreadMessages: 0});
+    },
 
 }));

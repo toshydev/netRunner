@@ -7,6 +7,7 @@ import React, {useState} from "react";
 import {keyframes} from "@emotion/react";
 import {useClickSound, useErrorSound, useLoginSuccessSound} from "../utils/sound.ts";
 import {useStore} from "../hooks/useStore.ts";
+import ChatViewButton from "./ChatViewButton.tsx";
 
 type Props = {
     user?: string
@@ -35,6 +36,8 @@ export default function NavBar({user}: Props) {
             return "Daemon Store"
         } else if(page === "settings") {
             return "Settings"
+        } else if(page === "chat") {
+            return "Chat"
         } else {
             return subPage.charAt(0).toUpperCase() + subPage.slice(1)
         }
@@ -65,7 +68,8 @@ export default function NavBar({user}: Props) {
                     navigate("/map")
                 }}/>
                 <StyledHeading length={heading.length}>{heading}</StyledHeading>
-                {isAuthenticated && <Box sx={{flexGrow: 0, ml: "auto"}}>
+                {isAuthenticated && <Box sx={{display: "flex", flexGrow: 0, ml: "auto"}}>
+                    <ChatViewButton/>
                     <Tooltip title="Open settings">
                         <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
                             <Avatar alt="player avatag" src={PlayerAvatar}/>
@@ -171,8 +175,8 @@ const StyledHeading = styled.h1<{length: number}>`
   animation: ${blink} 3s infinite;
   filter: drop-shadow(0 0 1rem var(--color-black));
   margin-left: 1rem;
-  font-family: var(--font-cyberpunk);
-  font-size: ${({length}) => length > 10 ? "1.5rem" : "2rem"};
+  font-family: var(--font-3270);
+  font-size: ${({length}) => length > 9 ? "1.3rem" : "1.8rem"};
 `;
 
 const StyledMenu = styled(Menu)`

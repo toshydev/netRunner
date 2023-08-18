@@ -41,10 +41,8 @@ export default function NodeItem({node, player, distance, type}: Props) {
     const [notEnoughAP, setNotEnoughAP] = useState<boolean>(true);
     const [isPlayerOwned, setIsPlayerOwned] = useState<boolean>(false);
     const [isClaimable, setIsClaimable] = useState<boolean>(false);
-    const [interactionText, setInteractionText] = useState<string>("");
-    const [isInteraction, setIsInteraction] = useState<boolean>(false);
-    const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate, 120);
-    const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack, 120);
+    const {isOnCooldown: isUpdating} = useCooldown(node.lastUpdate, node.level * 60);
+    const {isOnCooldown: isAttacked} = useCooldown(node.lastAttack, node.level * 60);
 
     const playUpgrade = useUpgradeSound();
     const playClick = useClickSound();
@@ -76,39 +74,12 @@ export default function NodeItem({node, player, distance, type}: Props) {
         }
     }, [node, player, editNode, distance, isUpdating, isAttacked])
 
-    useEffect(() => {
-        if (isInteraction) {
-            const timer = setTimeout(() => {
-                setIsInteraction(false)
-                setInteractionText("")
-            }, 3000)
-            return () => clearTimeout(timer)
-        }
-    }, [isInteraction])
-
     function handleEdit(action: ActionType) {
         editNode(node.id, action)
-        buildText(action)
         if (isPlayerOwned) {
             playUpgrade()
         } else {
             playElectricMachine()
-        }
-        setIsInteraction(true)
-    }
-
-    function buildText(action: ActionType) {
-        switch (action) {
-            case ActionType.HACK:
-                if (isPlayerOwned || owner === null) {
-                    setInteractionText(`-${node.level}AP`)
-                } else {
-                    setInteractionText(`+${node.level * 10}$`)
-                }
-                break;
-            case ActionType.ABANDON:
-                setInteractionText("+1AP")
-                break;
         }
     }
 
@@ -174,7 +145,6 @@ export default function NodeItem({node, player, distance, type}: Props) {
                 <StyledNameContainer>
                     <StyledHeading length={node.name.length} variant={"h2"}>{node.name}</StyledHeading>
                 </StyledNameContainer>
-                {isInteraction && <StyledFloatingText>{interactionText}</StyledFloatingText>}
                 <StyledStatsContainer>
                     <HealthBar health={node.health}/>
                 </StyledStatsContainer>
@@ -204,8 +174,8 @@ export default function NodeItem({node, player, distance, type}: Props) {
                     </StyledLevelContainer>
                 </StyledLevelArea>
                 <StyledStatusContainer>
-                    {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} label={"Update"}/>}
-                    {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} label={"Attack"}/>}
+                    {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} duration={node.level * 60} label={"Update"}/>}
+                    {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} duration={node.level * 60} label={"Attack"}/>}
                 </StyledStatusContainer>
             </StyledListItem>
         </>
@@ -221,7 +191,6 @@ export default function NodeItem({node, player, distance, type}: Props) {
                     <StyledPopupNameContainer>
                         <StyledPopupHeading length={node.name.length} variant={"h2"}>{node.name}</StyledPopupHeading>
                     </StyledPopupNameContainer>
-                    {isInteraction && <StyledPopupFloatingText>{interactionText}</StyledPopupFloatingText>}
                     <StyledPopupStatsContainer>
                         <HealthBar health={node.health}/>
                     </StyledPopupStatsContainer>
@@ -251,8 +220,8 @@ export default function NodeItem({node, player, distance, type}: Props) {
                         </StyledPopupLevelContainer>
                     </StyledPopupLevelArea>
                     <StyledPopupStatusContainer>
-                        {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} label={"Update"}/>}
-                        {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} label={"Attack"}/>}
+                        {isUpdating && <CooldownCounter lastActionTimestamp={node.lastUpdate} duration={node.level * 60} label={"Update"}/>}
+                        {isAttacked && <CooldownCounter lastActionTimestamp={node.lastAttack} duration={node.level * 60} label={"Attack"}/>}
                     </StyledPopupStatusContainer>
                 </StyledPopupListItem>
             </Popup>
@@ -420,36 +389,12 @@ const ModalContainer = styled.div`
   }
 `;
 
-const floatingText = keyframes`
-  0% {
-    transform: translate(-50%, -75%);
-  }
-  50% {
-    transform: translate(-50%, -200%);
-  }
-  100% {
-    transform: translate(-50%, -300%);
-  }
-`;
-
-const StyledFloatingText = styled.p`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -75%);
-  font-size: 2rem;
-  font-family: inherit;
-  color: var(--color-primary);
-  z-index: 5;
-  animation: ${floatingText} 3s linear;
-  text-shadow: 0 0 0.25rem var(--color-primary);
-`;
-
 const StyledPopupListItem = styled(Card)<{ isplayerowned: string; status: string, css: SerializedStyles | null }>`
   color: ${({isplayerowned}) =>
     isplayerowned === "true" ? "var(--color-primary)" : "var(--color-secondary)"};
   background: var(--color-semiblack);
   width: 100%;
+  height: 100%;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -593,17 +538,4 @@ const PopupModalContainer = styled.div`
     border: 2px solid var(--color-secondary);
     filter: drop-shadow(0 0 0.25rem var(--color-secondary));
   }
-`;
-
-const StyledPopupFloatingText = styled.p`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -75%);
-  font-size: 1rem;
-  font-family: inherit;
-  color: var(--color-primary);
-  z-index: 5;
-  animation: ${floatingText} 3s linear;
-  text-shadow: 0 0 0.25rem var(--color-primary);
 `;

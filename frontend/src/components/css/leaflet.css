@@ -30,13 +30,6 @@
     border: 2px solid var(--color-secondary);
 }
 
-.--update {
-    animation: pulse-update 1s infinite
-}
-
-.--attack {
-    animation: pulse-attack 1s infinite
-}
 .leaflet-marker-pane .player {
     border-radius: 50px;
     animation: halo-pulse 2s ease-in-out infinite;
@@ -60,19 +53,6 @@
 
 .leaflet-marker-pane .player__enemy {
     border-radius: 50px;
-    animation: halo-blink 0.5s infinite;
-}
-
-@keyframes halo-blink {
-    0% {
-        outline: 0.25rem solid var(--color-secondary);
-        filter: drop-shadow(0 0 0.25rem var(--color-secondary));
-    }
-
-    100% {
-        outline: 0.25rem solid transparent;
-        filter: drop-shadow(0 0 0 var(--color-secondary));
-    }
 }
 
 .leaflet-popup {
@@ -90,7 +70,7 @@
 .leaflet-popup .leaflet-popup-content-wrapper .leaflet-popup-content {
     background: transparent;
     width: 12rem;
-    height: 6rem;
+    height: 7rem;
     margin: 0;
     display: flex;
     flex-direction: column;
