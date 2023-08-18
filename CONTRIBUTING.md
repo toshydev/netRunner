@@ -1,4 +1,4 @@
-# Welcome to inSpot contributing guide <!-- omit in toc -->
+# Welcome to Netrunner contributing guide <!-- omit in toc -->
 
 Thank you for investing your time in contributing to our project! Any contribution you make will be reflected on [Netrunner](https://github.com/toshydev/netrunner) :sparkles:.
 
