@@ -14,12 +14,11 @@ export default function PlayerPage() {
     const [id, setId] = useState<string>("")
     const params = useParams()
     const player = usePlayer(name)
-    const nodes = useNodes(id)
+    const currentPlayer = useStore(state => state.player)
+    const nodes = useNodes(id, currentPlayer)
     const user = useStore(state => state.user)
     const theme = useTheme()
     const isEnemy = user !== player?.name
-    const currentPlayer = useStore(state => state.player)
-
     const incomePerHour = (nodes: Node[]): number => {
         return nodes.reduce((acc, node) => {
             return acc + node.level * 100;
@@ -38,28 +37,29 @@ export default function PlayerPage() {
     if (typeof player !== "undefined") {
         return (
             <>
-            <StyledCard>
-                <StyledAvatar isenemy={`${isEnemy}`} src={`${AvatarImage}`} sx={{width: 125, height: 125}}/>
-                <StyledPlayerDetails>
-                    <StyledText>Name: {player.name}</StyledText>
-                    <StyledText>Health: {player.health}/{player.maxHealth}</StyledText>
-                    <StyledText>Level: {player.level}</StyledText>
-                    <StyledText>Experience: {player.experience}/{player.experienceToNextLevel}XP</StyledText>
-                </StyledPlayerDetails>
-                <StyledPlayerStats>
-                    <StyledText>Credits: {player.credits}$</StyledText>
-                    <StyledText color={"secondary"}>Daemons: {player.attack}/{player.maxAttack}</StyledText>
-                    <StyledText>Income/Hour: {nodes ? incomePerHour(nodes) : 0}$</StyledText>
-                </StyledPlayerStats>
-                <StyledPlayerCoordinates>
-                    <StyledText>Position:</StyledText>
-                    <StyledText>Lat: {player.coordinates.latitude}</StyledText>
-                    <StyledText>Lon: {player.coordinates.longitude}</StyledText>
-                </StyledPlayerCoordinates>
-            </StyledCard>
+                <StyledCard>
+                    <StyledAvatar isenemy={`${isEnemy}`} src={`${AvatarImage}`} sx={{width: 125, height: 125}}/>
+                    <StyledPlayerDetails>
+                        <StyledText>Name: {player.name}</StyledText>
+                        <StyledText>Health: {player.health}/{player.maxHealth}</StyledText>
+                        <StyledText>Level: {player.level}</StyledText>
+                        <StyledText>Experience: {player.experience}/{player.experienceToNextLevel}XP</StyledText>
+                    </StyledPlayerDetails>
+                    <StyledPlayerStats>
+                        <StyledText>Credits: {player.credits}$</StyledText>
+                        <StyledText color={"secondary"}>Daemons: {player.attack}/{player.maxAttack}</StyledText>
+                        <StyledText>Income/Hour: {nodes ? incomePerHour(nodes) : 0}$</StyledText>
+                    </StyledPlayerStats>
+                    <StyledPlayerCoordinates>
+                        <StyledText>Position:</StyledText>
+                        <StyledText>Lat: {player.coordinates.latitude}</StyledText>
+                        <StyledText>Lon: {player.coordinates.longitude}</StyledText>
+                    </StyledPlayerCoordinates>
+                </StyledCard>
                 <Typography color={theme.palette.success.main} variant={"h5"}>Nodes</Typography>
-                {nodes && nodes.length > 0 ? <NodeList player={currentPlayer} nodes={nodes}/> : <p>No nodes yet</p>}
-        </>
+                {nodes && nodes.length > 0 ? <NodeList player={currentPlayer} nodes={nodes}/> :
+                    <p>No nodes yet</p>}
+            </>
         )
     }
 }
@@ -74,7 +74,7 @@ const StyledCard = styled(Card)`
   grid-template-rows: 2fr 1fr 2fr;
 `;
 
-const StyledAvatar = styled(Avatar)<{isenemy: string}>`
+const StyledAvatar = styled(Avatar)<{ isenemy: string }>`
   grid-row: 1;
   grid-column: 1;
   display: flex;
@@ -85,11 +85,12 @@ const StyledAvatar = styled(Avatar)<{isenemy: string}>`
 `;
 
 const StyledPlayerDetails = styled.div`
-    grid-row: 1;
-    grid-column: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  grid-row: 1;
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 1rem 1rem;
 `;
 
 const StyledPlayerStats = styled.div`
@@ -97,7 +98,7 @@ const StyledPlayerStats = styled.div`
   grid-column: 1 / span 2;
   display: flex;
   flex-wrap: wrap;
-  margin-left: 2rem;
+  margin: 1rem 1rem;
   column-gap: 2rem;
   row-gap: 0;
 `;
@@ -107,10 +108,10 @@ const StyledPlayerCoordinates = styled.div`
   grid-column: 1 / span 2;
   display: flex;
   flex-direction: column;
-  margin-left: 2rem;
+  margin: 1rem 1rem;
 `;
 
-const StyledText = styled(Typography)<{color?: string}>`
-    color: ${props => props.color === "secondary" ? "var(--color-secondary)" : "var(--color-primary)"};
-    font-family: inherit;
+const StyledText = styled(Typography)<{ color?: string }>`
+  color: ${props => props.color === "secondary" ? "var(--color-secondary)" : "var(--color-primary)"};
+  font-family: inherit;
 `;

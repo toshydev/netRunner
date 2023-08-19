@@ -25,11 +25,11 @@ public class WebSocketController extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(@NotNull WebSocketSession session) throws Exception {
         String username = Objects.requireNonNull(session.getPrincipal()).getName();
-        activeSessions.add(session);
-        activeUsers.add(username);
         String message = username + " is online";
         broadcastMessage(message);
+        activeSessions.add(session);
         welcomeUser(session);
+        activeUsers.add(username);
         sendActiveUsers();
     }
 

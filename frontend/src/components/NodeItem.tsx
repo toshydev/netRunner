@@ -53,16 +53,14 @@ export default function NodeItem({node, player, distance, type}: Props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (distance < 250) {
-            setIsInRange(true)
-        } else {
-            setIsInRange(false)
-        }
-    }, [distance, node.lastAttack, node.lastUpdate, editNode])
-
-    useEffect(() => {
+        console.log("NodeItem useEffect")
         try {
             setLevel(node.level)
+            if (distance < 250) {
+                setIsInRange(true)
+            } else {
+                setIsInRange(false)
+            }
         } catch (e) {
             console.error(e)
         } finally {
@@ -93,10 +91,10 @@ export default function NodeItem({node, player, distance, type}: Props) {
     const abandonDisabled = !isPlayerOwned || isUpdating || !isInRange || node.health === 0
 
     let status;
-    if (isUpdating) {
-        status = "update"
-    } else if (isAttacked) {
+    if (isAttacked) {
         status = "attack"
+    } else if (isUpdating) {
+        status = "update"
     } else {
         status = "none"
     }
