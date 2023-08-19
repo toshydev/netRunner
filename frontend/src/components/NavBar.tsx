@@ -1,6 +1,6 @@
 import {AppBar, Avatar, Box, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography} from "@mui/material";
 import styled from "@emotion/styled";
-import Intelligence from "../assets/images/intelligence.png"
+import Intelligence from "../../../../NetwalkerMobile/assets/intelligence.png"
 import PlayerAvatar from "../assets/images/defaultAvatar.webp"
 import {useLocation, useNavigate} from "react-router-dom";
 import React, {useState} from "react";

@@ -45,7 +45,9 @@ public class NodeService {
     }
 
     public List<Node> list() {
-        return this.nodeRepo.findAll();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Player player = this.playerService.getPlayer(username);
+        return this.nodeRepo.findAll().stream().filter(node -> node.ownerId().equals(player.id()) || getDistance(player.coordinates().latitude(), player.coordinates().longitude(), node.coordinates().latitude(), node.coordinates().longitude()) <= 25000).toList();
     }
 
     public Node add(NodeData nodeData) {

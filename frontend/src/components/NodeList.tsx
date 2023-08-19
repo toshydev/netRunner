@@ -19,19 +19,17 @@ export default function NodeList({ player, nodes }: Props) {
     const ownerNodesFilter = useStore(state => state.ownerNodesFilter);
     const filterNodesByOwner = useStore(state => state.filterNodesByOwner);
     const rangeFilter = useStore(state => state.rangeFilter);
-    const initialNodeFilter = useStore(state => state.initialNodeFilter);
     const filterNodesByRange = useStore(state => state.filterNodesByRange);
 
     useEffect(() => {
         if (user !== "" && user !== "anonymousUser") {
             if (nodes && player) {
-                const initialFilteredNodes = initialNodeFilter({latitude: player.coordinates.latitude, longitude: player.coordinates.longitude}, nodes);
-                const filteredNodesbyOwner = filterNodesByOwner(player.id, initialFilteredNodes);
+                const filteredNodesbyOwner = filterNodesByOwner(player.id, nodes);
                 const filteredNodesByRange = filterNodesByRange({latitude: player.coordinates.latitude, longitude: player.coordinates.longitude}, filteredNodesbyOwner, 250);
                 setSortedNodes(sortNodesByDistance({latitude: player.coordinates.latitude, longitude: player.coordinates.longitude}, filteredNodesByRange));
             }
         }
-    }, [getNodes, nodes, player, user, sortDirection, ownerNodesFilter, rangeFilter, initialNodeFilter, filterNodesByOwner, filterNodesByRange, sortNodesByDistance]);
+    }, [getNodes, nodes, player, user, sortDirection, ownerNodesFilter, rangeFilter, filterNodesByOwner, filterNodesByRange, sortNodesByDistance]);
 
     if (player) {
         return (
