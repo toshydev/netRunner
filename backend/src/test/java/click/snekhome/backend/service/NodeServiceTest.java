@@ -42,6 +42,7 @@ class NodeServiceTest {
     MongoUser player = new MongoUser("abc", playerName, "player@test.net", "password", Role.PLAYER);
     MongoUser admin = new MongoUser("1", adminName, "admin@test.net", "admin", Role.ADMIN);
     Player playerunknown = new Player("123", "abc", "playerunknown", new Coordinates(0, 0, Instant.now().getEpochSecond()), 1, 0, 100, 100, 100, 5, 10, 0, Instant.now().getEpochSecond());
+    Player adminPlayer = new Player("456", "1", "admin", new Coordinates(0, 0, Instant.now().getEpochSecond()), 1, 0, 100, 100, 100, 5, 10, 0, Instant.now().getEpochSecond());
 
     @Test
     void expectAllNodesInList() {
@@ -50,6 +51,10 @@ class NodeServiceTest {
         Node node2 = new Node("def", "456", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
         List<Node> expected = List.of(node1, node2);
         //when
+        when(authentication.getName()).thenReturn(playerName);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(playerService.getPlayer(playerName)).thenReturn(playerunknown);
         when(nodeRepo.findAll()).thenReturn(expected);
         List<Node> actual = nodeService.list();
         //then
@@ -185,8 +190,9 @@ class NodeServiceTest {
         when(authentication.getName()).thenReturn(adminName);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
-        when(nodeRepo.findAll()).thenReturn(List.of(node1));
         when(mongoUserService.getUserByUsername(adminName)).thenReturn(admin);
+        when(playerService.getPlayer(adminName)).thenReturn(adminPlayer);
+        when(nodeRepo.findAll()).thenReturn(List.of(node1));
         nodeService.delete("abc");
         List<Node> actual = nodeService.list();
         //then

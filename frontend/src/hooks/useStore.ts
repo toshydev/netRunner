@@ -31,7 +31,6 @@ type State = {
     filterNodesByOwner: (ownerId: string, nodes: Node[]) => Node[]
     rangeFilter: boolean
     toggleRangeFilter: () => void
-    initialNodeFilter: (position: { latitude: number, longitude: number }, nodes: Node[]) => Node[]
     filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[], range: number) => Node[]
     volume: number
     setVolume: (volume: number) => void
@@ -263,16 +262,6 @@ export const useStore = create<State>(set => ({
 
     toggleRangeFilter: () => {
         set((state) => ({rangeFilter: !state.rangeFilter}));
-    },
-
-    initialNodeFilter: (position: { latitude: number, longitude: number }, nodes: Node[]) => {
-            return nodes.filter((node) => {
-                const distance = getDistanceBetweenCoordinates(position, {
-                    latitude: node.coordinates.latitude,
-                    longitude: node.coordinates.longitude
-                });
-                return distance <= 25000;
-            });
     },
 
     filterNodesByRange: (position: { latitude: number, longitude: number }, nodes: Node[], range: number) => {

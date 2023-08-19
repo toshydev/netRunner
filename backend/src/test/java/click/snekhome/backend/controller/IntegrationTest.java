@@ -111,6 +111,7 @@ class IntegrationTest {
         Node node2 = new Node("def", "456", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
         nodeRepo.save(node1);
         nodeRepo.save(node2);
+        playerRepo.insert(new Player("123", "2", "test", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0));
         String expected = """
                 [
                     {
@@ -499,6 +500,7 @@ class IntegrationTest {
         Node node2 = new Node("def", "456", "Office", 2, 100, new Coordinates(0, 0, 0), 0, 0);
         nodeRepo.save(node1);
         nodeRepo.save(node2);
+        playerRepo.insert(new Player("123", "1", "admin", new Coordinates(0, 0, 0), 1, 0, 100, 100, 100, 5, 15, 0, 0));
         String expected = """
                 [
                     {
