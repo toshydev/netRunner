@@ -53,7 +53,6 @@ export default function NodeItem({node, player, distance, type}: Props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("NodeItem useEffect")
         try {
             setLevel(node.level)
             if (distance < 250) {
