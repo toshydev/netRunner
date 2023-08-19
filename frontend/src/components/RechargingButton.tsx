@@ -13,7 +13,6 @@ type Props = {
 }
 export default function RechargingButton({player}: Props) {
     const [timestamp, setTimestamp] = useState<number>(0);
-    const [isUpdating, setIsUpdating] = useState(false);
     const [percentage, setPercentage] = useState(0);
     const {isOnCooldown, counter} = useCooldown(timestamp, 300);
     const scanNodes = useStore(state => state.scanNodes);
@@ -23,21 +22,18 @@ export default function RechargingButton({player}: Props) {
     useEffect(() => {
         setTimestamp(player.lastScan)
         if (isOnCooldown) {
-        setIsUpdating(isOnCooldown)
             setPercentage(Math.ceil(100 - counter / 300 * 100))
-            console.log(percentage)
         }
     }, [counter, isOnCooldown, scanNodes, player]);
 
     function handleScan() {
-        setIsUpdating(true);
         setTimestamp(Date.now());
         scanNodes(player.coordinates, playLoading, playError);
     }
 
-    return <StyledButton disabled={isUpdating} onClick={handleScan} isupdating={String(isUpdating)}>
+    return <StyledButton disabled={isOnCooldown} onClick={handleScan} isupdating={String(isOnCooldown)}>
         <StyledBackgroundContainer>
-            {percentage !== 100 && <StyledRechargingBackground percentage={percentage}/>}
+            {isOnCooldown && <StyledRechargingBackground percentage={percentage}/>}
             <ScanIcon/>
         </StyledBackgroundContainer>
     </StyledButton>

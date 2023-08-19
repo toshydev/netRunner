@@ -1,12 +1,12 @@
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-import {Node} from "../models.ts";
+import {Node, Player} from "../models.ts";
 
-export default function useNodes(ownerId: string) {
+export default function useNodes(ownerId: string, currentPlayer: Player | null) {
     const [nodes, setNodes] = useState<Node[]>();
 
     useEffect(() => {
-        if (!ownerId) {
+        if (!ownerId || !currentPlayer) {
             return
         }
         axios
@@ -16,7 +16,7 @@ export default function useNodes(ownerId: string) {
                 setNodes(data);
             })
             .catch(console.error);
-    }, [ownerId]);
+    }, [ownerId, currentPlayer]);
 
     return nodes;
 }

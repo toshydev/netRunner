@@ -34,7 +34,7 @@ export default function StorePage() {
     if (player) {
         return <StyledCard>
             <StyledPlayerStats>
-                <StyledText isupdating={`${isUpdating}`} color="secondary">Daemons: {player.attack}</StyledText>
+                <StyledText isupdating={`${isUpdating}`} color="secondary">Daemons: {player.attack}/{player.maxAttack}</StyledText>
                 <StyledText isupdating={`${isUpdating}`}>Credits: {player.credits}$</StyledText>
             </StyledPlayerStats>
             <StyledSmallStoreItem disabled={isDisabled(1000, 1)} onClick={() => handleBuyDaemons(ItemSize.SMALL)}>
@@ -60,7 +60,7 @@ const StyledCard = styled(Card)`
   background: var(--color-semiblack);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 2.5rem 2fr 2fr;
+  grid-template-rows: 4rem 2fr 2fr;
   padding: 1rem;
   gap: 1rem;
 `;

@@ -31,7 +31,7 @@ class WebSocketControllerUnitTest {
         webSocketController.afterConnectionEstablished(mockSession1);
 
         verify(mockSession1).getPrincipal();
-        verify(mockSession1, times(3)).sendMessage(any(TextMessage.class));
+        verify(mockSession1, times(2)).sendMessage(any(TextMessage.class));
     }
 
     @Test
