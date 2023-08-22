@@ -20,7 +20,7 @@ public class GooglePlacesService {
 
     @Value("${google.api.url}")
     private String baseUrl;
-    private static final String RADIUS = "radius=1000";
+    private static final String RADIUS = "radius=5000";
     private final OkHttpClient client;
 
     public GooglePlacesService() {
