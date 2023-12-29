@@ -10,7 +10,7 @@ jobs:
       - name: Get logs from docker
         uses: appleboy/ssh-action@master
         with:
-          host: snekhome.click
+          host: snekworld.org
           port: ${{ secrets.SSH_PORT_SNEK }}
           username: ${{ secrets.SSH_USERNAME_SNEK }}
           password: ${{ secrets.SSH_PASSWORD_SNEK }}
@@ -19,7 +19,7 @@ jobs:
       - name: Check the deployed service URL
         uses: jtalk/url-health-check-action@v3
         with:
-          url: http://snekhome.click
+          url: http://snekworld.org
           max-attempts: 3
           retry-delay: 5s
           retry-all: true
